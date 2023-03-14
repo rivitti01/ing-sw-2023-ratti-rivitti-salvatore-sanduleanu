@@ -3,9 +3,15 @@ package it.polimi.ingsw.model;
 import java.util.List;
 
 public class Board {
-    private Tile[9][9] board;
+    private Tile[][] board;
 
-    public Tile getPosition(int[] position){}
+    public Board(){
+        board = new Tile[9][9];
+    }
+
+    public Tile getTile(int[] position){
+        return board[position[0]][position[1]];
+    }
     public boolean checkEmpty(){}
     public void fillBoard(){}
 
