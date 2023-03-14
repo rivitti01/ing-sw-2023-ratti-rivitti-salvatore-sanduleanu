@@ -17,5 +17,7 @@ public class Game {
 
     public void startGame(){}
     public void endGame(){}
-    public Player findWinner(){}
+    public Player findWinner(){
+        return null;
+    }
 }
