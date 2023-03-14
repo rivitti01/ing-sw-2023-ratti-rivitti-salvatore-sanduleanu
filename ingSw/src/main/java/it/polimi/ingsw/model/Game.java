@@ -11,7 +11,6 @@ public class Game {
     private boolean endPointGiven;
 
 
-
     public void fillBoard(){}
     public void addPartecipant(){}
     private void setFirstPlayer(){}
