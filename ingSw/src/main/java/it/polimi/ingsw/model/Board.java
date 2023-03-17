@@ -5,20 +5,24 @@ import java.util.List;
 public abstract class Board {
     private Tile[][] board;
 
-    public Board(){
-        board = new Tile[9][9];
+    public Board(int i){
+
     }
 
     public Tile getTile(int[] position){
         return board[position[0]][position[1]];
     }
-    public boolean checkEmpty(){
+    public boolean checkRefill(){
 
         return false;
     }
-    public void fillBoard(){}
 
-    public List<Tile> getAvaiableTiles() {
+    public List<Tile> getAvailableTiles() {
         return null;
     }
+
+    public void fillBoard(){}
+
 }
+
+

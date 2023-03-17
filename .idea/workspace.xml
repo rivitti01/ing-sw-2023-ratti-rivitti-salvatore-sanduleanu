@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b8e511b-a4b8-4955-b54d-5d258b138da4" name="Changes" comment="--">
-      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/FourClass.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ThreeBoard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/TwoBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="Modifica dell'artifactId">
+      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CardStrategy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +22,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -33,9 +34,6 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="c84b88d9-2bc7-47a5-b784-c9681b996d85" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -60,7 +58,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -73,7 +71,7 @@
       <updated>1678804102538</updated>
     </task>
     <task active="true" id="Default" summary="Default task">
-      <changelist id="7b8e511b-a4b8-4955-b54d-5d258b138da4" name="Changes" comment="--" />
+      <changelist id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="stessa cosa di prima" />
       <created>1678805732145</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -86,8 +84,6 @@
       <workItem from="1679061751575" duration="69000" />
       <workItem from="1679062570495" duration="608000" />
       <workItem from="1679066208448" duration="1158000" />
-      <workItem from="1679070142273" duration="177000" />
-      <workItem from="1679070349125" duration="3258000" />
     </task>
     <task id="LOCAL-00002" summary="stessa cosa di prima">
       <created>1678806882757</created>

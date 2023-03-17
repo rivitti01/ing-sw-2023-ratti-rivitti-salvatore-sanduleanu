@@ -10,6 +10,12 @@ public class Game {
     private boolean hasStarted;
     private boolean endPointGiven;
 
+    public Game(int partecipants){
+        numberPartecipants = partecipants;
+
+
+    }
+
 
 
     public void fillBoard(){}
@@ -17,7 +23,7 @@ public class Game {
     private void setFirstPlayer(){}
 
     public void startGame(){
-        players.get(0).getTiles(board); // e tutta la logica di gico
+        players.get(0).getTiles(board); // e tutta la logica di gioco
     }
     public void endGame(){}
     public Player findWinner(){
