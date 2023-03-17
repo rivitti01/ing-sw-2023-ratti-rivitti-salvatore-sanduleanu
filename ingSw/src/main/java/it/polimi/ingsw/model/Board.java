@@ -12,13 +12,17 @@ public class Board {
     public Tile getTile(int[] position){
         return board[position[0]][position[1]];
     }
-    public boolean checkEmpty(){
+    public boolean checkRefill(){
 
         return false;
     }
-    public void fillBoard(){}
 
-    public List<Tile> getAvaiableTiles() {
+    public List<Tile> getAvailableTiles() {
         return null;
     }
+
+    public void fillBoard(){}
+
 }
+
+

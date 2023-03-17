@@ -8,8 +8,10 @@ public class Shelf {
     }
     public int checkEmptyColumn(int column){
 
+        return column;
     }
     public int checkAdjacents(){
 
+        return 0;
     }
 }

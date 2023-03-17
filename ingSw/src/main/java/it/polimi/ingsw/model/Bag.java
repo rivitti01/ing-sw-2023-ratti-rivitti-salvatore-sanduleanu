@@ -10,4 +10,8 @@ public class Bag {
 
 
     }
+
+    public Tile getTile(){
+        return null;
+    }
 }
