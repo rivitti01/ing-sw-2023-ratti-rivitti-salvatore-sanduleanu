@@ -10,6 +10,12 @@ public class Game {
     private boolean hasStarted;
     private boolean endPointGiven;
 
+    public Game(int partecipants){
+        numberPartecipants = partecipants;
+
+
+    }
+
 
 
     public void fillBoard(){}

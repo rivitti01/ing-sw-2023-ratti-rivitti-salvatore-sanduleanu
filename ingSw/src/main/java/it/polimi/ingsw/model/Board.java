@@ -5,8 +5,8 @@ import java.util.List;
 public class Board {
     private Tile[][] board;
 
-    public Board(){
-        board = new Tile[9][9];
+    public Board(int i){
+
     }
 
     public Tile getTile(int[] position){
