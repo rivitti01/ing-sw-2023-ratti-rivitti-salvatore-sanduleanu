@@ -2,7 +2,7 @@ package it.polimi.ingsw.model;
 
 import java.util.List;
 
-public class Board {
+public abstract class Board {
     private Tile[][] board;
 
     public Board(){

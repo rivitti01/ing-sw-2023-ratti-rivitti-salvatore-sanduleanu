@@ -11,6 +11,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ingSw" target="1.5" />
+      <module name="softeng-gc30" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
