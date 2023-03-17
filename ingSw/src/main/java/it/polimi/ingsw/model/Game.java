@@ -5,7 +5,7 @@ public class Game {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
-    private Board LivingRoom;
+    private Board board;
     private Bag bag;
     private boolean hasStarted;
     private boolean endPointGiven;
@@ -16,7 +16,9 @@ public class Game {
     public void addPartecipant(){}
     private void setFirstPlayer(){}
 
-    public void startGame(){}
+    public void startGame(){
+        players.get(0).getTiles(board); // e tutta la logica di gico
+    }
     public void endGame(){}
     public Player findWinner(){
         return null;

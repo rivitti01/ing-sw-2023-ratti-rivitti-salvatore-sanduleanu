@@ -25,6 +25,7 @@ public class Player {
     }
     public boolean checkFullShelf(){
 
+        return false;
     }
 
     public void addPoints(){
@@ -34,7 +35,7 @@ public class Player {
 
     }
     private int checkPersonalPoints(){
-
+        return 0;
     }
 
 

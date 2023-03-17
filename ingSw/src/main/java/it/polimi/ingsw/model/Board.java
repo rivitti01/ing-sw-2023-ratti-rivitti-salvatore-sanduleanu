@@ -12,7 +12,10 @@ public class Board {
     public Tile getTile(int[] position){
         return board[position[0]][position[1]];
     }
-    public boolean checkEmpty(){}
+    public boolean checkEmpty(){
+
+        return false;
+    }
     public void fillBoard(){}
 
     public List<Tile> getAvaiableTiles() {

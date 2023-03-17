@@ -6,5 +6,6 @@ public class DeckCommon {
 
     private CommonGoalCard chooseRandomCard(){
 
+        return null;
     }
 }
