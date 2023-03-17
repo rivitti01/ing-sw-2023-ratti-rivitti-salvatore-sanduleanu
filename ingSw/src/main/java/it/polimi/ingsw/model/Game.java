@@ -11,7 +11,16 @@ public class Game {
     private boolean endPointGiven;
 
     public Game(int partecipants){
+        commonGoals = new CommonGoalCard[2];
         numberPartecipants = partecipants;
+        //--------------------------------
+        //estrarre due numeri casuali, da questi creare un ciclo per definire le strategie (as esempio):
+        //if (x = 1)
+        //commonGoals[0].setCardStrategy(new CommonGoalCard1());
+        //if (y = 2)
+        //commonGoals[1].setCardStrategy(new CommonGoalCard2());
+        //--------------------------------
+
 
 
     }

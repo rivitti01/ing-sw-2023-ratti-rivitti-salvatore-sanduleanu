@@ -9,4 +9,10 @@ public class CommonGoalCard2 implements CardStrategy{
                 myShelf.getTile(6, 5).getColor() ==
                         myShelf.getTile(6, 0).getColor();
     }
+
+    @Override
+    public String toString() {
+        return "Quattro tessere dello stesso tipo" +
+                " ai quattro angoli della Libreria.";
+    }
 }
