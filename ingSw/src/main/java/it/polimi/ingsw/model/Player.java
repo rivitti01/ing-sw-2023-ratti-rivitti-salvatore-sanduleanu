@@ -21,7 +21,7 @@ public class Player {
 
     }
     public void getTiles(Board board){
-
+        //board.getAvailableTiles();
     }
     public boolean checkFullShelf(){
 
@@ -32,11 +32,13 @@ public class Player {
 
     }
     public void addPoints(CommonGoalCard card){
-
+        //points.add(card.getPoint());
     }
     private int checkPersonalPoints(){
         return 0;
     }
+
+    public Shelf getShelf(){return shelf;}
 
 
 

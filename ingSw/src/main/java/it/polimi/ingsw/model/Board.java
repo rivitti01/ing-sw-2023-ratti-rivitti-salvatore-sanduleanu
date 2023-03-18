@@ -17,7 +17,7 @@ public abstract class Board {
         return false;
     }
 
-    public List<Tile> getAvailableTiles() {
+    public List<Integer[]> getAvailableTiles() {
         return null;
     }
 

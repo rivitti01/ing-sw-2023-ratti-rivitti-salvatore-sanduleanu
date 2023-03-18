@@ -14,7 +14,7 @@ public class CommonGoalCard {
         description = cardStrategy.toString();
     }
 
-    public void setPoints(int numberPartecipants){ //pro-tip: creare uno strategy pattern/factory method anche per scores
+    public void fillStack(int numberPartecipants){ //pro-tip: creare uno strategy pattern/factory method anche per scores
         scores = new Stack<ScoringToken>();
         if(numberPartecipants == 4){
             scores.push(new ScoringToken(8));
@@ -32,6 +32,9 @@ public class CommonGoalCard {
             scores.push(new ScoringToken(4));
         }
     }
+    public int getPoint(){
+        return scores.pop().score;
+    }
 
     public boolean algorythm(Shelf myShelf){
         return cardStrategy.algorythm(myShelf);
@@ -41,5 +44,5 @@ public class CommonGoalCard {
         return description;
     }
 
-    public void fillStack(){}
+
 }
