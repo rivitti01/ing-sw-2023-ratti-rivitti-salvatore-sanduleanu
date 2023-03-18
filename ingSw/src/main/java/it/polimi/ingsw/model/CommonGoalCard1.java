@@ -25,7 +25,7 @@ public class CommonGoalCard1 implements CardStrategy{
                 }
             }
         }
-        return counter == 6;
+        return counter >= 6; // non deve essere uguale a 6, si possono fare fino a 15 corrispondenze di questo tipo
     }
 
     @Override
