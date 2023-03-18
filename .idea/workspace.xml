@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="CommonGoalCard: ho aggiunto l'attributo CardStrategy per implementare lo strategy pattern.&#10;Il metodo algorythm(Shelf myShelf) prende come parametro la shelf del player e applica l'algoritmo scelto dalla carta comune.&#10;CommonGoalCard1: non ancora implementato&#10;CommonGoalCard2: Algoritmo facile, dovrebbe funzionare, vanno fatti i casi di test.">
+    <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="extended board class">
+      <change afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Square.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CardStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CardStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard1.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard2.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="Leo" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
