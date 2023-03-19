@@ -1,4 +1,6 @@
 package it.polimi.ingsw.model;
+import it.polimi.ingsw.model.Board.Board;
+
 import java.util.List;
 
 public class Game {

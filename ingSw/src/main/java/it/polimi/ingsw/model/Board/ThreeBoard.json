@@ -1,0 +1,14 @@
+{
+  "threeBoard": [
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"} ],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, null, null, null, null],
+    [{"color": "TRANSPARENT"}, null, null, null, null, null, null, null, {"color": "TRANSPARENT"}],
+    [null, null, null, null, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}]
+  ]
+
+}
