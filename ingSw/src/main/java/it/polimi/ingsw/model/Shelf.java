@@ -42,4 +42,8 @@ public class Shelf {
 
         return 0;
     }
+
+    public Tile[][] getShelf() {
+        return shelf;
+    }
 }

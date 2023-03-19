@@ -1,0 +1,14 @@
+{
+  "fourBoard": [
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"} ],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    [{"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, null, null, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}]
+  ]
+
+}
