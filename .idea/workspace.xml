@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="CommonGoalCard: ho aggiunto l'attributo CardStrategy per implementare lo strategy pattern.&#10;Il metodo algorythm(Shelf myShelf) prende come parametro la shelf del player e applica l'algoritmo scelto dalla carta comune.&#10;CommonGoalCard1: non ancora implementato&#10;CommonGoalCard2: Algoritmo facile, dovrebbe funzionare, vanno fatti i casi di test.">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CardStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CardStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard1.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard2.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/ingSw.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/ingSw.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ScoringToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ScoringToken.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -52,14 +51,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="stessa cosa di prima">
@@ -84,6 +87,7 @@
       <workItem from="1679062570495" duration="608000" />
       <workItem from="1679066208448" duration="1158000" />
       <workItem from="1679084992643" duration="9988000" />
+      <workItem from="1679249522993" duration="1055000" />
     </task>
     <task id="LOCAL-00002" summary="stessa cosa di prima">
       <created>1678806882757</created>
