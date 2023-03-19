@@ -7,7 +7,7 @@ public class CommonGoal9 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
 
-        colorsOccurence = new boolean[6];   //ogni slot indica un colore possibile delle tile
+        colorsOccurence = new boolean[6];
 
         for(int c=0; c<5; c++){
             for(int r=0; r<6 && myShelf.getTile(r,c)!=null ; r++){
