@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="">
+    <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/google_code_gson.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/gson-2.10.1.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ing-sw-2023-ratti-rivitti-salvatore-sanduleanu.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ing-sw-2023-ratti-rivitti-salvatore-sanduleanu.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/com_google.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Bag.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Bag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/ingSw.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/ingSw.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Board/BoardFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Board/BoardFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,15 +55,22 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Downloaded.Files.Path.Enabled": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -86,7 +96,6 @@
       <workItem from="1679061751575" duration="69000" />
       <workItem from="1679062570495" duration="608000" />
       <workItem from="1679066208448" duration="1158000" />
-      <workItem from="1679318620482" duration="2830000" />
     </task>
     <task id="LOCAL-00002" summary="stessa cosa di prima">
       <created>1678806882757</created>
@@ -148,7 +157,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -198,16 +219,5 @@
     <MESSAGE value="Modifica dell'artifactId" />
     <MESSAGE value="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12" />
     <option name="LAST_COMMIT_MESSAGE" value="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/App.java</url>
-          <line>20</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
