@@ -18,6 +18,7 @@ public class App
         Bag oneBag = new Bag(); // prove xD lol
         BoardFactory board = new BoardFactory();
         Board myBoard = board.createBoard(4);
+        myBoard.setupBoard();
         myBoard.fillBoard(oneBag);
         List<Tile> tiles = new ArrayList<>();
         int i = 0;
@@ -25,6 +26,7 @@ public class App
             tiles.add(oneBag.getTile());
             i++;
         }
+
 
 
 

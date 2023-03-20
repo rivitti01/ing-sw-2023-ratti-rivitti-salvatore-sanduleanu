@@ -73,9 +73,17 @@ public abstract class Board {
     public void fillBoard(Bag bag){
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
-                if(getTile(i, j) == null)
+                if(getTile(i, j).getColor() == null)
                     board[i][j] = bag.getTile();
             }
         }
+    }
+    public void makeBoard(List<Tile> newBoard){
+        for (int i = 0; i< size; i++){
+            for (int j = 0; j < size; j++){
+                board[i][j] = newBoard.remove(0);
+            }
+        }
+
     }
 }
