@@ -20,7 +20,7 @@ public class Shelf {
 
         return 0;
     }
-    public boolean checkEmptyRow(int column){
+    public boolean checkEmptyRow(int row){
 
         return false;
     }
