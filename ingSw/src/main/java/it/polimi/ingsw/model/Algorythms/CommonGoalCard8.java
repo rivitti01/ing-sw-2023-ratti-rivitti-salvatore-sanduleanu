@@ -45,5 +45,11 @@ public class CommonGoalCard8 implements CardStrategy {
             return fullRows.size() >= 4;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Quattro righe formate ciascuna da 5 tessere di uno, due o tre tipi differenti." +
+                " Righe diverse possono avere combinazioni diverse di tipi di tessere.";
+    }
 }
 

@@ -29,4 +29,10 @@ public class CommonGoalCard4 implements CardStrategy {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Due gruppi separati di 4 tessere dello stesso tipo che formano un quadrato 2x2." +
+                " Le tessere dei due gruppi devono essere dello stesso tipo.";
+    }
 }
