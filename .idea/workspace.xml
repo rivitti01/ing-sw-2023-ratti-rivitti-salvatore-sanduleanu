@@ -5,15 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="51274651-b52f-4b04-a97b-e0d308e7433d" name="Changes" comment="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/ingSw.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/ingSw.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard4.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard4.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard5.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard5.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard8.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Algorythms/CommonGoalCard8.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/Shelf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard11.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard11.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard12.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard12.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard6.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/CommonGoalCard6.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/FourClass.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ThreeBoard.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ThreeColumns.java" beforeDir="false" afterPath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/ThreeColumns.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ingSw/src/main/java/it/polimi/ingsw/model/TwoBoard.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,28 +53,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
-  <component name="RunManager">
-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.App" />
-      <module name="ingSw" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-  </component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="stessa cosa di prima">
@@ -99,7 +88,6 @@
       <workItem from="1679061751575" duration="69000" />
       <workItem from="1679062570495" duration="608000" />
       <workItem from="1679066208448" duration="1158000" />
-      <workItem from="1679316754246" duration="805000" />
     </task>
     <task id="LOCAL-00002" summary="stessa cosa di prima">
       <created>1678806882757</created>
@@ -143,7 +131,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679258394522</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12">
+      <created>1679267304597</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1679267304597</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,6 +209,7 @@
     <MESSAGE value="-" />
     <MESSAGE value="Creato il metodo costruttore e getTile di Board" />
     <MESSAGE value="Modifica dell'artifactId" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modifica dell'artifactId" />
+    <MESSAGE value="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12" />
+    <option name="LAST_COMMIT_MESSAGE" value="CommonGoalCard6, CommonGoalCard11, CommonGoalCard12" />
   </component>
 </project>
