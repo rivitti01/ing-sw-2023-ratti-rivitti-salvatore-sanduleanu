@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.Algorythms.CardStrategy;
+
 import java.util.Stack;
 
 public class CommonGoalCard {

@@ -1,7 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
+
+import it.polimi.ingsw.model.Shelf;
 
 public class CommonGoalCard11 {
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorythm(Shelf myShelf) {  // 5 Tiles of same color placed like a cross
         for (int r=1; r<5; r++){
             for (int c=1; c<4; c++) {
                 if(myShelf.getTile(r, c).getColor() == myShelf.getTile(r-1, c+1).getColor() &&

@@ -1,6 +1,10 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
 
-public class CommonGoal9 implements CardStrategy {
+import it.polimi.ingsw.model.Color;
+import it.polimi.ingsw.model.Shelf;
+import it.polimi.ingsw.model.Tile;
+
+public class CommonGoalCard9 implements CardStrategy {
 
     private boolean[] colorsOccurence; //array in cui memorizzo se l'i-esimo colore è presente oppure no
     private int columnCounter; // il numero di colonne che superano il check (dovranno essere 2)
@@ -29,7 +33,7 @@ public class CommonGoal9 implements CardStrategy {
     }
 
     private void colorCheck(Tile tile){  //aggiorno l'array che controlla la presenza dei colori
-        if(tile.getColor()==Color.GREEN) colorsOccurence[0]=true;
+        if(tile.getColor()== Color.GREEN) colorsOccurence[0]=true;
         if(tile.getColor()==Color.WHITE) colorsOccurence[1]=true;
         if(tile.getColor()==Color.YELLOW) colorsOccurence[2]=true;
         if(tile.getColor()==Color.BLUE) colorsOccurence[3]=true;

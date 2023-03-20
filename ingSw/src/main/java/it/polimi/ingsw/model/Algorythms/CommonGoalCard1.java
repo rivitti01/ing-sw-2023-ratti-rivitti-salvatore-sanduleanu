@@ -1,6 +1,8 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
 
-public class CommonGoalCard1 implements CardStrategy{
+import it.polimi.ingsw.model.Shelf;
+
+public class CommonGoalCard1 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) { //potrebbe essere più efficiente
         Shelf tmpShelf = new Shelf(myShelf);

@@ -1,6 +1,8 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
 
-public class CommonGoalCard2 implements CardStrategy{
+import it.polimi.ingsw.model.Shelf;
+
+public class CommonGoalCard2 implements CardStrategy {
     public boolean algorythm(Shelf myShelf) {
         return myShelf.getTile(0, 0).getColor() ==
                         myShelf.getTile(0, 5).getColor() &&

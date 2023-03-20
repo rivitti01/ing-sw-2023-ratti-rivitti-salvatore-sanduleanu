@@ -1,6 +1,8 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
 
-public class CommonGoal7 implements CardStrategy {
+import it.polimi.ingsw.model.Shelf;
+
+public class CommonGoalCard7 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
         //le diagonali possibili sono 4, le controllo una per volta

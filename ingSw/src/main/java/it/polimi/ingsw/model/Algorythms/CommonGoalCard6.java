@@ -1,7 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
+
+import it.polimi.ingsw.model.Shelf;
 
 public class CommonGoalCard6 {
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorythm(Shelf myShelf) { //8 Tiles of same color, order doesn't matter
         for (int r1=0; r1<6; r1++){
             for (int c1=0; c1<5; c1++) {
                 int count = 0;

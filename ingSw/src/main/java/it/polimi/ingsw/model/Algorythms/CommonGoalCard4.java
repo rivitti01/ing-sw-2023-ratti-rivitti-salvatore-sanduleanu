@@ -1,6 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
 
-public class Square implements CardStrategy{
+import it.polimi.ingsw.model.Shelf;
+import it.polimi.ingsw.model.Tile;
+
+public class CommonGoalCard4 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
         Tile[][] copiedShelf = myShelf.getShelf();

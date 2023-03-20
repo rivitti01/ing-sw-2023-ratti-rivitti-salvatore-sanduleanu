@@ -1,27 +1,30 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Algorythms;
+
+import it.polimi.ingsw.model.Shelf;
+import it.polimi.ingsw.model.Tile;
 
 import java.util.ArrayList;
 
-public class FourRows implements CardStrategy {
+public class CommonGoalCard5 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
 
         int i = 0, j = 0, k = 0, colorCounter=1;
         boolean colorFlag = false;
-        ArrayList<Tile[]> fullRows = new ArrayList<Tile[]>();
+        ArrayList<Tile[]> fullColumns = new ArrayList<Tile[]>();
 
-        for (i=0; i<5; i++){
-            if(!myShelf.checkEmptyRow(i)) {
-                fullRows.add(myShelf.getRow(i));
+        for (i=0; i<4; i++){
+            if(myShelf.checkColumnEmptiness(i)==0) {
+                fullColumns.add(myShelf.getColumn(i));
             }
         }
 
-        if (fullRows.size()<4){
+        if (fullColumns.size()<3){
             return false;
         } else {
-            for (Tile[] tiles: fullRows) {
+            for (Tile[] tiles: fullColumns) {
                 colorCounter=1;
-                for (j = 1; j < 4; j++) {
+                for (j = 1; j < 5; j++) {
                     for (k = 0; k < j; k++) {
                         if (tiles[j].getColor().equals(tiles[k].getColor())){
                             colorFlag = false;
@@ -36,11 +39,11 @@ public class FourRows implements CardStrategy {
                     colorFlag = false;
                 }
                 if (colorCounter > 3){
-                    fullRows.remove(tiles);
+                    fullColumns.remove(tiles);
                 }
             }
-            return fullRows.size() >= 4;
+            return fullColumns.size() >= 3;
         }
     }
-}
 
+}
