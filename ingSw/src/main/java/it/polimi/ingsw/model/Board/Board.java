@@ -13,7 +13,7 @@ public abstract class Board {
 
     public Board(int size){
         this.size = size;
-        this.board = new Tile[size-1][size-1];
+        this.board = new Tile[size][size];
     }
     public Tile[][] getBoard(){
         return board;
