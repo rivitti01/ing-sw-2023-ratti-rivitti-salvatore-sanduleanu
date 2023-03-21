@@ -24,7 +24,7 @@ public class ThreeBoard extends Board{
         //read from json file
 
         //read from json file
-        String filePath = "ingSw/src/main/resources/ThreeBoard.json";
+        String filePath = "ingSw/src/main/resources/BoardFactor.json";
         File input = new File(filePath);
         List<Tile> newBoard = new ArrayList<>();
         try {

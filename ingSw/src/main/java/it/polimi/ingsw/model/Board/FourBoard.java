@@ -24,7 +24,7 @@ public class FourBoard extends Board{
         //read from json file
 
         //read from json file
-        String filePath = "ingSw/src/main/resources/FourBoard.json";
+        String filePath = "ingSw/src/main/resources/BoardFactor.json";
         File input = new File(filePath);
         List<Tile> newBoard = new ArrayList<>();
         try {
