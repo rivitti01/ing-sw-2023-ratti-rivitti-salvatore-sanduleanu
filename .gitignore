@@ -6,3 +6,5 @@
 /dataSources/
 /dataSources.local.xml
 .idea/
+.DS_Store
+softeng-gc30.iml
