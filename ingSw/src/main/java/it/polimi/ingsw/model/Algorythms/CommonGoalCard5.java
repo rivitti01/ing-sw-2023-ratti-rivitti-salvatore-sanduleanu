@@ -11,7 +11,7 @@ public class CommonGoalCard5 implements CardStrategy {
 
         int i = 0, j = 0, k = 0, colorCounter=1;
         boolean colorFlag = false;
-        ArrayList<Tile[]> fullColumns = new ArrayList<Tile[]>();
+        ArrayList<Tile[]> fullColumns = new ArrayList<>();
 
         for (i=0; i<4; i++){
             if(myShelf.checkColumnEmptiness(i)==0) {
@@ -48,7 +48,10 @@ public class CommonGoalCard5 implements CardStrategy {
 
     @Override
     public String toString() {
-        return "Tre colonne formate ciascuna da 6 tessere di uno, due o tre tipi differenti." +
-                " Colonne diverse possono avere combinazioni diverse di tipi di tessere.";
+        return """
+                Three columns each formed by 6 tiles Five tiles of the same type forming an X.
+                of maximum three different types. One
+                column can show the same or a different
+                combination of another column.""";
     }
 }

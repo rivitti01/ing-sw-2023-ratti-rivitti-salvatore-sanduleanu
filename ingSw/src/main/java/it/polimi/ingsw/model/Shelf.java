@@ -10,19 +10,28 @@ public class Shelf {
         this.shelf = shelf.shelf;
     }
     public Tile getTile(int row, int col){
-        return shelf[row][col];
+        return this.shelf[row][col];
     }
 
     public void putTile(int row,int column, Tile tile){
         shelf[row][column] = tile;
     }
     public int checkColumnEmptiness(int column){
-
-        return 0;
+        int emptySquareCounter = 0;
+        for (int i = 0; i < 5; i++){
+            if (this.shelf[i][column]==null){
+                emptySquareCounter++;
+            }
+        }
+        return emptySquareCounter;
     }
-    public boolean checkEmptyRow(int row){
-
-        return false;
+    public boolean checkRowEmptiness(int row){
+        for (int i = 0; i < 5; i++) {
+            if (this.shelf[row][i]!=null){
+                return false;
+            }
+        }
+        return true;
     }
     public Tile[] getColumn(int index){ //returns a copy of the column, not the reference to that column
         Tile[] column = new Tile[6];
@@ -44,6 +53,6 @@ public class Shelf {
     }
 
     public Tile[][] getShelf() {
-        return shelf;
+        return this.shelf.clone();
     }
 }

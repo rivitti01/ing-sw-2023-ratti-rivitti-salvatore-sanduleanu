@@ -11,10 +11,10 @@ public class CommonGoalCard8 implements CardStrategy {
 
         int i = 0, j = 0, k = 0, colorCounter=1;
         boolean colorFlag = false;
-        ArrayList<Tile[]> fullRows = new ArrayList<Tile[]>();
+        ArrayList<Tile[]> fullRows = new ArrayList<>();
 
         for (i=0; i<5; i++){
-            if(!myShelf.checkEmptyRow(i)) {
+            if(!myShelf.checkRowEmptiness(i)) {
                 fullRows.add(myShelf.getRow(i));
             }
         }
@@ -48,8 +48,11 @@ public class CommonGoalCard8 implements CardStrategy {
 
     @Override
     public String toString() {
-        return "Quattro righe formate ciascuna da 5 tessere di uno, due o tre tipi differenti." +
-                " Righe diverse possono avere combinazioni diverse di tipi di tessere.";
+        return """
+                Four lines each formed by 5 tiles of
+                maximum three different types. One
+                line can show the same or a different
+                combination of another line.""";
     }
 }
 
