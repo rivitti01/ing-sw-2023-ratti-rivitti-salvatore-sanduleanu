@@ -24,7 +24,7 @@ public class FourBoard extends Board{
         //read from json file
 
         //read from json file
-        String filePath = "ingSw/src/main/java/it/polimi/ingsw/model/Board/FourBoard.json";
+        String filePath = "ingSw/src/main/resources/FourBoard.json";
         File input = new File(filePath);
         List<Tile> newBoard = new ArrayList<>();
         try {

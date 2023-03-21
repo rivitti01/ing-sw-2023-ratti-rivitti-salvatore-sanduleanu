@@ -19,7 +19,7 @@ public class TwoBoard extends Board{
     @Override
     public void setupBoard() {
         //read from json file
-        String filePath = "ingSw/src/main/java/it/polimi/ingsw/model/Board/TwoBoard.json";
+        String filePath = "ingSw/src/main/resources/TwoBoard.json";
         File input = new File(filePath);
         List<Tile> newBoard = new ArrayList<>();
         try {
