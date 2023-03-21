@@ -18,6 +18,14 @@ import java.util.ListIterator;
 public class App 
 {
     public static void main( String[] args ) {
+        DeckPersonal deckPersonal = new DeckPersonal();
+        deckPersonal.popPersonalCard();
+        deckPersonal.popPersonalCard();
+        deckPersonal.popPersonalCard();
+
+
+
+
         Bag oneBag = new Bag(); // prove xD lol
         BoardFactory board = new BoardFactory();
         Board myBoard = board.createBoard(4);
@@ -29,7 +37,7 @@ public class App
             tiles.add(oneBag.getTile());
             i++;
         }
-        ListIterator<Tile> tmp = tiles.listIterator();
+        /*ListIterator<Tile> tmp = tiles.listIterator();
         Color c = tmp.next().getColor();
         c = tmp.next().getColor();
         c = tmp.next().getColor();
@@ -37,7 +45,7 @@ public class App
         c = tmp.next().getColor();
         c = tmp.next().getColor();
         c = tmp.next().getColor();
-        c = tmp.next().getColor();
+        c = tmp.next().getColor();*/
 
 
 

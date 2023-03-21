@@ -1,0 +1,397 @@
+{
+  "goalStrategy1" : [
+    {
+    "color": "PINK",
+    "x": "0",
+    "y": "0"
+    },
+    {
+      "color": "BLUE",
+      "x": "0",
+      "y": "2"
+    },
+    {
+      "color": "GREEN",
+      "x": "1",
+      "y": "4"
+    },
+    {
+      "color": "WHITE",
+      "x": "2",
+      "y": "3"
+    },
+    {
+      "color": "YELLOW",
+      "x": "3",
+      "y": "1"
+    },
+    {
+      "color": "CYAN",
+      "x": "5",
+      "y": "2"
+    }
+  ],
+
+  "goalStrategy2" : [
+    {
+      "color": "PINK",
+      "x": "1",
+      "y": "1"
+    },
+    {
+      "color": "GREEN",
+      "x": "2",
+      "y": "0"
+    },
+    {
+      "color": "YELLOW",
+      "x": "2",
+      "y": "2"
+    },
+    {
+      "color": "WHITE",
+      "x": "3",
+      "y": "4"
+    },
+    {
+      "color": "CYAN",
+      "x": "4",
+      "y": "3"
+    },
+    {
+      "color": "BLUE",
+      "x": "5",
+      "y": "4"
+    }
+  ],
+
+  "goalStrategy3" : [
+    {
+      "color": "BLUE",
+      "x": "1",
+      "y": "0"
+    },
+    {
+      "color": "YELLOW",
+      "x": "1",
+      "y": "3"
+    },
+    {
+      "color": "PINK",
+      "x": "2",
+      "y": "2"
+    },
+    {
+      "color": "GREEN",
+      "x": "3",
+      "y": "1"
+    },
+    {
+      "color": "CYAN",
+      "x": "3",
+      "y": "4"
+    },
+    {
+      "color": "WHITE",
+      "x": "5",
+      "y": "0"
+    }
+  ],
+
+  "goalStrategy4" : [
+    {
+      "color": "PINK",
+      "x": "3",
+      "y": "3"
+    },
+    {
+      "color": "BLUE",
+      "x": "2",
+      "y": "2"
+    },
+    {
+      "color": "GREEN",
+      "x": "4",
+      "y": "2"
+    },
+    {
+      "color": "WHITE",
+      "x": "4",
+      "y": "1"
+    },
+    {
+      "color": "YELLOW",
+      "x": "0",
+      "y": "4"
+    },
+    {
+      "color": "CYAN",
+      "x": "2",
+      "y": "0"
+    }
+  ],
+
+  "goalStrategy5" : [
+    {
+      "color": "PINK",
+      "x": "4",
+      "y": "4"
+    },
+    {
+      "color": "BLUE",
+      "x": "3",
+      "y": "1"
+    },
+    {
+      "color": "GREEN",
+      "x": "5",
+      "y": "3"
+    },
+    {
+      "color": "WHITE",
+      "x": "3",
+      "y": "2"
+    },
+    {
+      "color": "YELLOW",
+      "x": "5",
+      "y": "0"
+    },
+    {
+      "color": "CYAN",
+      "x": "1",
+      "y": "1"
+    }
+  ],
+
+  "goalStrategy6" : [
+    {
+      "color": "PINK",
+      "x": "5",
+      "y": "0"
+    },
+    {
+      "color": "BLUE",
+      "x": "4",
+      "y": "3"
+    },
+    {
+      "color": "GREEN",
+      "x": "0",
+      "y": "4"
+    },
+    {
+      "color": "WHITE",
+      "x": "2",
+      "y": "3"
+    },
+    {
+      "color": "YELLOW",
+      "x": "4",
+      "y": "1"
+    },
+    {
+      "color": "CYAN",
+      "x": "0",
+      "y": "2"
+    }
+  ],
+
+  "goalStrategy7" : [
+    {
+      "color": "PINK",
+      "x": "2",
+      "y": "1"
+    },
+    {
+      "color": "BLUE",
+      "x": "1",
+      "y": "3"
+    },
+    {
+      "color": "GREEN",
+      "x": "0",
+      "y": "0"
+    },
+    {
+      "color": "WHITE",
+      "x": "5",
+      "y": "2"
+    },
+    {
+      "color": "YELLOW",
+      "x": "4",
+      "y": "4"
+    },
+    {
+      "color": "CYAN",
+      "x": "3",
+      "y": "0"
+    }
+  ],
+
+  "goalStrategy8" : [
+    {
+      "color": "PINK",
+      "x": "3",
+      "y": "0"
+    },
+    {
+      "color": "BLUE",
+      "x": "0",
+      "y": "4"
+    },
+    {
+      "color": "GREEN",
+      "x": "1",
+      "y": "1"
+    },
+    {
+      "color": "WHITE",
+      "x": "4",
+      "y": "3"
+    },
+    {
+      "color": "YELLOW",
+      "x": "5",
+      "y": "3"
+    },
+    {
+      "color": "CYAN",
+      "x": "2",
+      "y": "2"
+    }
+  ],
+
+  "goalStrategy9" : [
+    {
+      "color": "PINK",
+      "x": "4",
+      "y": "4"
+    },
+    {
+      "color": "BLUE",
+      "x": "5",
+      "y": "0"
+    },
+    {
+      "color": "GREEN",
+      "x": "2",
+      "y": "2"
+    },
+    {
+      "color": "WHITE",
+      "x": "3",
+      "y": "4"
+    },
+    {
+      "color": "YELLOW",
+      "x": "0",
+      "y": "2"
+    },
+    {
+      "color": "CYAN",
+      "x": "4",
+      "y": "1"
+    }
+  ],
+
+  "goalStrategy10" : [
+    {
+      "color": "PINK",
+      "x": "5",
+      "y": "3"
+    },
+    {
+      "color": "BLUE",
+      "x": "4",
+      "y": "1"
+    },
+    {
+      "color": "GREEN",
+      "x": "3",
+      "y": "3"
+    },
+    {
+      "color": "WHITE",
+      "x": "1",
+      "y": "0"
+    },
+    {
+      "color": "YELLOW",
+      "x": "1",
+      "y": "1"
+    },
+    {
+      "color": "CYAN",
+      "x": "0",
+      "y": "4"
+    }
+  ],
+
+  "goalStrategy11" : [
+    {
+      "color": "PINK",
+      "x": "0",
+      "y": "2"
+    },
+    {
+      "color": "BLUE",
+      "x": "3",
+      "y": "2"
+    },
+    {
+      "color": "GREEN",
+      "x": "4",
+      "y": "4"
+    },
+    {
+      "color": "WHITE",
+      "x": "1",
+      "y": "1"
+    },
+    {
+      "color": "YELLOW",
+      "x": "2",
+      "y": "0"
+    },
+    {
+      "color": "CYAN",
+      "x": "5",
+      "y": "3"
+    }
+  ],
+
+  "goalStrategy12" : [
+    {
+      "color": "PINK",
+      "x": "1",
+      "y": "1"
+    },
+    {
+      "color": "BLUE",
+      "x": "2",
+      "y": "2"
+    },
+    {
+      "color": "GREEN",
+      "x": "5",
+      "y": "0"
+    },
+    {
+      "color": "WHITE",
+      "x": "0",
+      "y": "2"
+    },
+    {
+      "color": "YELLOW",
+      "x": "4",
+      "y": "4"
+    },
+    {
+      "color": "CYAN",
+      "x": "3",
+      "y": "3"
+    }
+  ]
+}
