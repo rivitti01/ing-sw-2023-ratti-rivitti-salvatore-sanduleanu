@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.Board.Board;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -16,7 +15,6 @@ public class Game {
     public Game(int partecipants){
         commonGoals = new CommonGoalCard[2];
         numberPartecipants = partecipants;
-        players = new ArrayList<>();
         //--------------------------------
         //estrarre due numeri casuali, da questi creare un ciclo per definire le strategie (as esempio):
         //if (x = 1)
