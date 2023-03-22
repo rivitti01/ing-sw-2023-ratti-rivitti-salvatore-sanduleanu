@@ -30,6 +30,7 @@ public class CommonGoalCard4 implements CardStrategy {
         return false;
     }
 
+
     @Override
     public String toString() {
         return """
@@ -37,5 +38,10 @@ public class CommonGoalCard4 implements CardStrategy {
                 the same type in a 2x2 square. The tiles
                 of one square can be different from
                 those of the other square.""";
+    }
+
+    @Override
+    public int getId() {
+        return 4;
     }
 }

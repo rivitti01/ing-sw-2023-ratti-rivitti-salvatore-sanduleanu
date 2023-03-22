@@ -4,5 +4,6 @@ import it.polimi.ingsw.model.Shelf;
 
 public interface CardStrategy {
     public boolean algorythm(Shelf myShelf);
-    public String toString();
+    //public String toString();
+    public int getId();
 }

@@ -32,6 +32,11 @@ public class CommonGoalCard9 implements CardStrategy {
         return "Due colonne formate ciascuna da 6 diversi tipi di tessere.";
     }
 
+    @Override
+    public int getId() {
+        return 9;
+    }
+
     private void colorCheck(Tile tile){  //aggiorno l'array che controlla la presenza dei colori
         if(tile.getColor()== Color.GREEN) colorsOccurence[0]=true;
         if(tile.getColor()==Color.WHITE) colorsOccurence[1]=true;

@@ -25,17 +25,17 @@ public abstract class Board {
     public boolean checkRefill(){
         for(int i=0; i<size-1; i++){
             for(int j=0; j<size-1; j++) {
-                if(getTile(i, j) != null && !getTile(i, j).getColor().equals(Color.TRANSPARENT)){
-                    if(getTile(i+1,j) != null && !getTile(i+1, j).getColor().equals(Color.TRANSPARENT))
+                if(getTile(i, j).getColor() != null && !getTile(i, j).getColor().equals(Color.TRANSPARENT)){
+                    if(getTile(i+1,j).getColor() != null && !getTile(i+1, j).getColor().equals(Color.TRANSPARENT))
                         return false;
-                    else if(getTile(i,j+1) != null && !getTile(i, j+1).getColor().equals(Color.TRANSPARENT))
+                    else if(getTile(i,j+1).getColor() != null && !getTile(i, j+1).getColor().equals(Color.TRANSPARENT))
                         return false;
                 }
             }
         }
         for(int i=0; i<size-1; i++){
-            if(getTile(i, size-1) != null && !getTile(i, size-1).getColor().equals(Color.TRANSPARENT)){
-                if(getTile(i+1, size-1) != null && !getTile(i+1, size-1).getColor().equals(Color.TRANSPARENT))
+            if(getTile(i, size-1).getColor() != null && !getTile(i, size-1).getColor().equals(Color.TRANSPARENT)){
+                if(getTile(i+1, size-1).getColor() != null && !getTile(i+1, size-1).getColor().equals(Color.TRANSPARENT))
                     return false;
             }
         }

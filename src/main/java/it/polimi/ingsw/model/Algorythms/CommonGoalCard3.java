@@ -33,6 +33,10 @@ public class CommonGoalCard3 implements CardStrategy {
         }
         return counter >= 4;
     }
+
+    public int getId(){
+        return 3;
+    }
     public String toString(){
         return "Quattro gruppi separati formati ciascuno da quattro tessere adiacenti dello stesso tipo" +
                 " (non necessariamente come mostrato in figura)." +

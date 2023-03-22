@@ -54,4 +54,9 @@ public class CommonGoalCard5 implements CardStrategy {
                 column can show the same or a different
                 combination of another column.""";
     }
+
+    @Override
+    public int getId() {
+        return 5;
+    }
 }

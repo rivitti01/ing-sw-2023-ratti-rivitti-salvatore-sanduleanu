@@ -55,6 +55,15 @@ public class Shelf {
     public Tile[][] getShelf() {
         return this.shelf.clone();
     }
+    public Shelf copyShelf(){
+        Shelf newShelf = new Shelf();
+        for (int i = 0; i < 6; i++){
+            for (int j = 0; j < 5; j++){
+                newShelf.putTile(i,j,this.shelf[i][j]);
+            }
+        }
+        return newShelf;
+    }
 
 
 }

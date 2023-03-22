@@ -7,9 +7,16 @@ import java.util.Stack;
 public class CommonGoalCard {
     private CardStrategy cardStrategy;
 
-    private String ID;
+    private int Id;
     private Stack<ScoringToken> scores;
     private String description;
+    public CommonGoalCard(){
+    }
+    public CommonGoalCard(CardStrategy cardStrategy, int numberPartecipants){
+        setCardStrategy(cardStrategy);
+        fillStack(numberPartecipants);
+        Id = cardStrategy.getId();
+    }
 
     public void setCardStrategy(CardStrategy cardStrategy){
         this.cardStrategy = cardStrategy;
@@ -45,6 +52,7 @@ public class CommonGoalCard {
     public String getDescritpion(){
         return description;
     }
-
-
+    public int getId() {
+        return Id;
+    }
 }
