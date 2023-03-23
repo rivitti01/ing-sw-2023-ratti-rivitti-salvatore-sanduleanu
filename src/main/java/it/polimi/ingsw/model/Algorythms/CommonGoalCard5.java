@@ -9,36 +9,36 @@ public class CommonGoalCard5 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
 
-        int i = 0, j = 0, k = 0, colorCounter=1;
+        int i = 0, j = 0, k = 0, colorCounter = 1;
         boolean colorFlag = false;
         ArrayList<Tile[]> fullColumns = new ArrayList<>();
 
-        for (i=0; i<4; i++){
-            if(myShelf.checkColumnEmptiness(i)==0) {
+        for (i = 0; i < 4; i++) {
+            if (myShelf.checkColumnEmptiness(i) == 0) {
                 fullColumns.add(myShelf.getColumn(i));
             }
         }
 
-        if (fullColumns.size()<3){
+        if (fullColumns.size() < 3) {
             return false;
         } else {
-            for (Tile[] tiles: fullColumns) {
-                colorCounter=1;
+            for (Tile[] tiles : fullColumns) {
+                colorCounter = 1;
                 for (j = 1; j < 5; j++) {
                     for (k = 0; k < j; k++) {
-                        if (tiles[j].getColor().equals(tiles[k].getColor())){
+                        if (tiles[j].getColor().equals(tiles[k].getColor())) {
                             colorFlag = false;
-                            k=j;
+                            k = j;
                         } else {
                             colorFlag = true;
                         }
                     }
-                    if (colorFlag){
+                    if (colorFlag) {
                         colorCounter++;
                     }
                     colorFlag = false;
                 }
-                if (colorCounter > 3){
+                if (colorCounter > 3) {
                     fullColumns.remove(tiles);
                 }
             }
@@ -54,9 +54,5 @@ public class CommonGoalCard5 implements CardStrategy {
                 column can show the same or a different
                 combination of another column.""";
     }
-
-    @Override
-    public int getId() {
-        return 5;
-    }
 }
+

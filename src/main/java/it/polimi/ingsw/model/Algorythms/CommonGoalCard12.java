@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard12 implements CardStrategy{
+public class CommonGoalCard12 {
     public String toString(){
         return "Cinque colonne di altezza crescente o decrescente: " +
                 "a partire dalla prima colonna a sinistra o a destra, " +
@@ -10,10 +10,6 @@ public class CommonGoalCard12 implements CardStrategy{
                 " Le tessere possono essere di qualsiasi tipo.";
     }
 
-    @Override
-    public int getId() {
-        return 12;
-    }
 
 
     public boolean algorythm(Shelf myShelf) { // 5 columns, each has 1 more Tile than the previous colomn or 1 less

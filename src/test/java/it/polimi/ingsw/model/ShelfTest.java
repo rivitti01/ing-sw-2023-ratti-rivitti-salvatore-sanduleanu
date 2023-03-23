@@ -24,8 +24,8 @@ class ShelfTest {
         int c = random.nextInt(5);
         int r = random.nextInt(6);
         Tile t = b.getTile();
-        s.putTile(r,c, t);
-        assertEquals(t, s.getTile(r,c));
+        s.putTile(r, c, t);
+        assertEquals(t, s.getTile(r, c));
     }
 
     @Test
@@ -33,7 +33,7 @@ class ShelfTest {
         int c = random.nextInt(5);
         int r = random.nextInt(6);
         Tile t = b.getTile();
-        s.putTile(r,c, t);
+        s.putTile(r, c, t);
         assertEquals(4, s.checkColumnEmptiness(c));
     }
 
@@ -42,7 +42,7 @@ class ShelfTest {
         int c = random.nextInt(5);
         int r = random.nextInt(6);
         Tile t = b.getTile();
-        s.putTile(r,c, t);
+        s.putTile(r, c, t);
         assertFalse(s.checkRowEmptiness(r));
     }
 
@@ -66,15 +66,12 @@ class ShelfTest {
         Tile[] row = new Tile[5];
         for (int i = 0; i < 5; i++) {
             t = b.getTile();
-            s.putTile(r,i,t);
+            s.putTile(r, i, t);
             row[i] = t;
         }
         assertArrayEquals(row, s.getRow(r));
     }
 
-    @Test
-    void checkAdjacents() {
-    }
 
     @Test
     void getShelf() {
@@ -83,7 +80,34 @@ class ShelfTest {
         Tile[][] shelf = new Tile[6][5];
         Tile t = b.getTile();
         s.putTile(r, c, t);
-        shelf[r][c]=t;
+        shelf[r][c] = t;
         assertArrayEquals(shelf, s.getShelf());
+    }
+
+    @Test
+    void checkAdjacents() {
+        s.putTile(5,0, new Tile(Color.GREEN));
+        s.putTile(5,1, new Tile(Color.GREEN));
+        s.putTile(4,1, new Tile(Color.GREEN));
+        s.putTile(3,1, new Tile(Color.GREEN));
+        s.putTile(4,2, new Tile(Color.GREEN));
+        s.putTile(5,2, new Tile(Color.YELLOW));
+        s.putTile(5,3, new Tile(Color.YELLOW));
+        s.putTile(4,3, new Tile(Color.YELLOW));
+        s.putTile(5,4, new Tile(Color.PINK));
+        s.putTile(4,4, new Tile(Color.BLUE));
+        s.putTile(3,4, new Tile(Color.BLUE));
+        s.putTile(3,2, new Tile(Color.WHITE));
+        s.putTile(3,3, new Tile(Color.WHITE));
+        s.putTile(2,2, new Tile(Color.WHITE));
+        s.putTile(2,3, new Tile(Color.WHITE));
+        s.putTile(1,3, new Tile(Color.WHITE));
+        s.putTile(2,4, new Tile(Color.WHITE));
+        s.putTile(1,4, new Tile(Color.WHITE));
+        s.putTile(0,4, new Tile(Color.WHITE));
+
+        int expectedPoints = 15;
+        int actualPoints = s.checkAdjacents();
+        assertEquals(expectedPoints, actualPoints);
     }
 }

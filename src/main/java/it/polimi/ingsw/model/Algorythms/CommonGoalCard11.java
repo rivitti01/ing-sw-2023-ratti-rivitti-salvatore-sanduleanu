@@ -2,14 +2,9 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard11 implements CardStrategy {
+public class CommonGoalCard11 {
     public String toString(){
         return "Cinque tessere dello stesso tipo che formano una X.";
-    }
-
-    @Override
-    public int getId() {
-        return 11;
     }
 
 

@@ -24,9 +24,5 @@ public class CommonGoalCard7 implements CardStrategy {
         return "Cinque tessere dello stesso tipo che formano una diagonale.";
     }
 
-    @Override
-    public int getId() {
-        return 7;
-    }
 
 }
