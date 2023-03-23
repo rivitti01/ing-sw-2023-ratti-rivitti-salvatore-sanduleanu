@@ -1,4 +1,5 @@
 package it.polimi.ingsw.model;
+import static it.polimi.ingsw.Costants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +7,6 @@ import java.util.List;
 import static java.util.Collections.shuffle;
 
 public class Bag {
-    static final int tilesPerColor = 22;
     final List<Tile> bag;
 
 
@@ -14,7 +14,7 @@ public class Bag {
         bag = new ArrayList<>();
 
         for(Color c : Color.values()) {
-            for (int j = 0; j < tilesPerColor; j++) {
+            for (int j = 0; j < TILES_PER_COLOR; j++) {
                 if (c.equals(Color.TRANSPARENT))
                     break;
                 else

@@ -3,6 +3,7 @@ import static it.polimi.ingsw.Costants.*;
 
 import java.util.List;
 
+
 public class Shelf {
     private Tile[][] shelf;
 
@@ -103,9 +104,17 @@ public class Shelf {
         return count;
     }
 
-    public void dropTile(List<Tile> chosenTiles){
-
+    public void dropTiles(List<Tile> chosenTiles, int column){
+        int j=0;
+        while(j+1<SHELF_ROWS && this.getTile(j+1, column)==null) {
+            j++;
+        }
+        for(int i=0; i<chosenTiles.size(); i++){
+            putTile(j, column, chosenTiles.get(i));
+            j--;
+        }
     }
+
 
 
 }

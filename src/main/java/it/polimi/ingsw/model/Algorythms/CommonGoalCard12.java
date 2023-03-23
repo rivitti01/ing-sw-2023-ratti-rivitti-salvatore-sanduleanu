@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard12 {
+public class CommonGoalCard12 implements CardStrategy{
     public String toString(){
         return "Cinque colonne di altezza crescente o decrescente: " +
                 "a partire dalla prima colonna a sinistra o a destra, " +

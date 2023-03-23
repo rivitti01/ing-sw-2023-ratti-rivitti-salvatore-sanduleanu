@@ -3,6 +3,8 @@ package it.polimi.ingsw.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -111,5 +113,22 @@ class ShelfTest {
         int expectedPoints = 15;
         int actualPoints = s.checkAdjacents();
         assertEquals(expectedPoints, actualPoints);
+    }
+
+    @Test
+    void dropTiles(){
+        s.putTile(5,1, new Tile(Color.WHITE));
+        s.putTile(5,2, new Tile(Color.WHITE));
+        s.putTile(5,3, new Tile(Color.WHITE));
+        s.putTile(5,4, new Tile(Color.WHITE));
+        s.putTile(4,4, new Tile(Color.WHITE));
+        List<Tile> chosenTiles = new ArrayList<>();
+        Tile tile1 = new Tile(Color.YELLOW, 2);
+        Tile tile2 = new Tile(Color.WHITE, 0);
+        Tile tile3 = new Tile(Color.BLUE, 1);
+        chosenTiles.add(tile1);
+        chosenTiles.add(tile2);
+        chosenTiles.add(tile3);
+        s.dropTiles(chosenTiles, 4);
     }
 }
