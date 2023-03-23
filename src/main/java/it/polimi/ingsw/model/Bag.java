@@ -1,21 +1,20 @@
 package it.polimi.ingsw.model;
-
+import static it.polimi.ingsw.Costants.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.shuffle;
 
 public class Bag {
-     static final int tileTypes = 6;
-     static final int tilesPerColor = 22;
+
     final List<Tile> bag;
 
 
     public Bag(){
         bag = new ArrayList<>();
 
-        for (int i = 0; i < tileTypes; i++){
-            for (int j = 0; j < tilesPerColor; j++){
+        for (int i = 0; i < TILES_TYPES; i++){
+            for (int j = 0; j < TILES_PER_COLOR; j++){
                 switch (i) {
                     case 0 -> bag.add(new Tile(Color.CYAN, j % 3));
                     case 1 -> bag.add(new Tile(Color.BLUE, j % 3));

@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.Board.Board;
 
 import java.util.List;
+import static it.polimi.ingsw.Costants.*;
 
 public class Game {
     private int numberPartecipants;
@@ -13,7 +14,7 @@ public class Game {
     private boolean endPointGiven;
 
     public Game(int partecipants){
-        commonGoals = new CommonGoalCard[2];
+        commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
         numberPartecipants = partecipants;
         //--------------------------------
         //estrarre due numeri casuali, da questi creare un ciclo per definire le strategie (as esempio):

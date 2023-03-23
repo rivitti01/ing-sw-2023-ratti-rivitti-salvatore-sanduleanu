@@ -1,12 +1,12 @@
 package it.polimi.ingsw.model;
+import static it.polimi.ingsw.Costants.*;
 
 public class Shelf {
     private Tile[][] shelf;
-    static final int rows = 6;
-    static final int columns = 5;
+
 
     public Shelf(){
-        shelf = new Tile[rows][columns];
+        shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
     }
     public Shelf(Shelf shelf){
         this.shelf = shelf.shelf;
@@ -20,15 +20,15 @@ public class Shelf {
     }
     public int checkColumnEmptiness(int column){
         int emptySquareCounter = 0;
-        for (int i = 0; i < 5; i++){
-            if (this.shelf[i][column]==null){
+        for (int i = 0; i < SHELF_ROWS; i++){
+            if (this.shelf[i][column]!=null){
                 emptySquareCounter++;
             }
         }
         return emptySquareCounter;
     }
     public boolean checkRowEmptiness(int row){
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SHELF_COLUMN; i++) {
             if (this.shelf[row][i]!=null){
                 return false;
             }
@@ -36,7 +36,7 @@ public class Shelf {
         return true;
     }
     public Tile[] getColumn(int index){ //returns a copy of the column, not the reference to that column
-        Tile[] column = new Tile[6];
+        Tile[] column = new Tile[SHELF_ROWS];
         for(int i=0; i<column.length; i++){
             column[i] = this.shelf[i][index];
         }
@@ -54,8 +54,8 @@ public class Shelf {
     }
     public Shelf copyShelf(){
         Shelf newShelf = new Shelf();
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+        for (int i = 0; i < SHELF_ROWS; i++){
+            for (int j = 0; j < SHELF_COLUMN; j++){
                 newShelf.putTile(i,j,this.shelf[i][j]);
             }
         }
@@ -66,8 +66,8 @@ public class Shelf {
         Shelf copy = this.copyShelf();
         int points = 0;
         int count;
-        for(int i=0; i<rows; i++){
-            for (int j=0; j<columns; j++){
+        for(int i=0; i<SHELF_ROWS; i++){
+            for (int j=0; j<SHELF_COLUMN; j++){
                 count = 0;
                 if(copy.getTile(i, j) != null && copy.getTile(i, j).getColor()!=null){
                     count = countAdjacents(copy, i, j, count);
@@ -89,11 +89,11 @@ public class Shelf {
         Color tmp = copy.getTile(x, y).getColor();
         copy.putTile(x, y, null);
         count++;
-        if(x+1<rows && copy.getTile(x+1, y)!=null && copy.getTile(x+1, y).getColor().equals(tmp))
+        if(x+1<SHELF_ROWS && copy.getTile(x+1, y)!=null && copy.getTile(x+1, y).getColor().equals(tmp))
             count = countAdjacents(copy, x+1, y, count);
         if(x-1>=0 && copy.getTile(x-1, y)!=null && copy.getTile(x-1, y).getColor().equals(tmp))
             count = countAdjacents(copy, x-1, y, count);
-        if(y+1<columns && copy.getTile(x, y+1)!=null && copy.getTile(x, y+1).getColor().equals(tmp))
+        if(y+1<SHELF_COLUMN && copy.getTile(x, y+1)!=null && copy.getTile(x, y+1).getColor().equals(tmp))
             count = countAdjacents(copy, x, y+1, count);
         if(y-1>=0 && copy.getTile(x, y-1)!=null && copy.getTile(x, y-1).getColor().equals(tmp))
             count = countAdjacents(copy, x, y-1, count);
