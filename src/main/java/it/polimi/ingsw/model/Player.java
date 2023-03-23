@@ -19,10 +19,9 @@ public class Player {
     public void setSeat(){
         seat = true;
     }
-    public void choosePersonal(){
-
+    public void setPrivateCard(PersonalGoalCard personalGoalCard){
+        privateCard = personalGoalCard;
         //fra rivitti maestro di json pensaci tu
-
     }
     public void getTiles(Board board){
         //board.getAvailableTiles();

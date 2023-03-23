@@ -17,8 +17,8 @@ public class DeckPersonal {
         shuffle(deck);
     }
 
-    public String popPersonalCard(){
-       return deck.remove(0);
+    public PersonalGoalCard popPersonalCard(){
+        return new PersonalGoalCard(deck.remove(0));
     }
 }
 

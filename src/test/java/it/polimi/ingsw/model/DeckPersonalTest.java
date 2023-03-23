@@ -13,12 +13,6 @@ public class DeckPersonalTest {
 
     @Test
     void popPersonalCard(){
-        deck.popPersonalCard();
-        deck.popPersonalCard();
-        deck = new DeckPersonal();
-        deck.popPersonalCard();
-        deck.popPersonalCard();
-        deck = new DeckPersonal();
-
+        PersonalGoalCard personalGoalCard1 = deck.popPersonalCard();
     }
 }
