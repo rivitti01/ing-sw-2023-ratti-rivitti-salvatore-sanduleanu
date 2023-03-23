@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 import static it.polimi.ingsw.Costants.*;
 
+import java.util.List;
+
 public class Shelf {
     private Tile[][] shelf;
 
@@ -101,6 +103,9 @@ public class Shelf {
         return count;
     }
 
+    public void dropTile(List<Tile> chosenTiles){
+
+    }
 
 
 }
