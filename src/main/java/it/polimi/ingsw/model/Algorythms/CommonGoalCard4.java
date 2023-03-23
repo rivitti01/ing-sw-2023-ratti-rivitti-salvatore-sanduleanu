@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model.Algorythms;
-
+import static it.polimi.ingsw.Costants.*;
 import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 
@@ -9,8 +9,8 @@ public class CommonGoalCard4 implements CardStrategy {
         Tile[][] copiedShelf = myShelf.getShelf();
         int squareCounter = 0;
         int r = 0, c = 0;
-        for (r = 0; r < 4; r++) {
-            for (c = 0; c < 3; c++) {
+        for (r = 0; r < SHELF_ROWS-1; r++) {
+            for (c = 0; c < SHELF_COLUMN-1; c++) {
                 if (copiedShelf[r][c].getColor() != null
                         && copiedShelf[r][c].getColor().equals(copiedShelf[r + 1][c].getColor())
                         && copiedShelf[r + 1][c].getColor().equals(copiedShelf[r][c + 1].getColor())

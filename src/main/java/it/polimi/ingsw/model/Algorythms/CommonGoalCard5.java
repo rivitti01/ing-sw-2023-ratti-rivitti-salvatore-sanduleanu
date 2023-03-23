@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model.Algorythms;
-
+import static it.polimi.ingsw.Costants.*;
 import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 
@@ -13,7 +13,7 @@ public class CommonGoalCard5 implements CardStrategy {
         boolean colorFlag = false;
         ArrayList<Tile[]> fullColumns = new ArrayList<>();
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < SHELF_COLUMN-1; i++) {
             if (myShelf.checkColumnEmptiness(i) == 0) {
                 fullColumns.add(myShelf.getColumn(i));
             }
