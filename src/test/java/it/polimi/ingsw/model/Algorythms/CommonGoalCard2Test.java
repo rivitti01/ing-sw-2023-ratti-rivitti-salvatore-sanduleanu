@@ -16,8 +16,8 @@ class CommonGoalCard2Test {
     CommonGoalCard commonGoalCard;
     @BeforeEach
     void setUp(){
-        commonGoalCard = new CommonGoalCard();
-        commonGoalCard.setCardStrategy(new CommonGoalCard2());
+        commonGoalCard = new CommonGoalCard(new CommonGoalCard2(),4);
+
         testShelf = new Shelf();
         testShelf.putTile(0,0,new Tile(Color.WHITE));
         testShelf.putTile(0,4,new Tile(Color.WHITE));

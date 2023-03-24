@@ -31,10 +31,10 @@ public class PersonalGoalCard {
                 goalsShelf[x][y] = new Tile(Color.valueOf(color));
             }
         } catch (FileNotFoundException e) {
-            System.err.println("File non trovato");
+            System.err.println("File not found!");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("Errore di lettura del file json");
+            System.err.println("File read error!");
             e.printStackTrace();
         }
     }

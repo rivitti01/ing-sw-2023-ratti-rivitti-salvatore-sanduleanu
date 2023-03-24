@@ -1,5 +1,5 @@
 {
-  "twoBoard": [
+  "Board2": [
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"},
@@ -7,7 +7,7 @@
     {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
-  "threeBoard": [
+  "Board3": [
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
@@ -18,7 +18,7 @@
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}
   ],
-  "fourBoard": [
+  "Board4": [
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},

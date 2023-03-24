@@ -1,24 +1,58 @@
-package it.polimi.ingsw.model.Board;
+package it.polimi.ingsw.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import it.polimi.ingsw.model.Bag;
 import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Tile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Board {
+public class Board {
     private Tile[][] board;
-    private final int size;
+    private int size;
 
-    public Board(int size){
-        this.size = size;
-        this.board = new Tile[size][size];
+    public Board(int numberParticipants){
+        String name = "Board" + numberParticipants;
+        setupBoard(name);
     }
     public Tile[][] getBoard(){
         return board;
     }
-    public abstract void setupBoard();
+    private void setupBoard(String boardName){
+        String filePath = "src/main/resources/BoardFactor.json";
+        File input = new File(filePath);
+        List<Tile> newBoard = new ArrayList<>();
+        try {
+            JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+            JsonObject fileObject = fileElement.getAsJsonObject();
+            JsonArray jsonArrayOfTiles = fileObject.get(boardName).getAsJsonArray();
+            for (JsonElement tileElement : jsonArrayOfTiles){
+                JsonObject tileObject = tileElement.getAsJsonObject();
+                String color = tileObject.get("color").getAsString();
+                if (!color.equals("TRANSPARENT")){
+                    newBoard.add(new Tile(null));
+                }else {
+                    newBoard.add(new Tile(Color.TRANSPARENT));
+                }
+            }
+        } catch (FileNotFoundException | NullPointerException e) {
+            System.err.println("File BoardFactor.json not found, or invalid number of participant ");
+            e.printStackTrace();
+        } catch (Exception e){
+            System.err.println("File read error: BoardFactor.json!!");
+            e.printStackTrace();
+        }
+        size = (int) Math.sqrt(newBoard.size());
+        board = new Tile[size][size];
+        makeBoard(newBoard);
+    }
     public Tile getTile(int x, int y){
         return board[x][y];
     }
@@ -126,7 +160,7 @@ public abstract class Board {
             }
         }
     }
-    public void makeBoard(List<Tile> newBoard){
+    private void makeBoard(List<Tile> newBoard){
         for (int i = 0; i< size; i++){
             for (int j = 0; j < size; j++){
                 board[i][j] = newBoard.remove(0);

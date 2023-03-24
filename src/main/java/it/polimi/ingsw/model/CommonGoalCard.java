@@ -11,9 +11,9 @@ public class CommonGoalCard {
 
     public CommonGoalCard(){
     }//TODO: manca l'implementazione del costruttore
-    public CommonGoalCard(CardStrategy cardStrategy, int numberPartecipants){
+    public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
         setCardStrategy(cardStrategy);
-        fillStack(numberPartecipants);
+        fillStack(numberParticipants);
     }
 
     public void setCardStrategy(CardStrategy cardStrategy){
