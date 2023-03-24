@@ -1,10 +1,11 @@
 package it.polimi.ingsw.model;
+import it.polimi.ingsw.model.Board.Board;
 
 import java.util.List;
 import static it.polimi.ingsw.Costants.*;
 
 public class Game {
-    private int numberParticipants;
+    private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
     private Board board;
@@ -12,9 +13,9 @@ public class Game {
     private boolean hasStarted;
     private boolean endPointGiven;
 
-    public Game(int participants){
+    public Game(int partecipants){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
-        numberParticipants = participants;
+        numberPartecipants = partecipants;
         //--------------------------------
         //estrarre due numeri casuali, da questi creare un ciclo per definire le strategie (as esempio):
         //if (x = 1)
@@ -30,7 +31,7 @@ public class Game {
 
 
     public void fillBoard(){}
-    public void addParticipant(){}
+    public void addPartecipant(){}
     private void setFirstPlayer(){}
 
     public void startGame(){

@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ShelfTest {
 
@@ -42,12 +40,12 @@ class ShelfTest {
     }
 
     @Test
-    void checkEmptyRow() {
+    void checkRowFullness() {
         int c = random.nextInt(5);
         int r = random.nextInt(6);
         Tile t = b.getTile();
         s.putTile(r, c, t);
-        assertFalse(s.checkRowEmptiness(r));
+        assertFalse(s.checkRowFulness(r));
     }
 
     @Test
@@ -94,24 +92,26 @@ class ShelfTest {
         s.putTile(5,0, new Tile(Color.GREEN));
         s.putTile(5,1, new Tile(Color.GREEN));
         s.putTile(4,1, new Tile(Color.GREEN));
-        s.putTile(3,1, new Tile(Color.GREEN));
-        s.putTile(4,2, new Tile(Color.GREEN));
-        s.putTile(5,2, new Tile(Color.YELLOW));
+        s.putTile(4,0, new Tile(Color.BLUE));
+        s.putTile(3,0, new Tile(Color.BLUE));
+        s.putTile(3,1, new Tile(Color.BLUE));
+        s.putTile(3,2, new Tile(Color.BLUE));
+        s.putTile(4,2, new Tile(Color.BLUE));
+        s.putTile(5,2, new Tile(Color.BLUE));
         s.putTile(5,3, new Tile(Color.YELLOW));
-        s.putTile(4,3, new Tile(Color.YELLOW));
-        s.putTile(5,4, new Tile(Color.PINK));
-        s.putTile(4,4, new Tile(Color.BLUE));
-        s.putTile(3,4, new Tile(Color.BLUE));
-        s.putTile(3,2, new Tile(Color.WHITE));
-        s.putTile(3,3, new Tile(Color.WHITE));
-        s.putTile(2,2, new Tile(Color.WHITE));
-        s.putTile(2,3, new Tile(Color.WHITE));
-        s.putTile(1,3, new Tile(Color.WHITE));
-        s.putTile(2,4, new Tile(Color.WHITE));
-        s.putTile(1,4, new Tile(Color.WHITE));
-        s.putTile(0,4, new Tile(Color.WHITE));
+        s.putTile(4,3, new Tile(Color.GREEN));
+        s.putTile(3,3, new Tile(Color.GREEN));
+        s.putTile(2,3, new Tile(Color.GREEN));
+        s.putTile(5,4, new Tile(Color.YELLOW));
+        s.putTile(4,4, new Tile(Color.YELLOW));
+        s.putTile(3,4, new Tile(Color.YELLOW));
+        s.putTile(2,4, new Tile(Color.YELLOW));
+        s.putTile(1,4, new Tile(Color.YELLOW));
+        s.putTile(1,3, new Tile(Color.YELLOW));
+        s.putTile(1,2, new Tile(Color.YELLOW));
+        s.putTile(2,2, new Tile(Color.YELLOW));
 
-        int expectedPoints = 15;
+        int expectedPoints = 20;
         int actualPoints = s.checkAdjacents();
         assertEquals(expectedPoints, actualPoints);
     }
@@ -141,5 +141,26 @@ class ShelfTest {
 
 
         assertEquals(2, s.checkAdjacents());
+    }
+
+    @Test
+    void copyShelf(){
+        int c = random.nextInt(5);
+        int r = random.nextInt(6);
+        Tile t = b.getTile();
+        s.putTile(r, c, t);
+        Shelf s1 = s.copyShelf();
+        s1.putTile(random.nextInt(6), random.nextInt(5), b.getTile());
+        assertNotSame(s, s1);
+    }
+
+    @Test
+    void isFull(){
+        int c = random.nextInt(5);
+        int r = random.nextInt(6);
+        Tile[][] shelf = new Tile[6][5];
+        Tile t = b.getTile();
+        s.putTile(r, c, t);
+        assertFalse(s.isFull());
     }
 }

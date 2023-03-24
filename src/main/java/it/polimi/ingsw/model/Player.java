@@ -6,8 +6,8 @@ import java.util.List;
 public class Player {
     private String nickname;
     private Shelf shelf;
-    private Boolean seat;
-    private Boolean playingTurn;
+    private boolean seat;
+    private boolean playingTurn;
     private List<Tile> chosenTiles;
     private PersonalGoalCard privateCard;
     private List<Integer> points;
@@ -46,6 +46,9 @@ public class Player {
     }
 
     public Shelf getShelf(){return shelf;}
+    public void play(Board board) {
+
+    }
 
 
 
