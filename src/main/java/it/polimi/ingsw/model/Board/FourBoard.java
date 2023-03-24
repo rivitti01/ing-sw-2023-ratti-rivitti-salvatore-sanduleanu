@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FourBoard extends Board{
-    FourBoard fourBoard;
+    FourBoard fourBoard; //TODO: private o public ?
     public FourBoard(int players){
         super(9);
     }

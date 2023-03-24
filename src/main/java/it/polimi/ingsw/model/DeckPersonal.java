@@ -6,8 +6,7 @@ import java.util.List;
 import static java.util.Collections.shuffle;
 
 public class DeckPersonal {
-    List<String> deck;
-
+    private List<String> deck;
 
     public DeckPersonal(){
         deck = new ArrayList<>();

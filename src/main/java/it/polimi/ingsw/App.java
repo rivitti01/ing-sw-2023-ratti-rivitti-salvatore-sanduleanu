@@ -18,10 +18,7 @@ import java.util.ListIterator;
 public class App 
 {
     public static void main( String[] args ) {
-        DeckPersonal deckPersonal = new DeckPersonal();
-        deckPersonal.popPersonalCard();
-        deckPersonal.popPersonalCard();
-        deckPersonal.popPersonalCard();
+
 
 
 

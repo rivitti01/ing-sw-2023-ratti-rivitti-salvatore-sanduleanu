@@ -12,4 +12,5 @@ public class ScoringToken {
     /*public void givePoint(Player player){
         player.addPoints(); // va ragionato o tolto del tutto
     }*/
+
 }

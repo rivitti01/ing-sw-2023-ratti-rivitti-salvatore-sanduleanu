@@ -88,6 +88,7 @@ class ShelfTest {
         assertArrayEquals(shelf, s.getShelf());
     }
 
+
     @Test
     void checkAdjacents() {
         s.putTile(5,0, new Tile(Color.GREEN));
@@ -130,5 +131,15 @@ class ShelfTest {
         chosenTiles.add(tile2);
         chosenTiles.add(tile3);
         s.dropTiles(chosenTiles, 4);
+    }
+
+    @Test
+    void checkAdjacents_1() {
+        s.putTile(5, 0, new Tile(Color.WHITE));
+        s.putTile(4, 0, new Tile(Color.WHITE));
+        s.putTile(3, 0, new Tile(Color.WHITE));
+
+
+        assertEquals(2, s.checkAdjacents());
     }
 }

@@ -10,7 +10,7 @@ public class CommonGoalCard {
     private String description;
 
     public CommonGoalCard(){
-    }
+    }//TODO: manca l'implementazione del costruttore
     public CommonGoalCard(CardStrategy cardStrategy, int numberPartecipants){
         setCardStrategy(cardStrategy);
         fillStack(numberPartecipants);
