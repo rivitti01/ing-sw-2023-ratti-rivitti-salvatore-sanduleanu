@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model;
-import it.polimi.ingsw.model.Board.Board;
+import it.polimi.ingsw.model.Board;
 
 import java.util.List;
 import static it.polimi.ingsw.Costants.*;
