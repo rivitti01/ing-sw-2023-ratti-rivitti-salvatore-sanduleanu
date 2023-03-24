@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
 public class Tile {
-    final Color color;
+    private final Color color;
     private int type = 0;
 
     public Tile(Color color){

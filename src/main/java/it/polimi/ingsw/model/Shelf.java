@@ -30,9 +30,9 @@ public class Shelf {
         }
         return emptySquareCounter;
     }
-    public boolean checkRowEmptiness(int row){
+    public boolean checkRowFulness(int row){
         for (int i = 0; i < SHELF_COLUMN; i++) {
-            if (this.shelf[row][i]!=null){
+            if (this.shelf[row][i]==null){
                 return false;
             }
         }
@@ -109,10 +109,18 @@ public class Shelf {
         while(j+1<SHELF_ROWS && this.getTile(j+1, column)==null) {
             j++;
         }
-        for(int i=0; i<chosenTiles.size(); i++){
-            putTile(j, column, chosenTiles.get(i));
+        for (Tile chosenTile : chosenTiles) {
+            putTile(j, column, chosenTile);
             j--;
         }
+    }
+    public boolean isFull(){
+        for (int i = 0; i < SHELF_ROWS; i++){
+            if (!checkRowFulness(i)){
+                return false;
+            }
+        }
+        return true;
     }
 
 

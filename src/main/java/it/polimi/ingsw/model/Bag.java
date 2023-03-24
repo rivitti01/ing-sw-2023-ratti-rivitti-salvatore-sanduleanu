@@ -7,7 +7,7 @@ import java.util.List;
 import static java.util.Collections.shuffle;
 
 public class Bag {
-    final List<Tile> bag;
+    private final List<Tile> bag;
 
 
     public Bag(){
