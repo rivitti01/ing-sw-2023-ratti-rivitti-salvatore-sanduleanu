@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model;
-
-import static it.polimi.ingsw.Costants.*;
+import java.util.Scanner;
 import java.util.List;
 
 public class Player {
@@ -8,7 +7,7 @@ public class Player {
     private Shelf shelf;
     private boolean seat;
     private boolean playingTurn;
-    private List<Tile> chosenTiles;
+    private List<Integer> chosenTiles;
     private PersonalGoalCard privateCard;
     private List<Integer> points;
 
@@ -26,14 +25,8 @@ public class Player {
         //board.getAvailableTiles();
     }
     public boolean checkFullShelf(){
-        int tmp;
-        for(int i=0; i<SHELF_COLUMN; i++){
-            tmp = this.shelf.checkColumnEmptiness(i);
-            if(tmp > 0)
-                return false;
-        }
-        return true;
-    }
+        return this.shelf.isFull();
+    } //returns true iff the player's shelf is completely full of tiles
 
     public void addPoints(){
 
@@ -47,7 +40,25 @@ public class Player {
 
     public Shelf getShelf(){return shelf;}
     public void play(Board board) {
+        int[] coordnates = new int[2];
+        int i = 0;
+        Scanner s = new Scanner(System.in);
+        board.getAvailableTiles();
 
+            System.out.println("Write the coordinates of the chosen tiles and press 's' when you are finished.");
+            chosenTiles.add(i, s.nextInt());
+            i++;
+            chosenTiles.add(i, s.nextInt());
+
+
+        System.out.println("l'utente inserisce il numero d ");
+        //qua succederà qualcosa che traforma le icone cliccate dall'utente in coordinate delle tiles scelte
+        chosenTiles.add(0, s.nextInt());
+
+
+    }
+    public boolean getSeat(){
+        return this.seat;
     }
 
 

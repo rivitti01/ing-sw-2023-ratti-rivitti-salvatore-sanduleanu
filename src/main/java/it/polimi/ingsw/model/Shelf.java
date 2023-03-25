@@ -37,7 +37,7 @@ public class Shelf {
             }
         }
         return true;
-    }
+    }  //returns true iff "row" is completely full of tiles
     public Tile[] getColumn(int index){ //returns a copy of the column, not the reference to that column
         Tile[] column = new Tile[SHELF_ROWS];
         for(int i=0; i<column.length; i++){

@@ -12,6 +12,7 @@ public class Game {
     private Bag bag;
     private boolean hasStarted;
     private boolean endPointGiven;
+    private Player currentPlayer;
 
     public Game(int partecipants){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
@@ -35,7 +36,15 @@ public class Game {
     private void setFirstPlayer(){}
 
     public void startGame(){
+        boolean lastTurn = false;
         players.get(0).getTiles(board); // e tutta la logica di gioco
+        for (Player p: players){
+            if (p.getSeat()) currentPlayer = p;
+        }
+        while(!lastTurn){
+            currentPlayer.play(this.board);
+            if (currentPlayer.checkFullShelf()) lastTurn = true;
+        }
     }
     public void endGame(){}
     public Player findWinner(){
