@@ -21,10 +21,10 @@ public class Shelf {
     public void putTile(int row,int column, Tile tile){
         shelf[row][column] = tile;
     }
-    public int checkColumnEmptiness(int column){
+    public int checkColumnEmptiness(int column){ // return 0 if there is no space in the column. Return the number of space available
         int emptySquareCounter = 0;
         for (int i = 0; i < SHELF_ROWS; i++){
-            if (this.shelf[i][column]!=null){
+            if (this.shelf[i][column]==null){
                 emptySquareCounter++;
             }
         }

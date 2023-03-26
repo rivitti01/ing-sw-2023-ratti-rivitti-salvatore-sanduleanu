@@ -149,7 +149,7 @@ public class Board {
     }
     public Tile popTile(int x, int y){
         Tile temp = getTile(x, y);
-        board[x][y] = null;
+        board[x][y] = new Tile(null); //prima era board[x][y] = null;
         return temp;
     }
     public void fillBoard(Bag bag){
