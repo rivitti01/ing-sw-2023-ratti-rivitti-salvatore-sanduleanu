@@ -155,7 +155,7 @@ public class Board {
     public void fillBoard(Bag bag){
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
-                if(getTile(i, j).getColor() == null)
+                if(getTile(i, j)==null || getTile(i, j).getColor()==null)
                     board[i][j] = bag.getTile();
             }
         }
