@@ -123,6 +123,8 @@ public class Shelf {
         return true;
     }
 
-
+    public void setTile(int r, int c, Tile t){
+        shelf[r][c]=t;
+    }
 
 }
