@@ -1,0 +1,22 @@
+Ciao ragazzi, queste sono giusto due righe per spiegarvi il funzionamento del nostro UML.
+
+Incominciando con gli aspetti asrchitetturali, abbiamo deciso di affrontare il problema dell'inizializzazione delle
+Common Goal Cards tramite un pattern di tipo strategy. La logica sta nell'estrarre due numeri a caso (da 1 a 12)
+nel costruttore della classe Game in modo da poter inizializzare correttamente il corrispondente algoritmo. Questa parte
+è ancora da migliorare visto che ci sono algoritmi simili che possono essere accorpati per ottenere meno classi.
+La seconda scelta è stata quella di utilizzare dei file json per la memorizzazione delle Carte Personali e
+della Board, la quale dimensione dipende strettamente dal numero di giocatori presenti nella partita.
+
+Passando ora alla parte funzionale, la classe Game andrà a coprire la quasi totalità delle funzioni del controller.
+Le Tiles possono essere anche di un colore TRASPARENTE che usiamo per riempire le celle della Board dove non possono
+esserci tiles. Le tiles vengono scelte in base alle loro coordinate, il metdoo getAvailableTiles nella classe Board si
+occupa proprio di restituire le coordinate delle tiles disponibili.
+
+Per quanto riguarda il flow di gioco, l'idea è che una volta che il primo giocatore si collega, imposta anche
+i parametri della  nuova partita (costruzione di Game). Quando il numero numero di giocatori scelto vine colmato, il
+gioco inizia (Game.startGame()). Da qui in poi a turno ogni giocatore fa la sua mossa (Player.play()). Alla fine di
+ogni turno ci sarà un algoritmo che valuta l'attribuzione dei punti delle Common Goal Cards e un altro che controlla
+se la Shelf è piena. Nel caso in cui quest'ultimo restituisse 'vero' avverrà il canonico "ultimo giro"
+(ancora da imlementare) e il calcolo finale dei punti.
+
+Buona correzzione :)
