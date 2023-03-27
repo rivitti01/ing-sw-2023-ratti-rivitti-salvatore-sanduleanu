@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class CommonGoalCard {
     private CardStrategy cardStrategy;
-    public Stack<Integer> scores;
+    private Stack<Integer> scores;
     private String description;
 
     public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
@@ -17,6 +17,10 @@ public class CommonGoalCard {
     public void setCardStrategy(CardStrategy cardStrategy){
         this.cardStrategy = cardStrategy;
         description = cardStrategy.toString();
+    }
+
+    public int getPoint(){
+        return scores.pop();
     }
 
     public void fillStack(int numberPartecipants){ //pro-tip: creare uno strategy pattern/factory method anche per scores

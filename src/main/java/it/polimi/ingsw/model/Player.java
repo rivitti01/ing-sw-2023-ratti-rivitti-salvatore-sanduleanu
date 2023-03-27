@@ -1,104 +1,110 @@
 package it.polimi.ingsw.model;
+import it.polimi.ingsw.model.Algorythms.CardStrategy;
+
 import java.util.ArrayList;
+//import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.List;
 
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
+import static it.polimi.ingsw.Costants.*;
 
 public class Player {
     private String nickname;
     private Shelf shelf;
     private boolean seat;
+    private boolean[] goalsCompleted;
     private boolean playingTurn;
     private List<Tile> chosenTiles;
-    private PersonalGoalCard privateCard;
-    private List<Integer> points;
+    private PersonalGoalCard personalGoalCardCard;
+    private int points;
 
     public Player(String nickname,PersonalGoalCard personalGoalCard){
         this.nickname = nickname;
-        setPrivateCard(personalGoalCard);
         shelf = new Shelf();
         chosenTiles = new ArrayList<>();
+        this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
+        points = 0;
+    }
 
+    public void setSeat(boolean seat) {
+        this.seat = seat;
     }
-    public void setSeat(){
-        seat = true;
-    }
-    private void setPrivateCard(PersonalGoalCard personalGoalCard){
-        privateCard = personalGoalCard;
-        //fra rivitti maestro di json pensaci tu
-    }
-    public void getTiles(Board board){
-        //board.getAvailableTiles();
-    }
-    public boolean checkFullShelf(){
-        return this.shelf.isFull();
-    } //returns true iff the player's shelf is completely full of tiles
 
-    public void addPoints(){
+    public void setPrivateCard(PersonalGoalCard personalGoalCard){
+        this.personalGoalCardCard = personalGoalCard;
+    }
 
+    public void addPoints(int points){
+        this.points += points;
     }
     public void addPoints(CommonGoalCard card){
-        //points.add(card.getPoint());
+        points += card.getPoint();
     }
     private int checkPersonalPoints(){
         return 0;
     }
-
     public Shelf getShelf(){return shelf;}
-    public void play(Board board) {
-        System.out.println("Choose up to 3 Tiles:");
-        for (int i = 0; i < board.getAvailableTiles().size(); i++){
-            System.out.println(board.getAvailableTiles2().get(i)[0] + " " + board.getAvailableTiles2().get(i)[1]);
-        }
+
+    private void getTile(Board board) {
         Scanner scanner = new Scanner(System.in);
         int[] coordinates = new int[2];
-        int counter = 0;
-        while (counter < 3){
-            if(scanner.hasNextInt()){
-                coordinates[0] = scanner.nextInt();
-                coordinates[1] = scanner.nextInt();
-                chosenTiles.add(board.popTile(coordinates[0],coordinates[1]));
-                counter++;
-                //if (!board.getAvailableTiles2().contains(coordinates)){
-                    //System.out.println("Please write valid coordinates");
-                //}else {
-                    //chosenTiles.add(board.popTile(coordinates[0],coordinates[1]));
-                    //counter++;
-                //}
-            }else{
-                if (counter == 0){
-                    System.out.println("Write at least one coordinate");
-                    continue;
-                }
-                break;
-            }
+        if (scanner.hasNextInt()) {
+            do {
+                coordinates[0] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
+                coordinates[1] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
+            } while (!board.getAvailableTiles().contains(board.getTile(coordinates[0], coordinates[1]))); //manca l aggiornamento delle availableTiles in base alle coordinate precedentemente selezionate
+        } else {
+            //returna nulla
         }
-        System.out.println("Please choose a valid column to insert the tiles");
-        Boolean correct = false;
-        while (!correct){
-            int column = scanner.nextInt();
-            if (column >= 0 && column < SHELF_COLUMN){
-                if(shelf.checkColumnEmptiness(column) >= chosenTiles.size()){
-                    System.out.println("In which order do you want to insert the tiles?\n Please choose from lowest to highest:");
-                    for (int i = 0; i< chosenTiles.size(); i++){
-                        System.out.println("["+i+"]" + " " + chosenTiles.get(i).getColor());
-                    }
-                    List<Tile> tmp = new ArrayList<>();
-                    for (int i = 0; i< chosenTiles.size(); i++){
-                        tmp.add(chosenTiles.get(scanner.nextInt()));
-                    }
-                    shelf.dropTiles(tmp,column);
-                    correct = true;
-                }else {
-                    System.out.println("Column "+column+ "can't contain "+ chosenTiles.size() + "tiles. Please repeat");
-                }
-            }else {
-                System.out.println("Invalid column, please repeat");
-            }
-        }
+        chosenTiles.add(board.popTile(coordinates[0], coordinates[1]));
     }
-    public boolean getSeat(){
+
+    private int selectColumn(){
+        Scanner scanner = new Scanner(System.in);
+        int column;
+        do {
+             column = scanner.nextInt();
+        }while (column<0 || column>= SHELF_COLUMN || shelf.checkColumnEmptiness(column) < chosenTiles.size());
+        return column;
+    }
+
+
+    public void play(Board board, CommonGoalCard[] cards) {
+        System.out.println("Seleziona almeno una tessera, al massimo tre:");
+        //for (int i = 0; i < board.getAvailableTiles2().size(); i++) {
+        //    System.out.println(board.getAvailableTiles2().get(i)[0] + " " + board.getAvailableTiles2().get(i)[1]);
+        //}
+        for (int i = 0; i < MAX_TILES_PER_TURN; i++) {
+            getTile(board);
+        }
+        System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
+        int columnSelected = selectColumn();
+        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
+
+        //for (int i = 0; i < chosenTiles.size(); i++) {
+        //    System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
+        //}
+        List<Tile> tmp = new ArrayList<>();
+
+        Scanner scanner = new Scanner(System.in);
+        for (int i = 0; i < chosenTiles.size(); i++) {  // throws OutOfBoundException
+            tmp.add(chosenTiles.remove(scanner.nextInt())); // stampare le rimanenze delle chosenTiles
+        }
+        shelf.dropTiles(tmp, columnSelected);
+
+        // shelf.checkAdjacents();  ogni fine turno controlla le adiacenze
+
+        for (int i = 0; i < cards.length; i++) {
+            if (!goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
+                addPoints(cards[i]);
+                goalsCompleted[i] = true;
+            }
+        }
+
+    }
+
+
+    public boolean getSeat(){       //non ho capito l utilita
         return this.seat;
     }
 

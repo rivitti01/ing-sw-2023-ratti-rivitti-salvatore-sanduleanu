@@ -1,7 +1,10 @@
 package it.polimi.ingsw.model;
+import it.polimi.ingsw.model.Algorythms.*;
 import it.polimi.ingsw.model.Board;
 
 import java.util.List;
+import java.util.Random;
+
 import static it.polimi.ingsw.Costants.*;
 
 public class Game {
@@ -17,37 +20,56 @@ public class Game {
     public Game(int partecipants){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
         numberPartecipants = partecipants;
-        //--------------------------------
-        //estrarre due numeri casuali, da questi creare un ciclo per definire le strategie (as esempio):
-        //if (x = 1)
-        //commonGoals[0].setCardStrategy(new CommonGoalCard1());
-        //if (y = 2)
-        //commonGoals[1].setCardStrategy(new CommonGoalCard2());
-        //--------------------------------
+        this.bag = new Bag();
+        this.board = new Board(partecipants);
+        this.board.fillBoard(this.bag);
 
 
+        DeckPersonal deckPersonal = new DeckPersonal();
+        setFirstPlayer();
+        for (Player p : players) {
+            p.setPrivateCard(deckPersonal.popPersonalCard());
+        }
+
+            Random random = new Random();
+            //si potrebbe fare deck common che crea e shuffla e fa pop come il deckPersonals (non so se come ho fatto qui cosi si evitano ripetizioni)
+            CardStrategy[] strategies = {new CommonGoalCard1(), new CommonGoalCard2(), new CommonGoalCard3(), new CommonGoalCard4(), new CommonGoalCard5(), new CommonGoalCard6(), new CommonGoalCard7(), new CommonGoalCard8(), new CommonGoalCard9(), new CommonGoalCard10(), new CommonGoalCard11(), new CommonGoalCard12()};
+            for(int i=0; i< COMMON_CARDS_PER_GAME; i++){
+                int tmp = random.nextInt(DECK_SIZE); //random numbers between 0 and DECK_SIZE-1
+                commonGoals[i] = new CommonGoalCard(strategies[tmp], partecipants);
+            } // VA CAMBIATO
 
     }
 
-
-
-    public void fillBoard(){}
-    public void addPartecipant(){}
-    private void setFirstPlayer(){}
+    private void setFirstPlayer(){
+        Random random = new Random();
+        int tmp = random.nextInt(this.numberPartecipants);
+        for(int i=0; i< players.size(); i++) {
+            if(i==tmp)
+                players.get(i).setSeat(true);
+            else
+                players.get(i).setSeat(false);
+        }
+    }
 
     public void startGame(){
         boolean lastTurn = false;
-        players.get(0).getTiles(board); // e tutta la logica di gioco
+        //players.get(0).getTiles(board); // NON E DETTO CHE GET(0) ABBIA LA SEDIA
+        //........
         for (Player p: players){
             if (p.getSeat()) currentPlayer = p;
         }
         while(!lastTurn){
-            currentPlayer.play(this.board);
-            if (currentPlayer.checkFullShelf()) lastTurn = true;
-        }
+            currentPlayer.play(this.board, this.commonGoals);
+
+            if (currentPlayer.getShelf().isFull()){
+                    currentPlayer.addPoints(END_GAME_POINT);
+                    lastTurn = true;
+                }
+            }
     }
     public void endGame(){}
     public Player findWinner(){
-        return null;
+        return null; // CONTROLLO SU OGNI POINTS DI PLAYER....
     }//cose sul main
 }
