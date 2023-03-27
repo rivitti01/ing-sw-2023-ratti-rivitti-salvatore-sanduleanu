@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.Algorythms.*;
 import it.polimi.ingsw.model.Board;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -17,39 +18,36 @@ public class Game {
     private boolean endPointGiven;
     private Player currentPlayer;
 
-    public Game(int partecipants){
+    public Game(int participants, List<Player> players){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
-        numberPartecipants = partecipants;
+        numberPartecipants = participants;
         this.bag = new Bag();
-        this.board = new Board(partecipants);
+        this.board = new Board(participants);
         this.board.fillBoard(this.bag);
-
-
+        this.players = players;
         DeckPersonal deckPersonal = new DeckPersonal();
         setFirstPlayer();
         for (Player p : players) {
             p.setPrivateCard(deckPersonal.popPersonalCard());
         }
-
-            Random random = new Random();
-            //si potrebbe fare deck common che crea e shuffla e fa pop come il deckPersonals (non so se come ho fatto qui cosi si evitano ripetizioni)
-            CardStrategy[] strategies = {new CommonGoalCard1(), new CommonGoalCard2(), new CommonGoalCard3(), new CommonGoalCard4(), new CommonGoalCard5(), new CommonGoalCard6(), new CommonGoalCard7(), new CommonGoalCard8(), new CommonGoalCard9(), new CommonGoalCard10(), new CommonGoalCard11(), new CommonGoalCard12()};
-            for(int i=0; i< COMMON_CARDS_PER_GAME; i++){
-                int tmp = random.nextInt(DECK_SIZE); //random numbers between 0 and DECK_SIZE-1
-                commonGoals[i] = new CommonGoalCard(strategies[tmp], partecipants);
-            } // VA CAMBIATO
-
+        commonGoals = new CommonGoalCard[2];
+        commonGoals[0] = new CommonGoalCard(participants);
+        commonGoals[1] = new CommonGoalCard(participants);
     }
 
     private void setFirstPlayer(){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
-        for(int i=0; i< players.size(); i++) {
-            if(i==tmp)
-                players.get(i).setSeat(true);
-            else
-                players.get(i).setSeat(false);
+        List<Player> tempList = new ArrayList<>();
+        while(players.size() != 0){
+            if (tmp < players.size()){
+                tempList.add(players.remove(tmp));
+            }else {
+                tempList.add(players.remove(0));
+            }
         }
+        players = tempList;
+        players.get(0).setSeat(true);
     }
 
     public void startGame(){

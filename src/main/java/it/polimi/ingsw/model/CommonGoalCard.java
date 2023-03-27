@@ -4,11 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import it.polimi.ingsw.model.Algorythms.CardStrategy;
+import it.polimi.ingsw.model.Algorythms.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Objects;
 import java.util.Stack;
 
 import static it.polimi.ingsw.Costants.SHELF_COLUMN;
@@ -19,14 +20,53 @@ public class CommonGoalCard {
     private Stack<Integer> scores;
     private String description;
 
-    public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
-        setCardStrategy(cardStrategy);
+    public CommonGoalCard(int numberParticipants){
+        setCardStrategy();
         fillStack(numberParticipants);
+        description = cardStrategy.toString();
     }
 
-    public void setCardStrategy(CardStrategy cardStrategy){
-        this.cardStrategy = cardStrategy;
-        description = cardStrategy.toString();
+    private void setCardStrategy(){
+        DeckCommon deckCommon = new DeckCommon();
+        String common = deckCommon.popCommonGoalCard();
+        switch (common){
+            case "CommonGoalCard1" -> {
+                cardStrategy = new CommonGoalCard1();
+            }
+            case "CommonGoalCard2" -> {
+                cardStrategy = new CommonGoalCard2();
+            }
+            case "CommonGoalCard3" -> {
+                cardStrategy = new CommonGoalCard3();
+            }
+            case "CommonGoalCard4" -> {
+                cardStrategy = new CommonGoalCard4();
+            }
+            case "CommonGoalCard5" -> {
+                cardStrategy = new CommonGoalCard5();
+            }
+            case "CommonGoalCard6" -> {
+                cardStrategy = new CommonGoalCard6();
+            }
+            case "CommonGoalCard7" -> {
+                cardStrategy = new CommonGoalCard7();
+            }
+            case "CommonGoalCard8" -> {
+                cardStrategy = new CommonGoalCard8();
+            }
+            case "CommonGoalCard9" -> {
+                cardStrategy = new CommonGoalCard9();
+            }
+            case "CommonGoalCard10" -> {
+                cardStrategy = new CommonGoalCard10();
+            }
+            case "CommonGoalCard11" -> {
+                cardStrategy = new CommonGoalCard11();
+            }
+            case "CommonGoalCard12" -> {
+                cardStrategy = new CommonGoalCard12();
+            }
+        }
     }
 
     public int getPoint(){
