@@ -20,14 +20,18 @@ public class CommonGoalCard {
     private Stack<Integer> scores;
     private String description;
 
-    public CommonGoalCard(int numberParticipants){
-        setCardStrategy();
+    public CommonGoalCard(int numberParticipants, DeckCommon deckCommon){
+        setCardStrategy(deckCommon);
+        fillStack(numberParticipants);
+        description = cardStrategy.toString();
+    }
+    public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
+        this.cardStrategy = cardStrategy;
         fillStack(numberParticipants);
         description = cardStrategy.toString();
     }
 
-    private void setCardStrategy(){
-        DeckCommon deckCommon = new DeckCommon();
+    private void setCardStrategy(DeckCommon deckCommon){
         String common = deckCommon.popCommonGoalCard();
         switch (common){
             case "CommonGoalCard1" -> {

@@ -30,9 +30,10 @@ public class Game {
         for (Player p : players) {
             p.setPrivateCard(deckPersonal.popPersonalCard());
         }
+        DeckCommon deckCommon = new DeckCommon();
         commonGoals = new CommonGoalCard[2];
-        commonGoals[0] = new CommonGoalCard(participants);
-        commonGoals[1] = new CommonGoalCard(participants);
+        commonGoals[0] = new CommonGoalCard(participants,deckCommon);
+        commonGoals[1] = new CommonGoalCard(participants,deckCommon);
     }
 
     private void setFirstPlayer(){

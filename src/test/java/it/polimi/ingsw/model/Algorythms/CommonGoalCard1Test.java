@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.Algorythms;
 
-import it.polimi.ingsw.model.Color;
-import it.polimi.ingsw.model.CommonGoalCard;
-import it.polimi.ingsw.model.Shelf;
-import it.polimi.ingsw.model.Tile;
+import it.polimi.ingsw.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +12,7 @@ class CommonGoalCard1Test {
     CommonGoalCard commonGoalCard;
     @BeforeEach
     void setUp(){
-        commonGoalCard = new CommonGoalCard(new CommonGoalCard1(), 4);
+        commonGoalCard = new CommonGoalCard(new CommonGoalCard1(),4);
         testShelf = new Shelf();
         testShelf.putTile(0,0,new Tile(Color.WHITE));
         testShelf.putTile(0,1,new Tile(Color.WHITE));
