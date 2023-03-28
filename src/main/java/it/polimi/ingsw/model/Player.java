@@ -93,9 +93,7 @@ public class Player {
         }
         shelf.dropTiles(tmp, columnSelected);
 
-        // shelf.checkAdjacents();  ogni fine turno controlla le adiacenze
-
-        for (int i = 0; i < cards.length; i++) {
+        for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
             if (!goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
                 addPoints(cards[i]);
                 goalsCompleted[i] = true;

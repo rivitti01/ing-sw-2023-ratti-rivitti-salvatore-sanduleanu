@@ -76,9 +76,9 @@ public class Game {
     public void endGame(){
         for(Player p : players) {
             p.addPoints(p.getShelf().checkAdjacents());
-            // fare controllo sulla personalGoalCard
+            // aggiungere punti dati dalla personalGoalCard
         }
-        findWinner();
+        Player winner = findWinner();
 
     }
     public Player findWinner(){
