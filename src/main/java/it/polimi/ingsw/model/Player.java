@@ -109,6 +109,5 @@ public class Player {
         return this.seat;
     }
 
-
-
+    public int getPoints(){return this.points;}
 }

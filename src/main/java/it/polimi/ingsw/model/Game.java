@@ -1,6 +1,4 @@
 package it.polimi.ingsw.model;
-import it.polimi.ingsw.model.Algorythms.*;
-import it.polimi.ingsw.model.Board;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +52,6 @@ public class Game {
     public void startGame(){
         boolean lastTurn = false;
 
-        // for (Player p: players){
-        //    if (p.getSeat()) currentPlayer = p;
-        // }
-
         currentPlayer = players.get(0);
 
         while(!lastTurn){  // turni finche nessuno ha riempito una shelf
@@ -79,8 +73,21 @@ public class Game {
         }
     }
 
-    public void endGame(){}
+    public void endGame(){
+        for(Player p : players) {
+            p.addPoints(p.getShelf().checkAdjacents());
+            // fare controllo sulla personalGoalCard
+        }
+        findWinner();
+
+    }
     public Player findWinner(){
-        return null; // CONTROLLO SU OGNI POINTS DI PLAYER....
-    }//cose sul main
+        Player tempWinner = players.get(0);
+        for(int i=1; i<players.size(); i++){
+            if(players.get(i).getPoints() >= players.get(i-1).getPoints())
+                tempWinner = players.get(i);
+        }
+         return tempWinner;
+
+    }
 }
