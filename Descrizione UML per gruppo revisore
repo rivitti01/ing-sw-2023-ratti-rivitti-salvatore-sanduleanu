@@ -1,15 +1,15 @@
 Ciao ragazzi, queste sono giusto due righe per spiegarvi il funzionamento del nostro UML.
 
 Incominciando con gli aspetti architetturali, abbiamo deciso di affrontare il problema dell'inizializzazione delle
-Common Goal Cards tramite un pattern di tipo strategy. Ogni volta che viene inizializzata un oggetto di questo tipo viene estratto casualmente
-un algoritmo dai 12 disponibili (ovviamente dato che le carte comuni sono due, nel momento in cui viene inizializzata la prima carta
-e assegnato il primo algoritmo, questo non potrà ricapitare per la seconda carta poichè viene immediatamente rimosso). Questa parte
-è ancora da migliorare visto che ci sono algoritmi simili che possono essere accorpati per ottenere meno classi.
-Per quanto riguarda le carte personali, abbiamo deciso di usare un file json per salvare le 12 carte disponibili, a run-time
-viene scelta una carta e assegnata a un giocatore (come per le carte comuni, la stessa carta personale non può capitare a 2 o più persone diverse)
-quindi la quale dimensione dipende strettamente dal numero di giocatori presenti nella partita.
-La board segue lo stesso pensiero delle carte comuni, quindi viene inizializzata in base al numero di giocatori prendendo lo stile della board
-da un file json.
+Common Goal Cards tramite un pattern di tipo strategy. L'inizializzazione avviene estraendo a caso due carte dal
+DeckCommon (nel momento in cui viene pescata una carta l'algoritmo corrispondende viene rimosso dal deckCommon).
+Questa parte è ancora da migliorare visto che ci sono algoritmi simili che possono essere accorpati per ottenere
+meno classi.
+Per quanto riguarda le carte personali, abbiamo deciso di usare un file json per salvare tutte le 12 istanze,
+a run-time viene scelta una carta e assegnata a un giocatore (come per le carte comuni, la stessa carta personale non
+può capitare a 2 o più persone diverse).
+La board segue lo stesso pensiero delle carte comuni: viene inizializzata in base al numero di
+giocatori, istanziando lo stile e le dimensioni da un file json.
 
 Passando ora alla parte funzionale, la classe Game andrà a coprire la quasi totalità delle funzioni del controller.
 Le Tiles possono essere anche di un colore TRASPARENTE che usiamo per riempire le celle della Board dove non possono
