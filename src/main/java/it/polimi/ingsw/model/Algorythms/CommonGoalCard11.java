@@ -14,8 +14,9 @@ public class CommonGoalCard11 implements CardStrategy{
                 if(myShelf.getTile(r, c).getColor() == myShelf.getTile(r-1, c+1).getColor() &&
                    myShelf.getTile(r, c).getColor() == myShelf.getTile(r+1, c+1).getColor() &&
                    myShelf.getTile(r, c).getColor() == myShelf.getTile(r+1, c-1).getColor() &&
-                   myShelf.getTile(r, c).getColor() == myShelf.getTile(r-1, c-1).getColor())
-                    return true;
+                   myShelf.getTile(r, c).getColor() == myShelf.getTile(r-1, c-1).getColor()
+                )
+                        return true;
             }
         }
         return false;

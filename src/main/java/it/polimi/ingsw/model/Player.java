@@ -53,6 +53,7 @@ public class Player {
                 coordinates[0] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
                 coordinates[1] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
             } while (!board.getAvailableTiles().contains(board.getTile(coordinates[0], coordinates[1]))); //manca l aggiornamento delle availableTiles in base alle coordinate precedentemente selezionate
+                        //idea: fare un metodo filter che prende availableTiles e restituisce availableTiles in base a due coppie di coordinate come parametri 
         } else {
             //returna nulla
         }
@@ -99,7 +100,7 @@ public class Player {
                 addPoints(cards[i]);
                 goalsCompleted[i] = true;
             }
-        }
+        } // controlla per ogni common se e stato fatto l obiettivo
 
     }
 

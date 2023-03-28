@@ -25,15 +25,15 @@ public class Game {
         this.board = new Board(participants);
         this.board.fillBoard(this.bag);
         this.players = players;
-        DeckPersonal deckPersonal = new DeckPersonal();
         setFirstPlayer();
-        for (Player p : players) {
+
+        DeckPersonal deckPersonal = new DeckPersonal();
+        for (Player p : players)
             p.setPrivateCard(deckPersonal.popPersonalCard());
-        }
+
         DeckCommon deckCommon = new DeckCommon();
-        commonGoals = new CommonGoalCard[2];
-        commonGoals[0] = new CommonGoalCard(participants,deckCommon);
-        commonGoals[1] = new CommonGoalCard(participants,deckCommon);
+        for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
+            commonGoals[i] = new CommonGoalCard(participants, deckCommon);
     }
 
     private void setFirstPlayer(){
@@ -53,20 +53,32 @@ public class Game {
 
     public void startGame(){
         boolean lastTurn = false;
-        //players.get(0).getTiles(board); // NON E DETTO CHE GET(0) ABBIA LA SEDIA
-        //........
-        for (Player p: players){
-            if (p.getSeat()) currentPlayer = p;
-        }
-        while(!lastTurn){
+
+        // for (Player p: players){
+        //    if (p.getSeat()) currentPlayer = p;
+        // }
+
+        currentPlayer = players.get(0);
+
+        while(!lastTurn){  // turni finche nessuno ha riempito una shelf
             currentPlayer.play(this.board, this.commonGoals);
 
             if (currentPlayer.getShelf().isFull()){
                     currentPlayer.addPoints(END_GAME_POINT);
                     lastTurn = true;
                 }
-            }
+            if(players.iterator().hasNext()) //non sono ancora arrivato in fondo alla lista di players
+                currentPlayer = players.iterator().next();
+            else    //se arrivo in fondo torno al player con la sedia
+                currentPlayer = players.get(0);
+        }
+
+        while(players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo non e quello con la sedia
+            currentPlayer.play(board, commonGoals);
+            currentPlayer = players.iterator().next();
+        }
     }
+
     public void endGame(){}
     public Player findWinner(){
         return null; // CONTROLLO SU OGNI POINTS DI PLAYER....
