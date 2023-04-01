@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import it.polimi.ingsw.model.Bag;
-import it.polimi.ingsw.model.Color;
-import it.polimi.ingsw.model.Tile;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -123,8 +121,24 @@ public class Board {
         return availableTiles;
 
     }
+
+
+    public List<int[]> getAvailableTiles2(int[] t1, int[] t2){
+        //seleziona dalle available quelle con stesse coordinate di una tile o quelle che hanno una coordinata in comune con le altre due selezionate
+        List<int[]> borderTiles = getAvailableTiles2();
+        if(t1==null && t2==null)
+            return borderTiles;
+        else if(t1!=null && t2==null){
+            borderTiles.removeIf(i -> i[0] != t1[0] || i[1] != t1[1]);
+            return borderTiles;
+        }else if(t1!=null && t2!=null){
+            borderTiles.removeIf(i -> (t1[0] == t2[0] && i[0] != t1[0]) || (t1[1] == t2[1] && i[1] != t1[1]));
+            return borderTiles;
+        }
+        return borderTiles;
+    }
     public List<Tile> getAvailableTiles() {
-        List<Tile> availableTiles = new ArrayList<Tile>();
+        List<Tile> availableTiles = new ArrayList<>();
         for(int i=0; i<size; i++){
             if(getTile(i, 0) != null && !getTile(i, 0).getColor().equals(Color.TRANSPARENT))
                 availableTiles.add(getTile(i, 0));
