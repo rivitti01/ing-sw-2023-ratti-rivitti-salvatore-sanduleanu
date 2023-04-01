@@ -21,18 +21,19 @@ public class CommonGoalCard9 implements CardStrategy {
                 for (int i = r; i < r + 6 && myShelf.getTile(i, c) != null; i++) {   // controllo in verticale di 6 caselle.
                     colorCheck(myShelf.getTile(i, c));
                     if (i == r + 5) {                                            // se ci sono 6 tessere di fila nella colonna
-                        for (int k = 0; k < 6 && colorsOccurence[k] == true; k++) { // e
+                        for (int k = 0; k < 6 && colorsOccurence[k]; k++) { // e
                             if (k == 5) {                                      // se sono presenti tutti i colori
                                 columnCounter++;                           // ho 1 colonna che soddisfa l'obiettivo.
-                                tmp = i;                                     // salvo i per saltare le caselle già analizzate
+                                tmp = i;                                     // salvo i per saltare le caselle già analizzate.
                             }
                         }
                     }
-                    if (myShelf.getTile(tmp + 1, c) == null && tmp != i)
-                        tmp = i;  // salto caselle anche se incontro una casella vuota
+                    if (myShelf.getTile(tmp + 1, c) == null && tmp!=i)
+                        tmp = i+1;  // salto caselle anche se incontro una casella vuota.
                 }
-            if(columnCounter==2) return true;   //se ci sono 2 colonne che soddisfano l'obiettivo sono contento
+            if(columnCounter==2) return true;   //se ci sono 2 colonne che soddisfano l'obiettivo sono contento.
             r=tmp;
+            tmp=0;                              //svuoto temp una volta usato
             }
         }
     return false;
