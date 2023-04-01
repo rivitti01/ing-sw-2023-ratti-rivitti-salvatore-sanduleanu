@@ -12,9 +12,9 @@ public class Shelf {
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
     }
 
-    // public Shelf(Shelf shelf){
-        //this.shelf = shelf.shelf;
-    //}
+    public Shelf(Shelf shelf){
+        this.shelf = shelf.shelf;
+    }
     public Tile getTile(int row, int col){
         return this.shelf[row][col];
     }

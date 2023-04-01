@@ -46,7 +46,7 @@ public class Player {
         int count = 0;
         for (int i=0; i<SHELF_ROWS; i++){
             for(int j=0; j<SHELF_COLUMN; j++){
-                if(personalGoalCard.goalsShelf[i][j]!=null &&
+                if(personalGoalCard.goalsShelf[i][j]!=null && this.shelf.getTile(i, j)!=null &&
                         personalGoalCard.goalsShelf[i][j].getColor().equals(this.shelf.getTile(i, j).getColor()))
                     count++;
             }
@@ -64,12 +64,16 @@ public class Player {
 
     public Shelf getShelf(){return shelf;}
 
-    private void getTile(Board board, List<int[]> chosenCoordinates) {
+    public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
         int[] coordinates = new int[2];
         int flag = 0;
-        int[] t1 = chosenCoordinates.get(0);
-        int[] t2 = chosenCoordinates.get(1);
+        int[] t1 = null;
+        int[] t2 = null;
+        if(chosenCoordinates.size()>0)
+            t1 = chosenCoordinates.get(0);
+        if(chosenCoordinates.size()>1)
+            t2 = chosenCoordinates.get(1);
         if (scanner.hasNextInt()) {
             do {
                 if(flag > 0)
@@ -141,4 +145,6 @@ public class Player {
     }
 
     public int getPoints(){return this.points;}
+    public List<Tile> getChosenTiles(){return this.chosenTiles;}
+
 }

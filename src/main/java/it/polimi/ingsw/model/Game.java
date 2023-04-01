@@ -72,7 +72,7 @@ public class Game {
     }
 
     public void endGame(){
-        for(Player p : players) {
+        for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
             //punti dai gruppi sulla shelf aggiunti qui
