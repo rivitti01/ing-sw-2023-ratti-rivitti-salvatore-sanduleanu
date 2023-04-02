@@ -80,10 +80,7 @@ public class Player {
         }
         System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
         int columnSelected = selectColumn();
-        System.out.println("""
-                Selezionare l'ordine di inserimento,
-                dalla posizione piu bassa alla piu alta:
-                """);
+        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
 
         //for (int i = 0; i < chosenTiles.size(); i++) {
         //    System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());

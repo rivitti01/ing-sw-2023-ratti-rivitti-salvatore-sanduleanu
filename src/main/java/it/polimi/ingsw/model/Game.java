@@ -12,8 +12,6 @@ public class Game {
     private CommonGoalCard[] commonGoals;
     private Board board;
     private Bag bag;
-    private boolean hasStarted;
-    private boolean endPointGiven;
     private Player currentPlayer;
 
     public Game(int participants, List<Player> players){
@@ -67,18 +65,21 @@ public class Game {
                 currentPlayer = players.get(0);
         }
 
-        while(players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo non e quello con la sedia
+        while(!players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo e quello con la sedia
             currentPlayer.play(board, commonGoals);
             currentPlayer = players.iterator().next();
         }
     }
 
     public void endGame(){
-        for(Player p : players) {
+        for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
-            // aggiungere punti dati dalla personalGoalCard
+            p.addPoints(p.checkPersonalPoints());
+            //punti dai gruppi sulla shelf aggiunti qui
+            //punti personalGoalCard aggiunti qui
+            //punti delle commonGoals gia eventualmente aggiunti ai punteggi in player.play()
+            //punto della fine della partita e stato gia assegnato in game.startGame()
         }
-        Player winner = findWinner();
 
     }
     public Player findWinner(){
@@ -88,6 +89,5 @@ public class Game {
                 tempWinner = players.get(i);
         }
          return tempWinner;
-
     }
 }

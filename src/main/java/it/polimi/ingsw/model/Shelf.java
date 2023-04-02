@@ -11,6 +11,7 @@ public class Shelf {
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
     }
+
     public Shelf(Shelf shelf){
         this.shelf = shelf.shelf;
     }
