@@ -27,7 +27,7 @@ class CommonGoalCard5Test {
     }
 
     @Test
-    void lessThenThree(){
+    void lessThanThree(){
         s.putTile(5,0, new Tile(Color.YELLOW));
         s.putTile(5,1, new Tile(Color.GREEN));
         s.putTile(4,1, new Tile(Color.GREEN));
