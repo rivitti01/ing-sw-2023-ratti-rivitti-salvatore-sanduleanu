@@ -132,23 +132,7 @@ public class Player {
         System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
         int columnSelected = selectColumn();
 
-
-        for (int i = 0; i < this.chosenTiles.size(); i++) {
-            System.out.println("[" + i + "]" + " " + this.chosenTiles.get(i).getColor());
-        }
-
-        List<Tile> tmp = new ArrayList<>();
-
-        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
-
-
-        Scanner scanner = new Scanner(System.in);
-        int tempCount = this.chosenTiles.size();
-        for (int i = 0; i < tempCount; i++) {  // throws OutOfBoundException
-            tmp.add(this.chosenTiles.remove(scanner.nextInt())); // stampare le rimanenze delle chosenTiles
-            // problema su come il giocatore sceglie l'ordine: all inizio deve mettere un numero tra 0 e il (numero di Tiles scelte)-1 mentre dopo la lunghezza diminuisce
-        }
-        chosenTiles = tmp;
+        chosenTiles = chooseOrder(chosenTiles);
         shelf.dropTiles(chosenTiles, columnSelected);
 
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
@@ -161,9 +145,34 @@ public class Player {
     }   // finisce il turno
 
 
+    private List<Tile> chooseOrder(List<Tile> chosenTiles){
+        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
+        List<Tile> tmp = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        do{
+            for (int i = 0; i < chosenTiles.size(); i++) {
+                System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
+            }
+            tmp.add(chosenTiles.remove(scanner.nextInt()));
+        }while (chosenTiles.size()!=0);
+        return tmp;
+    }
+
     public boolean getSeat(){
         return this.seat;
     }
     public int getPoints(){return this.points;}
     public List<Tile> getChosenTiles(){return this.chosenTiles;}
+    public void printShelf(){
+        for (int i = 0; i < SHELF_ROWS; i++){
+            for (int j = 0; j < SHELF_COLUMN; j++){
+                if (shelf.getTile(i,j) == null)
+                    System.out.print("empty ");
+                else
+                    System.out.print(shelf.getTile(i,j).getColor()+" ");
+            }
+            System.out.println();
+        }
+
+    }
 }
