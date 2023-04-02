@@ -31,7 +31,6 @@ public class Game {
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
             commonGoals[i] = new CommonGoalCard(participants, deckCommon);
     }
-
     private void setFirstPlayer(){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
@@ -46,7 +45,6 @@ public class Game {
         players = tempList;
         players.get(0).setSeat(true);
     }
-
     public void startGame(){
         boolean lastTurn = false;
 
@@ -70,7 +68,6 @@ public class Game {
             currentPlayer = players.iterator().next();
         }
     }
-
     public void endGame(){
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());

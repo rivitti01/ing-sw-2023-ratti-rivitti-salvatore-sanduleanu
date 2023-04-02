@@ -129,7 +129,7 @@ public class Board {
         if(t1==null && t2==null)
             return borderTiles;
         else if(t1!=null && t2==null){
-            borderTiles.removeIf(i -> i[0] != t1[0] || i[1] != t1[1]);
+            borderTiles.removeIf(i -> i[0] != t1[0] && i[1] != t1[1]);
             return borderTiles;
         }else if(t1!=null && t2!=null){
             borderTiles.removeIf(i -> (t1[0] == t2[0] && i[0] != t1[0]) || (t1[1] == t2[1] && i[1] != t1[1]));

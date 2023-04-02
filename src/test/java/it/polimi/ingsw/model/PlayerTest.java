@@ -73,6 +73,7 @@ class PlayerTest {
 
     @Test
     void getTile(){
+        //serve gestire lo scanner se no entra in wait
         this.p.getTile(board, chosenCoords);
     }
 

@@ -39,7 +39,7 @@ public class Player {
         this.points += points;
     }
     public void addPoints(CommonGoalCard card){
-        points += card.getPoint();
+        this.points += card.getPoint();
     }
 
     public int checkPersonalPoints(){
@@ -62,7 +62,7 @@ public class Player {
         };
     }
 
-    public Shelf getShelf(){return shelf;}
+    public Shelf getShelf(){return this.shelf;}
 
     public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
@@ -114,8 +114,8 @@ public class Player {
         int columnSelected = selectColumn();
 
 
-        for (int i = 0; i < chosenTiles.size(); i++) {
-            System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
+        for (int i = 0; i < this.chosenTiles.size(); i++) {
+            System.out.println("[" + i + "]" + " " + this.chosenTiles.get(i).getColor());
         }
 
         List<Tile> tmp = new ArrayList<>();
@@ -123,17 +123,17 @@ public class Player {
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
 
         Scanner scanner = new Scanner(System.in);
-        for (int i = 0; i < chosenTiles.size(); i++) {  // throws OutOfBoundException
-            tmp.add(chosenTiles.remove(scanner.nextInt())); // stampare le rimanenze delle chosenTiles
+        for (int i = 0; i < this.chosenTiles.size(); i++) {  // throws OutOfBoundException
+            tmp.add(this.chosenTiles.remove(scanner.nextInt())); // stampare le rimanenze delle chosenTiles
             // problema su come il giocatore sceglie l'ordine: all inizio deve mettere un numero tra 0 e il (numero di Tiles scelte)-1 mentre dopo la lunghezza diminuisce
         }
         shelf.dropTiles(tmp, columnSelected);
-        chosenTiles = new ArrayList<Tile>();
+        this.chosenTiles = new ArrayList<>();
 
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
-            if (!goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
+            if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
                 addPoints(cards[i]);
-                goalsCompleted[i] = true;
+                this.goalsCompleted[i] = true;
             }
         } // controlla per ogni common se e stato fatto l obiettivo
 
@@ -143,8 +143,6 @@ public class Player {
     public boolean getSeat(){
         return this.seat;
     }
-
     public int getPoints(){return this.points;}
     public List<Tile> getChosenTiles(){return this.chosenTiles;}
-
 }
