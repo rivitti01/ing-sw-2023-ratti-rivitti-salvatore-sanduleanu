@@ -24,7 +24,7 @@ public class Game {
         setFirstPlayer();
 
         DeckPersonal deckPersonal = new DeckPersonal();
-        for (Player p : players)
+        for (Player p : this.players)
             p.setPrivateCard(deckPersonal.popPersonalCard());
 
         DeckCommon deckCommon = new DeckCommon();

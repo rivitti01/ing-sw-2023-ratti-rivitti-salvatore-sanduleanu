@@ -16,11 +16,19 @@ public class Player {
     private List<Tile> chosenTiles;
     private PersonalGoalCard personalGoalCard;
     private int points;
+    private List<int[]> borderTiles;
+    private boolean isChoosing;
+    public Player(String nickname){
+        this.nickname = nickname;
+        shelf = new Shelf();
+        chosenTiles = new ArrayList<>();
+        this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
+        points = 0;
+    }
 
     public Player(String nickname,PersonalGoalCard chosenCard){
         this.nickname = nickname;
         shelf = new Shelf();
-        chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
         setPrivateCard(chosenCard);
@@ -67,25 +75,38 @@ public class Player {
     public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
         int[] coordinates = new int[2];
-        int flag = 0;
+        boolean flag = true;
         int[] t1 = null;
         int[] t2 = null;
         if(chosenCoordinates.size()>0)
             t1 = chosenCoordinates.get(0);
         if(chosenCoordinates.size()>1)
             t2 = chosenCoordinates.get(1);
+        List<int[]> availableTiles = board.getAvailableTiles2(t1,t2,this.borderTiles);
+        System.out.println("Seleziona una delle seguenti tessere\n");
+        for (int[] availableTile : availableTiles) {
+            System.out.println(availableTile[0] + " " + availableTile[1]);
+        }
         if (scanner.hasNextInt()) {
             do {
-                if(flag > 0)
-                    System.out.println("Posizione errata!\nReinserire coordinate: ");
                 coordinates[0] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
                 coordinates[1] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
-                flag++;
-            } while (!board.getAvailableTiles2(t1, t2).contains(coordinates));
+                for (int i = 0; i < availableTiles.size();i++){
+                    if (availableTiles.get(i)[0] == coordinates[0] && availableTiles.get(i)[1] == coordinates[1]){
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag){
+                    System.out.println("Posizione errata!\nReinserire coordinate: ");
+                }
+            } while (flag); //&& board.getAvailableTiles2(t1, t2).contains(coordinates)
             chosenCoordinates.add(coordinates);
             this.chosenTiles.add(board.popTile(coordinates[0], coordinates[1]));
         }
-        //altrimenti non fa nulla (non so se si possa non fare nulla da input pero si vedra)
+        else {
+            isChoosing = false;
+        }
     }
 
     private int selectColumn(){
@@ -99,14 +120,12 @@ public class Player {
 
 
     public void play(Board board, CommonGoalCard[] cards) {
-        System.out.println("Seleziona almeno una tessera, al massimo tre:");
-        //for (int i = 0; i < board.getAvailableTiles2().size(); i++) {
-        //    System.out.println(board.getAvailableTiles2().get(i)[0] + " " + board.getAvailableTiles2().get(i)[1]);
-        //}  (ci manca il colore da far vedere sullo schermo in quella posizione)
-
+        chosenTiles = new ArrayList<>();
+        borderTiles = new ArrayList<>();
+        borderTiles = board.getAvailableTiles2();
+        isChoosing = true;
         List<int[]> chosenCoordinates = new ArrayList<>(2);
-        for (int i = 0; i < MAX_TILES_PER_TURN; i++) {
-            //modificare MAX_TILES_PER_TURN con un metodo che trova la capacita massima della shelf
+        for (int i = 0; i < MAX_TILES_PER_TURN && isChoosing; i++) {//modificare MAX_TILES_PER_TURN con un metodo che trova la capacita massima della shelf
             getTile(board, chosenCoordinates);
         }
 
@@ -122,13 +141,15 @@ public class Player {
 
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
 
+
         Scanner scanner = new Scanner(System.in);
-        for (int i = 0; i < this.chosenTiles.size(); i++) {  // throws OutOfBoundException
+        int tempCount = this.chosenTiles.size();
+        for (int i = 0; i < tempCount; i++) {  // throws OutOfBoundException
             tmp.add(this.chosenTiles.remove(scanner.nextInt())); // stampare le rimanenze delle chosenTiles
             // problema su come il giocatore sceglie l'ordine: all inizio deve mettere un numero tra 0 e il (numero di Tiles scelte)-1 mentre dopo la lunghezza diminuisce
         }
-        shelf.dropTiles(tmp, columnSelected);
-        this.chosenTiles = new ArrayList<>();
+        chosenTiles = tmp;
+        shelf.dropTiles(chosenTiles, columnSelected);
 
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
             if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
