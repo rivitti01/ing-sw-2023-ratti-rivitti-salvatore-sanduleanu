@@ -14,17 +14,22 @@ class PlayerTest {
     PersonalGoalCard chosenCard;
     Board board;
     Bag bag;
+    DeckCommon deckCommon;
+    CommonGoalCard[] commonGoalCards;
    List<int[]> chosenCoords;
 
 
     @BeforeEach
     void setup(){
-        bag = new Bag();
+        this.bag = new Bag();
         this.chosenCard = new PersonalGoalCard("goalStrategy1");
         this.p = new Player("denis", chosenCard);
-        board = new Board(4);
-        board.fillBoard(bag);
-        chosenCoords = new ArrayList<>(2);
+        this.board = new Board(4);
+        this.board.fillBoard(bag);
+        this.deckCommon = new DeckCommon();
+        commonGoalCards = new CommonGoalCard[2];
+        for(int i=0; i<2; i++)
+            commonGoalCards[i] = new CommonGoalCard(4, deckCommon);
     }
 
     @Test
@@ -74,11 +79,13 @@ class PlayerTest {
     @Test
     void getTile(){
         //serve gestire lo scanner se no entra in wait
-        this.p.getTile(board, chosenCoords);
+        chosenCoords = new ArrayList<>();
+        this.p.getTile(this.board, chosenCoords);
     }
 
     @Test
     void play() {
+        this.p.play(this.board, this.commonGoalCards);
     }
 
     @Test

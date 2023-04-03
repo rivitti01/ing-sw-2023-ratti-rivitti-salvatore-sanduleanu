@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommonGoalCard1Test {
-    Shelf testShelf;
-    Shelf testShelf2;
-    CommonGoalCard commonGoalCard;
+    private Shelf testShelf;
+    private Shelf testShelf2;
+    private CommonGoalCard commonGoalCard;
     @BeforeEach
     void setUp(){
         commonGoalCard = new CommonGoalCard(new CommonGoalCard1(),4);
