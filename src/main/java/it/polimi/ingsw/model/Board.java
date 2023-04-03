@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Board {
@@ -131,33 +132,43 @@ public class Board {
         else if(t1!=null && t2==null){
             for (int[] i: borderTiles) {
                 if (t1[0] == i[0] && t1[1] == i[1] - 1) {
-                    goodTiles.add(i);
+                    if (!Arrays.equals(t1, i)){
+                        goodTiles.add(i);
+                    }
                 } else if (t1[0] == i[0] - 1 && t1[1] == i[1]) {
-                    goodTiles.add(i);
+                    if (!Arrays.equals(t1, i)){
+                        goodTiles.add(i);
+                    }
                 }
             }
             return goodTiles;
         }else if(t1!=null && t2!=null){
             for (int[] i: borderTiles) {
-                //if (t1[0] != i[0] && t1[1] != i[1] && t2[0] != i[0] && t2[1] != i[1]) {
-                    if (t1[0] == t2[0] && t1[1] == t2[1] - 1) {
-                        if (t1[0] == i[0] && t1[1] == i[1] - 1 || t1[0] == i[0] && t1[1] == i[1] + 2) {
-                            goodTiles.add(i);
-                        }
-                    } else if (t1[0] == t2[0] && t1[1] == t2[1] + 1) {
-                        if (t1[0] == i[0] && t1[1] == i[1] + 1 || t1[0] == i[0] && t1[1] == i[1] - 2) {
-                            goodTiles.add(i);
-                        }
-                    } else if (t1[1] == t2[1] && t1[0] == t2[0] - 1) {
-                        if (t1[1] == i[1] && t1[0] == i[0] - 1 || t1[1] == i[1] && t1[0] == i[0] + 2) {
-                            goodTiles.add(i);
-                        }
-                    } else if (t1[1] == t2[1] && t1[0] == t2[0] + 1) {
-                        if (t1[1] == i[1] && t1[0] == i[0] + 1 || t1[1] == i[1] && t1[0] == i[0] - 2) {
+                if (t1[0] == t2[0] && t1[1] == t2[1] - 1) {
+                    if (t1[0] == i[0] && t1[1] == i[1] - 1 || t1[0] == i[0] && t1[1] == i[1] + 2) {
+                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
                             goodTiles.add(i);
                         }
                     }
-               // }
+                } else if (t1[0] == t2[0] && t1[1] == t2[1] + 1) {
+                    if (t1[0] == i[0] && t1[1] == i[1] + 1 || t1[0] == i[0] && t1[1] == i[1] - 2) {
+                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
+                            goodTiles.add(i);
+                        }
+                    }
+                } else if (t1[1] == t2[1] && t1[0] == t2[0] - 1) {
+                    if (t1[1] == i[1] && t1[0] == i[0] - 1 || t1[1] == i[1] && t1[0] == i[0] + 2) {
+                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i) ){
+                            goodTiles.add(i);
+                        }
+                    }
+                } else if (t1[1] == t2[1] && t1[0] == t2[0] + 1) {
+                    if (t1[1] == i[1] && t1[0] == i[0] + 1 || t1[1] == i[1] && t1[0] == i[0] - 2) {
+                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
+                            goodTiles.add(i);
+                        }
+                    }
+                }
             }
         }
         return goodTiles;
