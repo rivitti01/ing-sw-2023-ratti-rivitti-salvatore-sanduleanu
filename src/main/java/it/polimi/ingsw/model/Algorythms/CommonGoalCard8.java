@@ -9,11 +9,11 @@ public class CommonGoalCard8 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) {
 
-        int i = 0, j = 0, k = 0, colorCounter=1;
+        int i = 0, j = 0, k = 0, colorCounter=1, rowCounter =0;
         boolean colorFlag = false;
         ArrayList<Tile[]> fullRows = new ArrayList<>();
 
-        for (i=0; i<SHELF_COLUMN; i++){
+        for (i=0; i<SHELF_ROWS-1; i++){
             if(myShelf.checkRowFulness(i)) {
                 fullRows.add(myShelf.getRow(i));
             }
@@ -24,7 +24,7 @@ public class CommonGoalCard8 implements CardStrategy {
         } else {
             for (Tile[] tiles: fullRows) {
                 colorCounter=1;
-                for (j = 1; j < 4; j++) {
+                for (j = 1; j < SHELF_COLUMN-1; j++) {
                     for (k = 0; k < j; k++) {
                         if (tiles[j].getColor().equals(tiles[k].getColor())){
                             colorFlag = false;
@@ -38,11 +38,11 @@ public class CommonGoalCard8 implements CardStrategy {
                     }
                     colorFlag = false;
                 }
-                if (colorCounter > 3){
-                    fullRows.remove(tiles);
+                if (colorCounter <= 3) {
+                    rowCounter++;
                 }
             }
-            return fullRows.size() >= 4;
+            return rowCounter >= 3;
         }
     }
 

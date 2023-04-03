@@ -21,6 +21,8 @@ public class CommonGoalCard12 implements CardStrategy{
         if(tmp == true)
             return tmp;
 
+        tmp = true;
+
         for (int c = 0; c < 4; c++) {
             if(myShelf.checkColumnEmptiness(c) >= myShelf.checkColumnEmptiness(c+1))
                 tmp = false;
