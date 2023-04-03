@@ -13,6 +13,9 @@ public class DeckPersonalTest {
 
     @Test
     void popPersonalCard(){
-        PersonalGoalCard personalGoalCard1 = deck.popPersonalCard();
+        PersonalGoalCard card_A = deck.popPersonalCard();
+        PersonalGoalCard card_B = deck.popPersonalCard();
+        PersonalGoalCard card_C = deck.popPersonalCard();
+        PersonalGoalCard card_D = deck.popPersonalCard();
     }
 }
