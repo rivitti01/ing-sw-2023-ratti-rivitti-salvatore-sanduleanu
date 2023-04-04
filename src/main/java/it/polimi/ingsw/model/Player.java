@@ -149,7 +149,6 @@ public class Player {
 
         chosenTiles = chooseOrder(chosenTiles);
         shelf.dropTiles(chosenTiles, columnSelected);
-        printShelf();
 
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
             if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {

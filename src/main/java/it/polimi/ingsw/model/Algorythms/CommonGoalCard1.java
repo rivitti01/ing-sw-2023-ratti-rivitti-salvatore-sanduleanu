@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Shelf;
 public class CommonGoalCard1 implements CardStrategy {
 
     public boolean algorythm(Shelf myShelf) { //potrebbe essere più efficiente
+        if (myShelf == null){
+            return false;
+        }
         Shelf tmpShelf = myShelf.copyShelf();
         int counter = 0;
         for (int r = 0; r < 5; r++){
