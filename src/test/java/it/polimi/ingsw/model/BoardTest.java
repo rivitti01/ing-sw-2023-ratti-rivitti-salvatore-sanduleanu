@@ -34,9 +34,9 @@ public class BoardTest {
 
     @Test
     void availableCoordinates(){
-        List<int[]> available1 = this.board1.getAvailableTiles2();
-        List<int[]> available2 = this.board2.getAvailableTiles2();
-        List<int[]> available3 = this.board3.getAvailableTiles2();
+        List<int[]> available1 = this.board1.getAvailableTiles();
+        List<int[]> available2 = this.board2.getAvailableTiles();
+        List<int[]> available3 = this.board3.getAvailableTiles();
     }
 
     @Test

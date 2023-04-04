@@ -75,7 +75,7 @@ public class Board {
         return true;
     }
 
-    public List<int[]> getAvailableTiles2(){
+    public List<int[]> getAvailableTiles(){
         List<int[]> availableTiles = new ArrayList<>();
         int[] pos;
 
@@ -124,7 +124,7 @@ public class Board {
     }
 
 
-    public List<int[]> getAvailableTiles2(int[] t1, int[] t2, List<int[]> borderTiles){
+    public List<int[]> getAvailableTiles(int[] t1, int[] t2, List<int[]> borderTiles){
         //seleziona dalle available quelle con stesse coordinate di una tile o quelle che hanno una coordinata in comune con le altre due selezionate
         List<int[]> goodTiles = new ArrayList<>();
         if(t1==null && t2==null)
@@ -132,6 +132,7 @@ public class Board {
         else if(t1!=null && t2==null){
             for (int[] i: borderTiles) {
                 if (t1[0] == i[0] && t1[1] == i[1] - 1) {
+
                     if (!Arrays.equals(t1, i)){
                         goodTiles.add(i);
                     }
@@ -172,30 +173,6 @@ public class Board {
             }
         }
         return goodTiles;
-    }
-    public List<Tile> getAvailableTiles() {
-        List<Tile> availableTiles = new ArrayList<>();
-        for(int i=0; i<size; i++){
-            if(getTile(i, 0) != null && !getTile(i, 0).getColor().equals(Color.TRANSPARENT))
-                availableTiles.add(getTile(i, 0));
-            if(getTile(0, i) != null && !getTile(0, i).getColor().equals(Color.TRANSPARENT))
-                availableTiles.add(getTile(0, i));
-            if(getTile(i, size-1) != null && !getTile(i, size-1).getColor().equals(Color.TRANSPARENT))
-                availableTiles.add(getTile(i, size-1));
-            if(getTile(size-1, i) != null && !getTile(size-1, i).getColor().equals(Color.TRANSPARENT))
-                availableTiles.add(getTile(size-1, i));
-        }
-        for (int i=1; i<size-1; i++){
-            for(int j=1; j<size-1; j++){
-                if(getTile(i, j) != null && !getTile(i, j).getColor().equals(Color.TRANSPARENT)){
-                    if (getTile(i+1, j) == null || getTile(i, j+1) == null || getTile(i-1, j) == null || getTile(i, j-1) == null ||
-                            getTile(i+1, j).getColor().equals(Color.TRANSPARENT) || getTile(i, j+1).getColor().equals(Color.TRANSPARENT) || getTile(i-1, j).getColor().equals(Color.TRANSPARENT) || getTile(i, j-1).getColor().equals(Color.TRANSPARENT)) {
-                        availableTiles.add(getTile(i, j));
-                    }
-                }
-            }
-        }
-        return availableTiles;
     }
     public Tile popTile(int x, int y){
         Tile temp = getTile(x, y);
