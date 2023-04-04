@@ -14,13 +14,9 @@ public class CommonGoalCard10Test {
     Shelf testShelf;
     Shelf testShelf2;
     Shelf testShelf3;
-
     Shelf testShelf4;
-
     Shelf testShelf5;
-
     Shelf testShelf6;
-
     Shelf testShelf7;
 
     CommonGoalCard commonGoalCard;
@@ -32,7 +28,6 @@ public class CommonGoalCard10Test {
 
         testShelf = new Shelf();
         testShelf2 = new Shelf();
-
         testShelf4 = new Shelf();
         testShelf5 = new Shelf();
         testShelf6 = new Shelf();

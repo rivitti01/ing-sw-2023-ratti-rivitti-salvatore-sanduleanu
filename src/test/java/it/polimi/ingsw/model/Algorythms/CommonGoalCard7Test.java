@@ -14,17 +14,12 @@ public class CommonGoalCard7Test {
     Shelf testShelf;
     Shelf testShelf2;
     Shelf testShelf3;
-
     Shelf testShelf4;
-
     Shelf testShelf5;
-
     Shelf testShelf6;
-
     Shelf testShelf7;
 
     CommonGoalCard commonGoalCard;
-
 
     @BeforeEach
     void setUp() {
