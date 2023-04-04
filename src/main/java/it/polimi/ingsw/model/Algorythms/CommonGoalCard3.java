@@ -5,13 +5,16 @@ import it.polimi.ingsw.model.Shelf;
 public class CommonGoalCard3 implements CardStrategy {
     private Shelf tmpShelf;
     public boolean algorythm(Shelf myShelf) {
+        if (myShelf == null) {
+            return false;
+        }
         tmpShelf = myShelf.copyShelf();
         int counter = 0;
         for (int r = 0; r < 6; r++ ){ // 0,1,2,3,4,5 righe; 0,1,2,3,4 colonne
             for (int c = 0; c < 4; c++){
                 if (tmpShelf.getTile(r,c)!= null && tmpShelf.getTile(r,c+1) != null &&
                         tmpShelf.getTile(r,c).getColor() == tmpShelf.getTile(r,c+1).getColor()){
-                    if (c == 3){
+                    if (c == 2){
                         counter++;
                         removeRow(r);
                     }

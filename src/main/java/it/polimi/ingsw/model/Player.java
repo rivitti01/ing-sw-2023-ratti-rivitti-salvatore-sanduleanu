@@ -82,7 +82,7 @@ public class Player {
             t1 = chosenCoordinates.get(0);
         if(chosenCoordinates.size()>1)
             t2 = chosenCoordinates.get(1);
-        List<int[]> availableTiles = board.getAvailableTiles2(t1,t2,this.borderTiles);
+        List<int[]> availableTiles = board.getAvailableTiles(t1,t2,this.borderTiles);
         if (availableTiles.size()!= 0){
             System.out.println("Seleziona una delle seguenti tessere\n");
         }
@@ -134,7 +134,7 @@ public class Player {
     public void play(Board board, CommonGoalCard[] cards) {
         chosenTiles = new ArrayList<>();
         borderTiles = new ArrayList<>();
-        borderTiles = board.getAvailableTiles2();
+        borderTiles = board.getAvailableTiles();
         isChoosing = true;
         List<int[]> chosenCoordinates = new ArrayList<>(2);
         for (int i = 0; i < MAX_TILES_PER_TURN; i++) {//modificare MAX_TILES_PER_TURN con un metodo che trova la capacita massima della shelf

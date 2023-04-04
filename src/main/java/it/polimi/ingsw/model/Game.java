@@ -48,19 +48,21 @@ public class Game {
     public void startGame(){
         boolean lastTurn = false;
 
-        currentPlayer = players.get(0);
+        int index = 0;
+        currentPlayer = players.get(index);
+
 
         while(!lastTurn){  // turni finche nessuno ha riempito una shelf
+            System.out.println("Gioca il player numero "+ currentPlayer.nickname);
             currentPlayer.play(this.board, this.commonGoals);
+            currentPlayer.printShelf();
 
             if (currentPlayer.getShelf().isFull()){
                     currentPlayer.addPoints(END_GAME_POINT);
                     lastTurn = true;
                 }
-            if(players.iterator().hasNext()) //non sono ancora arrivato in fondo alla lista di players
-                currentPlayer = players.iterator().next();
-            else    //se arrivo in fondo torno al player con la sedia
-                currentPlayer = players.get(0);
+            index = ( index + 1 ) % players.size();
+            currentPlayer = players.get(index);
         }
 
         while(!players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo e quello con la sedia
