@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommonGoalCard1Test {
     private Shelf testShelf;
     private Shelf testShelf2;
+    private Shelf testShelf3;
     private CommonGoalCard commonGoalCard;
     @BeforeEach
     void setUp(){
@@ -33,5 +34,6 @@ class CommonGoalCard1Test {
     void algorythm() {
         assertTrue(commonGoalCard.algorythm(testShelf));
         assertFalse(commonGoalCard.algorythm(testShelf2));
+        assertFalse(commonGoalCard.algorythm(testShelf3));
     }
 }

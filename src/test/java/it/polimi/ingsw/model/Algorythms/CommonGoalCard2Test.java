@@ -13,6 +13,7 @@ class CommonGoalCard2Test {
     Shelf testShelf;
     Shelf testShelf2;
     Shelf testShelf3;
+    Shelf getTestShelf4;
     CommonGoalCard commonGoalCard;
     @BeforeEach
     void setUp(){
@@ -33,5 +34,6 @@ class CommonGoalCard2Test {
         assertTrue(commonGoalCard.algorythm(testShelf));
         assertFalse(commonGoalCard.algorythm(testShelf2));
         assertFalse(commonGoalCard.algorythm(testShelf3));
+        assertFalse(commonGoalCard.algorythm(getTestShelf4));
     }
 }
