@@ -107,46 +107,58 @@ public class Player {
         boolean flag = true;
         int[] t1 = null;
         int[] t2 = null;
-        if(chosenCoordinates.size()>0)
+        if (chosenCoordinates.size() > 0)
             t1 = chosenCoordinates.get(0);
-        if(chosenCoordinates.size()>1)
+        if (chosenCoordinates.size() > 1)
             t2 = chosenCoordinates.get(1);
-        List<int[]> availableTiles = board.filterAvailableTiles(t1,t2,this.borderTiles);
-        if (availableTiles.size()!= 0){
+        List<int[]> availableTiles = board.filterAvailableTiles(t1, t2, this.borderTiles);
+        if (availableTiles.size() != 0) {
             System.out.println("Seleziona una delle seguenti tessere\n");
         }
-        if (chosenTiles.size()!= 0 && availableTiles.size()!= 0){
-            System.out.println("Scrivere 'exit' o qualsiasi altra parola se non si vogliono scegliere altre tiles\n");
+        if (chosenTiles.size() != 0 && availableTiles.size() != 0) {
+            System.out.println("Scrivere 'ok' per terminare la selezione\n");
         }
-        if (availableTiles.size()== 0){
+        if (availableTiles.size() == 0) {
             System.out.println("Non sono disponibili altre tiles da poter prendere\n");
-            isChoosing = false;
+            isChoosing = true;
         }
-        if (availableTiles.size()!= 0){
+        if (availableTiles.size() != 0) {
             for (int[] availableTile : availableTiles) {
                 System.out.print(availableTile[0] + ";" + availableTile[1] + "   ");
             }
             System.out.println("");
         }
-        if (isChoosing) {
-            if (scanner.hasNextInt()) { //&& isChoosing
-                do {
-                    coordinates[0] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
-                    coordinates[1] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
-                    for (int i = 0; i < availableTiles.size(); i++) {
-                        if (availableTiles.get(i)[0] == coordinates[0] && availableTiles.get(i)[1] == coordinates[1]) {
-                            flag = false;
-                            break;
+        while (true) {
+            if (isChoosing) {
+                if (scanner.hasNextInt()) { //&& isChoosing
+                    do {
+                        coordinates[0] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
+                        coordinates[1] = scanner.nextInt(); //throws InputMismatchException (managing NOT numeric input)
+                        for (int i = 0; i < availableTiles.size(); i++) {
+                            if (availableTiles.get(i)[0] == coordinates[0] && availableTiles.get(i)[1] == coordinates[1]) {
+                                flag = false;
+                                break;
+                            }
                         }
-                    }
-                    if (flag) {
-                        System.out.println("Posizione errata!\nReinserire coordinate: ");
-                    }
-                } while (flag); //&& board.getAvailableTiles2(t1, t2).contains(coordinates)
-                chosenCoordinates.add(coordinates);
-                this.chosenTiles.add(board.popTile(coordinates[0], coordinates[1]));
-            } else {
-                isChoosing = false;
+                        if (flag) {
+                            System.out.println("Posizione errata!\nReinserire coordinate: ");
+                        }
+                    } while (flag); //&& board.getAvailableTiles2(t1, t2).contains(coordinates)
+                    chosenCoordinates.add(coordinates);
+                    this.chosenTiles.add(board.popTile(coordinates[0], coordinates[1]));
+                    return;
+                } else {
+                    if(scanner.next().equals("ok")){
+                        if(this.chosenTiles.size()==0) {
+                            System.out.println("scegliere almeno una tessera");
+                            scanner.nextLine();
+                        }
+                        else {
+                            isChoosing = false;
+                            return;
+                        }
+                    }else System.out.println("comando non vaalido. riprova");
+                }
             }
         }
     }
@@ -156,12 +168,16 @@ public class Player {
         int column;
 
         while (true) {
-            column = scanner.nextInt();
-            if(column < 0 || column >= SHELF_COLUMN)
-                System.out.println("posizione invalida! riprovare\n");
-            else if(shelf.checkColumnEmptiness(column) < chosenTiles.size())
-                System.out.println("troppe tessere! Riprovare\n");
-            else return column;
+            try {
+                column = Integer.parseInt(scanner.nextLine());
+                if (column < 0 || column >= SHELF_COLUMN)
+                    System.out.println("posizione invalida! riprovare\n");
+                else if (shelf.checkColumnEmptiness(column) < chosenTiles.size())
+                    System.out.println("troppe tessere! Riprovare\n");
+                else return column;
+            }catch (NumberFormatException e){
+                System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
+            }
         }
     }
 
@@ -208,10 +224,14 @@ public class Player {
             for (int i = 0; i < chosenTiles.size(); i++) {
                 System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
             }
-            int pos = scanner.nextInt();
-            if(pos<0 || pos>= chosenTiles.size())
-                System.out.println("posizione errata! Riprovare");
-            else tmp.add(chosenTiles.remove(pos));
+            try {
+                int pos = Integer.parseInt(scanner.nextLine());
+                if (pos < 0 || pos >= chosenTiles.size())
+                    System.out.println("posizione errata! Riprovare");
+                else tmp.add(chosenTiles.remove(pos));
+            }catch(NumberFormatException e){
+                System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
+            }
         }while (chosenTiles.size()!=0);
         return tmp;
     }
