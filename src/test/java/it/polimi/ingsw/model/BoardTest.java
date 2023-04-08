@@ -14,6 +14,9 @@ public class BoardTest {
     Bag bag2;
     Bag bag3;
 
+    Board board4;
+    Bag bag4;
+
     Tile tmp;
 
     @BeforeEach
@@ -27,6 +30,10 @@ public class BoardTest {
         this.board1.fillBoard(bag1);
         this.board2.fillBoard(bag2);
         this.board3.fillBoard(bag3);
+
+        this.board4 = new Board(4);
+        this.bag4 = new Bag();
+        this.board4.fillBoard(bag4);
 
         empty = new Board(4);
 
@@ -58,11 +65,28 @@ public class BoardTest {
             }
         }
 
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(i==0 && j==3) continue;
+                else if(i==2 && j==6) continue;
+                else if(i==4 && j==8) continue;
+                else if(i==6 && j==6) continue;
+                else if(i==4 && j==0) continue;
+                else if(i==6 && j==2) continue;
+                else if(i==8 && j==4) continue;
+                else if(i==8 && j==5) continue;
+                else tmp = this.board4.popTile(i, j);
+            }
+        }
+        this.board4.printBoard();
+
         //ok
         assertFalse(this.board2.checkRefill());
         //ok
         assertTrue(this.board1.checkRefill());
         //ok
         assertTrue(this.empty.checkRefill());
+        //
+        assertFalse(this.board4.checkRefill());
     }
 }

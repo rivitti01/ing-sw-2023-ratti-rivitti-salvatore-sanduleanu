@@ -7,6 +7,8 @@ import java.util.Scanner;
 import java.util.List;
 
 import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.model.Colors.*;
+import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
 public class Player {
     final String nickname;
@@ -18,6 +20,7 @@ public class Player {
     private int points;
     private List<int[]> borderTiles;
     private boolean isChoosing;
+
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
@@ -25,7 +28,6 @@ public class Player {
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
     }
-
     public Player(String nickname,PersonalGoalCard chosenCard){
         this.nickname = nickname;
         shelf = new Shelf();
@@ -33,23 +35,19 @@ public class Player {
         points = 0;
         setPrivateCard(chosenCard);
     }
-
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
         this.seat = seat;
     }
-
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;
     }
-
     public void addPoints(int points){
         this.points += points;
     }
     public void addPoints(CommonGoalCard card){
         this.points += card.getPoint();
     }
-
     public int checkPersonalPoints(){
         int count = 0;
         for (int i=0; i<SHELF_ROWS; i++){
@@ -69,8 +67,39 @@ public class Player {
             default -> 0;
         };
     }
-
     public Shelf getShelf(){return this.shelf;}
+    public boolean getSeat(){
+        return this.seat;
+    }
+    public int getPoints(){return this.points;}
+    public List<Tile> getChosenTiles(){return this.chosenTiles;}
+    public void printShelf() {
+        for (int i = 0; i < SHELF_ROWS; i++) {
+            System.out.println("  ");
+            for (int j = 0; j < SHELF_COLUMN; j++) {
+                if(j==0)
+                    System.out.print("|");
+                if (this.shelf.getTile(i, j) == null)
+                    System.out.print("  " + "|");
+                else {
+                    if (this.shelf.getTile(i, j).getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.shelf.getTile(i, j).getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.shelf.getTile(i, j).getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.shelf.getTile(i, j).getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.shelf.getTile(i, j).getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.shelf.getTile(i, j).getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                }
+
+            }
+        }
+        System.out.println("");
+    }
 
     public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
@@ -82,7 +111,7 @@ public class Player {
             t1 = chosenCoordinates.get(0);
         if(chosenCoordinates.size()>1)
             t2 = chosenCoordinates.get(1);
-        List<int[]> availableTiles = board.getAvailableTiles(t1,t2,this.borderTiles);
+        List<int[]> availableTiles = board.filterAvailableTiles(t1,t2,this.borderTiles);
         if (availableTiles.size()!= 0){
             System.out.println("Seleziona una delle seguenti tessere\n");
         }
@@ -95,8 +124,9 @@ public class Player {
         }
         if (availableTiles.size()!= 0){
             for (int[] availableTile : availableTiles) {
-                System.out.println(availableTile[0] + " " + availableTile[1]);
+                System.out.print(availableTile[0] + ";" + availableTile[1] + "   ");
             }
+            System.out.println("");
         }
         if (isChoosing) {
             if (scanner.hasNextInt()) { //&& isChoosing
@@ -121,13 +151,18 @@ public class Player {
         }
     }
 
-    private int selectColumn(){
+    private int selectColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
-        do {
-             column = scanner.nextInt();
-        }while (column<0 || column>= SHELF_COLUMN || shelf.checkColumnEmptiness(column) < chosenTiles.size());
-        return column;
+
+        while (true) {
+            column = scanner.nextInt();
+            if(column < 0 || column >= SHELF_COLUMN)
+                System.out.println("posizione invalida! riprovare\n");
+            else if(shelf.checkColumnEmptiness(column) < chosenTiles.size())
+                System.out.println("troppe tessere! Riprovare\n");
+            else return column;
+        }
     }
 
 
@@ -145,10 +180,15 @@ public class Player {
         }
 
         System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
+        this.printShelf();
+        for(int i=0; i<SHELF_COLUMN; i++)
+            System.out.print(" " + i + " ");
+        System.out.println("");
         int columnSelected = selectColumn();
 
         chosenTiles = chooseOrder(chosenTiles);
         shelf.dropTiles(chosenTiles, columnSelected);
+
 
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
             if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
@@ -171,23 +211,5 @@ public class Player {
             tmp.add(chosenTiles.remove(scanner.nextInt()));
         }while (chosenTiles.size()!=0);
         return tmp;
-    }
-
-    public boolean getSeat(){
-        return this.seat;
-    }
-    public int getPoints(){return this.points;}
-    public List<Tile> getChosenTiles(){return this.chosenTiles;}
-    public void printShelf(){
-        for (int i = 0; i < SHELF_ROWS; i++){
-            for (int j = 0; j < SHELF_COLUMN; j++){
-                if (shelf.getTile(i,j) == null)
-                    System.out.print("empty ");
-                else
-                    System.out.print(shelf.getTile(i,j).getColor()+" ");
-            }
-            System.out.println();
-        }
-
     }
 }

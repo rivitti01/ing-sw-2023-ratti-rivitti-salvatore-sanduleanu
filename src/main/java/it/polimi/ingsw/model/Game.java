@@ -54,8 +54,16 @@ public class Game {
 
         while(!lastTurn){  // turni finche nessuno ha riempito una shelf
             System.out.println("Gioca il player numero "+ currentPlayer.nickname);
+
+            // scelta delle Tiles di ogni player da passare a getTile
+            // scelta della colonna
+            // scelta ordine delle tiles
+            this.board.printBoard();
             currentPlayer.play(this.board, this.commonGoals);
             currentPlayer.printShelf();
+
+            if(this.board.checkRefill())
+                this.board.fillBoard(this.bag);
 
             if (currentPlayer.getShelf().isFull()){
                     currentPlayer.addPoints(END_GAME_POINT);

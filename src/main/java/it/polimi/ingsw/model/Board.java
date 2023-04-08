@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static it.polimi.ingsw.model.Colors.*;
+
 public class Board {
     private Tile[][] board;
     private int size;
@@ -72,6 +74,12 @@ public class Board {
                     return false;
             }
         }
+        for(int i=0; i<size-1; i++){
+            if(getTile(size-1, i).getColor() != null && !getTile(size-1, i).getColor().equals(Color.TRANSPARENT)){
+                if(getTile(size-1, i+1 ).getColor() != null && !getTile(size-1,i+1).getColor().equals(Color.TRANSPARENT))
+                    return false;
+            }
+        }
         return true;
     }
 
@@ -124,19 +132,19 @@ public class Board {
     }
 
 
-    public List<int[]> getAvailableTiles(int[] t1, int[] t2, List<int[]> borderTiles){
+    public List<int[]> filterAvailableTiles(int[] t1, int[] t2, List<int[]> borderTiles){
         //seleziona dalle available quelle con stesse coordinate di una tile o quelle che hanno una coordinata in comune con le altre due selezionate
         List<int[]> goodTiles = new ArrayList<>();
         if(t1==null && t2==null)
             return borderTiles;
         else if(t1!=null && t2==null){
             for (int[] i: borderTiles) {
-                if (t1[0] == i[0] && t1[1] == i[1] - 1) {
+                if (t1[0] == i[0] && (t1[1] == i[1] - 1 || t1[1] == i[1] + 1)) {
 
                     if (!Arrays.equals(t1, i)){
                         goodTiles.add(i);
                     }
-                } else if (t1[0] == i[0] - 1 && t1[1] == i[1]) {
+                } else if ((t1[0] == i[0] - 1 || t1[0] == i[0] + 1) && t1[1] == i[1]) {
                     if (!Arrays.equals(t1, i)){
                         goodTiles.add(i);
                     }
@@ -145,27 +153,15 @@ public class Board {
             return goodTiles;
         }else if(t1!=null && t2!=null){
             for (int[] i: borderTiles) {
-                if (t1[0] == t2[0] && t1[1] == t2[1] - 1) {
-                    if (t1[0] == i[0] && t1[1] == i[1] - 1 || t1[0] == i[0] && t1[1] == i[1] + 2) {
+                if (t1[0] == t2[0]) {
+                    if (i[0]==t1[0] && (i[1]==t1[1]+1 ||  i[1] == t1[1]-1 || i[1]==t2[1]+1 || i[1] == t2[1]-1)) {
                         if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
                             goodTiles.add(i);
                         }
                     }
-                } else if (t1[0] == t2[0] && t1[1] == t2[1] + 1) {
-                    if (t1[0] == i[0] && t1[1] == i[1] + 1 || t1[0] == i[0] && t1[1] == i[1] - 2) {
-                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
-                            goodTiles.add(i);
-                        }
-                    }
-                } else if (t1[1] == t2[1] && t1[0] == t2[0] - 1) {
-                    if (t1[1] == i[1] && t1[0] == i[0] - 1 || t1[1] == i[1] && t1[0] == i[0] + 2) {
+                } else if (t1[1] == t2[1]) {
+                    if (i[1] == t1[1] && (i[0]==t1[0]+1 ||  i[0] == t1[0]-1 || i[0]==t2[0]+1 || i[0] == t2[0]-1)) {
                         if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i) ){
-                            goodTiles.add(i);
-                        }
-                    }
-                } else if (t1[1] == t2[1] && t1[0] == t2[0] + 1) {
-                    if (t1[1] == i[1] && t1[0] == i[0] + 1 || t1[1] == i[1] && t1[0] == i[0] - 2) {
-                        if (!Arrays.equals(t1, i) && !Arrays.equals(t2, i)){
                             goodTiles.add(i);
                         }
                     }
@@ -194,5 +190,41 @@ public class Board {
             }
         }
 
+    }
+    public void printBoard(){
+
+        System.out.print("   ");
+        for (int i=0; i<this.board.length; i++)
+            System.out.print("  " + i + "  ");
+
+        for(int i=0; i<this.board.length; i++) {
+            System.out.print("\n");
+            for (int j = 0; j < this.board.length; j++) {
+                if(j==0)
+                    System.out.print(" "+ i + " ");
+                if (this.getTile(i, j)==null || this.getTile(i, j).getColor()==null)
+                    System.out.print("     ");
+                else {
+                    if (this.getTile(i, j).getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                    else if (this.getTile(i, j).getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                    else if (this.getTile(i, j).getColor() == Color.TRANSPARENT)
+                        System.out.print("     ");
+                    else if (this.getTile(i, j).getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                    else if (this.getTile(i, j).getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                    else if (this.getTile(i, j).getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                    else if (this.getTile(i, j).getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                }
+            }
+
+        }
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
     }
 }
