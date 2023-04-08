@@ -201,14 +201,17 @@ public class Player {
 
 
     private List<Tile> chooseOrder(List<Tile> chosenTiles){
-        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione piu bassa alla piu alta:\n");
+        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");
         List<Tile> tmp = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         do{
             for (int i = 0; i < chosenTiles.size(); i++) {
                 System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
             }
-            tmp.add(chosenTiles.remove(scanner.nextInt()));
+            int pos = scanner.nextInt();
+            if(pos<0 || pos>= chosenTiles.size())
+                System.out.println("posizione errata! Riprovare");
+            else tmp.add(chosenTiles.remove(pos));
         }while (chosenTiles.size()!=0);
         return tmp;
     }
