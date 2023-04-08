@@ -120,7 +120,8 @@ public class Player {
         }
         if (availableTiles.size() == 0) {
             System.out.println("Non sono disponibili altre tiles da poter prendere\n");
-            isChoosing = true;
+            isChoosing = false;
+            return;
         }
         if (availableTiles.size() != 0) {
             for (int[] availableTile : availableTiles) {
