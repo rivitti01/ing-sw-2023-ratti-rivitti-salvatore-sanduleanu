@@ -1,12 +1,14 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.util.Observable_1;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Game {
+public class Game extends Observable_1 {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;

@@ -1,10 +1,21 @@
 package it.polimi.ingsw.view;
 
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import it.polimi.ingsw.model.Game;
 
-public class TextualUI /*extends Observable<Choice>*/ implements Runnable {
+import it.polimi.ingsw.util.Observable_1;
+import it.polimi.ingsw.util.Observer_1;
+
+import java.util.Scanner;
+
+public class TextualUI extends Observable_1 implements Observer_1, Runnable {
+
+
+
+
+    @Override
+    public void update(Observable_1 o, Object arg) {
+
+    }
 
     private enum State {
         WAITING_FOR_PLAYER,
@@ -40,14 +51,49 @@ public class TextualUI /*extends Observable<Choice>*/ implements Runnable {
                     }
                 }
             }
-            System.out.println("--- NEW TURN ---");
+            System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
             /* Player chooses */
-            //Choice c = askPlayer();
+            int n = askNumber();
+            setChanged();
+            notifyObservers(n);
+            for (int i = 0; i < n; i++){
+                String s = askNickName(i);
+                setChanged();
+                notifyObservers(s);
+            }
             setState(State.WAITING_FOR_OUTCOME);
-            //setChanged();
-            //notifyObservers(c);
         }
     }
+
+    public int askNumber() {
+        while (true) {
+            Scanner s = new Scanner(System.in);
+            int input = s.nextInt();
+            if (input < 2 || input > 4){
+                System.err.println("Sorry you cannot play with this much players :(");
+                System.err.println("Please enter a number in between 2 and 4:");
+            } else {
+                return input;
+            }
+        }
+    }
+
+    private String askNickName(int index) {
+        while (true) {
+            Scanner s = new Scanner (System.in);
+            System.out.println("Plyer " + index + ", choose your nickname for the game:");
+            String nickName = s.next();
+            if (nickName.length() == 0){
+                System.err.println("Sorry there was something wrong with your nickname :(");
+                System.err.println("Please try again:");
+            } else {
+                return nickName;
+            }
+        }
+    }
+
+
+
 
     /*public Choice askPlayer() {
         Scanner s = new Scanner(System.in);
@@ -69,8 +115,8 @@ public class TextualUI /*extends Observable<Choice>*/ implements Runnable {
         }
     }*/
 
-    /*public void update(TurnView model, Turn.Event arg) {
-        switch (arg) {
+    public void update(/*TurnView model*/ ) {
+        /*switch (arg) {
             case CPU_CHOICE -> showChoices(model);
             case OUTCOME -> {
                 showOutcome(model);
@@ -99,6 +145,6 @@ public class TextualUI /*extends Observable<Choice>*/ implements Runnable {
             return;
         }
         // Show CPU's choice
-        System.out.println("CPU chose: " + cpuChoice);
-    }*/
+        System.out.println("CPU chose: " + cpuChoice);*/
+    }
 }
