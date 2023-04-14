@@ -1,73 +1,49 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.model.Color;
+import it.polimi.ingsw.model.Shelf;
 
-import it.polimi.ingsw.util.Observable_1;
-import it.polimi.ingsw.util.Observer_1;
-
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.util.Scanner;
 
-public class TextualUI extends Observable_1 implements Observer_1, Runnable {
+import static it.polimi.ingsw.Costants.SHELF_COLUMN;
+import static it.polimi.ingsw.Costants.SHELF_ROWS;
+import static it.polimi.ingsw.model.Colors.*;
+import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
 
+public class TextualUI  implements  Runnable {
 
+    private GameController controller;
 
-    @Override
-    public void update(Observable_1 o, Object arg) {
-
+    public TextualUI(GameController gc){
+        this.controller = gc;
     }
 
-    private enum State {
-        WAITING_FOR_PLAYER,
-        WAITING_FOR_OUTCOME
-    }
 
-    private State state = State.WAITING_FOR_PLAYER;
-    private final Object lock = new Object();
-
-    private State getState() {
-        synchronized (lock) {
-            return state;
-        }
-    }
-
-    private void setState(State state) {
-        synchronized (lock) {
-            this.state = state;
-            lock.notifyAll();
-        }
-    }
 
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
         while (true) {
-            while (getState() == State.WAITING_FOR_OUTCOME) {
-                synchronized (lock) {
-                    try {
-                        lock.wait();
-                    } catch (InterruptedException e) {
-                        System.err.println("Interrupted while waiting for server: " + e.getMessage());
-                    }
-                }
-            }
             System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
             /* Player chooses */
             int n = askNumber();
-            setChanged();
-            notifyObservers(n);
+            controller.setPlayerNumber(n);
             for (int i = 0; i < n; i++){
                 String s = askNickName(i);
-                setChanged();
-                notifyObservers(s);
+                controller.setPlayerNickname(s);
             }
-            setState(State.WAITING_FOR_OUTCOME);
+            controller.play();
         }
     }
 
     public int askNumber() {
         while (true) {
             Scanner s = new Scanner(System.in);
+            System.out.println("Type in the number of players that will take part in this game:");
             int input = s.nextInt();
             if (input < 2 || input > 4){
                 System.err.println("Sorry you cannot play with this much players :(");
@@ -89,6 +65,38 @@ public class TextualUI extends Observable_1 implements Observer_1, Runnable {
             } else {
                 return nickName;
             }
+        }
+    }
+
+    public static class ShelfChange implements ChangeListener{
+        private Shelf s;
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            s = (Shelf)e.getSource();
+            for (int i = 0; i < SHELF_ROWS; i++) {
+                System.out.println("  ");
+                for (int j = 0; j < SHELF_COLUMN; j++) {
+                    if(j==0)
+                        System.out.print("|");
+                    if (this.s.getTile(i, j) == null)
+                        System.out.print("  " + "|");
+                    else {
+                        if (this.s.getTile(i, j).getColor() == Color.WHITE)
+                            System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (this.s.getTile(i, j).getColor() == Color.YELLOW)
+                            System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (this.s.getTile(i, j).getColor() == Color.BLUE)
+                            System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (this.s.getTile(i, j).getColor() == Color.GREEN)
+                            System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (this.s.getTile(i, j).getColor() == Color.PINK)
+                            System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (this.s.getTile(i, j).getColor() == Color.CYAN)
+                            System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    }
+                }
+            }
+            System.out.println("");
         }
     }
 
@@ -147,4 +155,6 @@ public class TextualUI extends Observable_1 implements Observer_1, Runnable {
         // Show CPU's choice
         System.out.println("CPU chose: " + cpuChoice);*/
     }
+
+
 }

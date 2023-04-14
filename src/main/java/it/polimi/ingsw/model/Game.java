@@ -1,20 +1,27 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.util.Observable_1;
 
+import it.polimi.ingsw.view.TextualUI;
+
+import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Game extends Observable_1 {
+public class Game  {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
     private Board board;
     private Bag bag;
     private Player currentPlayer;
+
+
+    public Game(){
+
+    }
 
     public Game(int participants, List<Player> players){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
@@ -33,7 +40,16 @@ public class Game extends Observable_1 {
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
             commonGoals[i] = new CommonGoalCard(participants, deckCommon);
     }
-    private void setFirstPlayer(){
+
+    public void setNumberPartecipants(int numberPartecipants) {
+        this.numberPartecipants = numberPartecipants;
+    }
+
+    public void setPlayers(String s){
+        players.add(new Player(s));
+    }
+
+    public void setFirstPlayer(){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
         List<Player> tempList = new ArrayList<>();

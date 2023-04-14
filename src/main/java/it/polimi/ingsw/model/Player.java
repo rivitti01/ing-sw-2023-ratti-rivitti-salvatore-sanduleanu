@@ -1,6 +1,10 @@
 package it.polimi.ingsw.model;
 
 
+import it.polimi.ingsw.view.TextualUI;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -10,7 +14,7 @@ import static it.polimi.ingsw.Costants.*;
 import static it.polimi.ingsw.model.Colors.*;
 import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
-public class Player {
+public class Player  {
     final String nickname;
     private Shelf shelf;
     private boolean seat;
@@ -27,6 +31,7 @@ public class Player {
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
+
     }
     public Player(String nickname,PersonalGoalCard chosenCard){
         this.nickname = nickname;
@@ -236,4 +241,7 @@ public class Player {
         }while (chosenTiles.size()!=0);
         return tmp;
     }
+
+
+
 }

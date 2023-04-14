@@ -1,7 +1,19 @@
 package it.polimi.ingsw.model;
+
+import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.TextualUI.*;
+
+import static com.sun.java.accessibility.util.SwingEventMonitor.addChangeListener;
 import static it.polimi.ingsw.Costants.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+
 
 
 public class Shelf {
@@ -10,7 +22,10 @@ public class Shelf {
 
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
+        addChangeListener(new ShelfChange());
     }
+
+
 
     public Shelf(Shelf shelf){
         this.shelf = shelf.shelf;
@@ -127,5 +142,7 @@ public class Shelf {
     public void setTile(int r, int c, Tile t){
         shelf[r][c]=t;
     }
+
+
 
 }
