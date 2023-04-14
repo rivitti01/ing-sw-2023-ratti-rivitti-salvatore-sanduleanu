@@ -46,6 +46,7 @@ public class Game  {
     }
 
     public void setPlayers(String s){
+        players = new ArrayList<>();
         players.add(new Player(s));
     }
 

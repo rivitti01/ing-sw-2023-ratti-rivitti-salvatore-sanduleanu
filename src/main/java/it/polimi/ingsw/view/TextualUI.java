@@ -2,10 +2,14 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.Color;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Shelf;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.Costants.SHELF_COLUMN;
@@ -22,22 +26,21 @@ public class TextualUI  implements  Runnable {
         this.controller = gc;
     }
 
-
-
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
-        while (true) {
-            System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
-            /* Player chooses */
-            int n = askNumber();
-            controller.setPlayerNumber(n);
-            for (int i = 0; i < n; i++){
-                String s = askNickName(i);
-                controller.setPlayerNickname(s);
-            }
-            controller.play();
+
+        System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
+        /* Player chooses */
+        int n = askNumber();
+        controller.setPlayerNumber(n);
+        for (int i = 0; i < n; i++){
+            String s = askNickName(i);
+            controller.setPlayerNickname(s);
         }
+        controller.setFirst();
+
+
     }
 
     public int askNumber() {
@@ -68,35 +71,50 @@ public class TextualUI  implements  Runnable {
         }
     }
 
-    public static class ShelfChange implements ChangeListener{
+    public static class ShelfChange implements PropertyChangeListener{
         private Shelf s;
+
         @Override
-        public void stateChanged(ChangeEvent e) {
-            s = (Shelf)e.getSource();
-            for (int i = 0; i < SHELF_ROWS; i++) {
-                System.out.println("  ");
-                for (int j = 0; j < SHELF_COLUMN; j++) {
-                    if(j==0)
-                        System.out.print("|");
-                    if (this.s.getTile(i, j) == null)
-                        System.out.print("  " + "|");
-                    else {
-                        if (this.s.getTile(i, j).getColor() == Color.WHITE)
-                            System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (this.s.getTile(i, j).getColor() == Color.YELLOW)
-                            System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (this.s.getTile(i, j).getColor() == Color.BLUE)
-                            System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (this.s.getTile(i, j).getColor() == Color.GREEN)
-                            System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (this.s.getTile(i, j).getColor() == Color.PINK)
-                            System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (this.s.getTile(i, j).getColor() == Color.CYAN)
-                            System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+        public void propertyChange(PropertyChangeEvent evt) {
+            if("shelf".equals(evt.getPropertyName())){
+                s = (Shelf)evt.getSource();
+                for (int i = 0; i < SHELF_ROWS; i++) {
+                    System.out.println("  ");
+                    for (int j = 0; j < SHELF_COLUMN; j++) {
+                        if(j==0)
+                            System.out.print("|");
+                        if (this.s.getTile(i, j) == null)
+                            System.out.print("  " + "|");
+                        else {
+                            if (this.s.getTile(i, j).getColor() == Color.WHITE)
+                                System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                            else if (this.s.getTile(i, j).getColor() == Color.YELLOW)
+                                System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                            else if (this.s.getTile(i, j).getColor() == Color.BLUE)
+                                System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                            else if (this.s.getTile(i, j).getColor() == Color.GREEN)
+                                System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                            else if (this.s.getTile(i, j).getColor() == Color.PINK)
+                                System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                            else if (this.s.getTile(i, j).getColor() == Color.CYAN)
+                                System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                        }
                     }
                 }
             }
-            System.out.println("");
+        }
+    }
+    public static class FirstPlayerSet implements PropertyChangeListener{
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            String propertyname = evt.getPropertyName();
+
+            if ("seat".equals(propertyname)){
+                Player p = (Player) evt.getSource();
+                System.out.println("The first player is: " + p.getNickname());
+            }
+            if ("shelf".equals(propertyname)) System.out.println("Shelf changed");
+            if ("nickname".equals(propertyname)) System.out.println("Nickcame changed");
         }
     }
 

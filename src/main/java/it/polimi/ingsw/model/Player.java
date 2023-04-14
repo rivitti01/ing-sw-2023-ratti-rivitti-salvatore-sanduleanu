@@ -1,10 +1,18 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.TextualUI.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+
+import java.text.*;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -13,6 +21,7 @@ import java.util.List;
 import static it.polimi.ingsw.Costants.*;
 import static it.polimi.ingsw.model.Colors.*;
 import static it.polimi.ingsw.model.Colors.ANSI_RESET;
+import static javax.swing.UIManager.addPropertyChangeListener;
 
 public class Player  {
     final String nickname;
@@ -28,6 +37,7 @@ public class Player  {
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
+        shelf.addPropertyChangeListener((PropertyChangeListener) new ShelfChange());
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
@@ -43,6 +53,7 @@ public class Player  {
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
         this.seat = seat;
+
     }
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;

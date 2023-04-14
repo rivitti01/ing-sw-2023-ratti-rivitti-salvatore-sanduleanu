@@ -6,6 +6,9 @@ import it.polimi.ingsw.view.TextualUI.*;
 import static com.sun.java.accessibility.util.SwingEventMonitor.addChangeListener;
 import static it.polimi.ingsw.Costants.*;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -18,11 +21,12 @@ import javax.swing.event.ChangeListener;
 
 public class Shelf {
     private Tile[][] shelf;
+    private PropertyChangeSupport sPcs;
 
 
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
-        addChangeListener(new ShelfChange());
+        sPcs = new PropertyChangeSupport(this);
     }
 
 
@@ -121,6 +125,7 @@ public class Shelf {
     }
 
     public void dropTiles(List<Tile> chosenTiles, int column){
+        Shelf sCopy = this.copyShelf();
         int j=0;
         while(j+1<SHELF_ROWS && this.getTile(j+1, column)==null) {
             j++;
@@ -129,6 +134,7 @@ public class Shelf {
             putTile(j, column, chosenTile);
             j--;
         }
+        sPcs.firePropertyChange(new PropertyChangeEvent(this, "shelf", sCopy, this));
     }
     public boolean isFull(){
         for (int i = 0; i < SHELF_ROWS; i++){
@@ -143,6 +149,12 @@ public class Shelf {
         shelf[r][c]=t;
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        sPcs.addPropertyChangeListener(listener);
+    }
 
-
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        sPcs.removePropertyChangeListener(listener);
+    }
 }
+

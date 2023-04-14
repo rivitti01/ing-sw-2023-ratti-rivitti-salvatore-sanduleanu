@@ -18,7 +18,7 @@ public class GameController  {
         this.model.setPlayers(s);
     }
 
-    public void play(){
+    public void setFirst(){
         model.setFirstPlayer();
     }
 
