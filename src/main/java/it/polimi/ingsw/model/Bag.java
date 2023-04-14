@@ -26,6 +26,9 @@ public class Bag {
         }
     }
 
+    public List<Tile> getBag(){
+        return this.bag;
+    }
 
     public Tile getTile(){
         return bag.remove(0);

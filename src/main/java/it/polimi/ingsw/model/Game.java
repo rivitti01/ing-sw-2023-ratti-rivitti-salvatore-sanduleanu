@@ -33,6 +33,7 @@ public class Game extends Observable_1 {
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
             commonGoals[i] = new CommonGoalCard(participants, deckCommon);
     }
+    //model
     private void setFirstPlayer(){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
@@ -47,6 +48,7 @@ public class Game extends Observable_1 {
         players = tempList;
         players.get(0).setSeat(true);
     }
+    //controller and view
     public void startGame(){
         boolean lastTurn = false;
 
@@ -64,7 +66,7 @@ public class Game extends Observable_1 {
             currentPlayer.play(this.board, this.commonGoals);
             currentPlayer.printShelf();
 
-            if(this.board.checkRefill())
+            if(this.board.checkRefill() && !this.bag.getBag().isEmpty())
                 this.board.fillBoard(this.bag);
 
             if (currentPlayer.getShelf().isFull()){
@@ -76,10 +78,13 @@ public class Game extends Observable_1 {
         }
 
         while(!players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo e quello con la sedia
+            if(this.board.checkRefill() && !this.bag.getBag().isEmpty())
+                this.board.fillBoard(this.bag);
             currentPlayer.play(board, commonGoals);
             currentPlayer = players.iterator().next();
         }
     }
+    //model
     public void endGame(){
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
@@ -91,6 +96,7 @@ public class Game extends Observable_1 {
         }
 
     }
+    //model
     public Player findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
