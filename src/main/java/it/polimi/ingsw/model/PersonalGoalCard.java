@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.model.Colors.*;
+import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,5 +39,32 @@ public class PersonalGoalCard {
             System.err.println("File read error!");
             e.printStackTrace();
         }
+    }
+
+    public void printPersonal(){
+        for (int i = 0; i < SHELF_ROWS; i++) {
+            System.out.println("  ");
+            for (int j = 0; j < SHELF_COLUMN; j++) {
+                if(j==0)
+                    System.out.print("|");
+                if (this.goalsShelf[i][j] == null)
+                    System.out.print("  " + "|");
+                else {
+                    if (this.goalsShelf[i][j].getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.goalsShelf[i][j].getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.goalsShelf[i][j].getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.goalsShelf[i][j].getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.goalsShelf[i][j].getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (this.goalsShelf[i][j].getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                }
+            }
+        }
+        System.out.println("");
     }
 }

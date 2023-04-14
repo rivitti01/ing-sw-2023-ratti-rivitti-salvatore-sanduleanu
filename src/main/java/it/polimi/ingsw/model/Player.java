@@ -163,7 +163,7 @@ public class Player  {
                             isChoosing = false;
                             return;
                         }
-                    }else System.out.println("comando non vaalido. riprova");
+                    }else System.out.println("comando non valido. riprova");
                 }
             }
         }
@@ -193,6 +193,10 @@ public class Player  {
         borderTiles = new ArrayList<>();
         borderTiles = board.getAvailableTiles();
         isChoosing = true;
+
+        System.out.println("Questa e la tua carta obiettivo personale:");
+        this.personalGoalCard.printPersonal();
+
         List<int[]> chosenCoordinates = new ArrayList<>(2);
         for (int i = 0; i < MAX_TILES_PER_TURN; i++) {//modificare MAX_TILES_PER_TURN con un metodo che trova la capacita massima della shelf
             if (isChoosing){
@@ -206,6 +210,7 @@ public class Player  {
         for(int i=0; i<SHELF_COLUMN; i++)
             System.out.print(" " + i + " ");
         System.out.println("");
+
         int columnSelected = selectColumn();
 
         chosenTiles = chooseOrder(chosenTiles);
@@ -233,7 +238,7 @@ public class Player  {
             try {
                 int pos = Integer.parseInt(scanner.nextLine());
                 if (pos < 0 || pos >= chosenTiles.size())
-                    System.out.println("posizione errata! Riprovare");
+                    System.out.println("posizione non valida!\nRiprovare");
                 else tmp.add(chosenTiles.remove(pos));
             }catch(NumberFormatException e){
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
