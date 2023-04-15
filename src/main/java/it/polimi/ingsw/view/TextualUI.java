@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.Costants.SHELF_COLUMN;
@@ -19,7 +20,6 @@ import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
 
 public class TextualUI  implements  Runnable {
-
     private GameController controller;
 
     public TextualUI(GameController gc){
@@ -32,20 +32,32 @@ public class TextualUI  implements  Runnable {
 
         System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
         /* Player chooses */
+        //Damiani nel suo codice non ha dipendenze dal controller in textualUI (con Observable<Choice> indica che Controller è un suo listener il quale cambia in base alle notifiche)
         int n = askNumber();
         controller.setPlayerNumber(n);
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             String s = askNickName(i);
             controller.setPlayerNickname(s);
         }
-        controller.setFirst();
+        //dopo la scelta del numero giocatori e i nomi dei Players si crea il GameModel
+        this.controller.initializeModel();
 
+/*        while (true) {
+            System.out.println("Turno di: " + this.controller.getCurrentPlayer().getNickname());
+            //stampare la board
+            //stampare le coordinate disponibili
+            System.out.println("Questa e la tua carta obiettivo personale:");
+            System.out.println("scegli delle coordinate valide");
+            //controller deve chiamare getTile in Player con le coordinate come parametro al posto di avere gli Scanner in Player
 
+        }
+
+ */
     }
 
     public int askNumber() {
+        Scanner s = new Scanner(System.in);
         while (true) {
-            Scanner s = new Scanner(System.in);
             System.out.println("Type in the number of players that will take part in this game:");
             int input = s.nextInt();
             if (input < 2 || input > 4){
@@ -60,7 +72,7 @@ public class TextualUI  implements  Runnable {
     private String askNickName(int index) {
         while (true) {
             Scanner s = new Scanner (System.in);
-            System.out.println("Plyer " + index + ", choose your nickname for the game:");
+            System.out.println("Player " + index + ", choose your nickname for the game:");
             String nickName = s.next();
             if (nickName.length() == 0){
                 System.err.println("Sorry there was something wrong with your nickname :(");
@@ -141,7 +153,7 @@ public class TextualUI  implements  Runnable {
         }
     }*/
 
-    public void update(/*TurnView model*/ ) {
+ /*   public void update(TurnView model ) {
         /*switch (arg) {
             case CPU_CHOICE -> showChoices(model);
             case OUTCOME -> {
@@ -171,8 +183,10 @@ public class TextualUI  implements  Runnable {
             return;
         }
         // Show CPU's choice
-        System.out.println("CPU chose: " + cpuChoice);*/
+        System.out.println("CPU chose: " + cpuChoice);
     }
+
+    */
 
 
 }

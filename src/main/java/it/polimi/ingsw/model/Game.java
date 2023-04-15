@@ -17,11 +17,8 @@ public class Game  {
     private Board board;
     private Bag bag;
     private Player currentPlayer;
-
-
-    public Game(){
-
-    }
+    //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
+    private boolean lastTurn;
 
     public Game(int participants, List<Player> players){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
@@ -30,6 +27,7 @@ public class Game  {
         this.board = new Board(participants);
         this.board.fillBoard(this.bag);
         this.players = players;
+        this.lastTurn = false;
         setFirstPlayer();
 
         DeckPersonal deckPersonal = new DeckPersonal();
@@ -41,15 +39,8 @@ public class Game  {
             commonGoals[i] = new CommonGoalCard(participants, deckCommon);
     }
 
-    public void setNumberPartecipants(int numberPartecipants) {
-        this.numberPartecipants = numberPartecipants;
-    }
 
-    public void setPlayers(String s){
-        players = new ArrayList<>();
-        players.add(new Player(s));
-    }
-
+    //Getters and Setters
     public void setFirstPlayer(){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
@@ -64,16 +55,28 @@ public class Game  {
         players = tempList;
         players.get(0).setSeat(true);
     }
-    public void startGame(){
-        boolean lastTurn = false;
+    public boolean isLastTurn() {
+        return this.lastTurn;
+    }
+    public List<Player> getPlayers() {
+        return players;
+    }
+    public Board getBoard() {
+        return board;
+    }
+    public Bag getBag() {
+        return bag;
+    }
 
+
+
+
+    public void startGame(){
         int index = 0;
         currentPlayer = players.get(index);
 
-
-        while(!lastTurn){  // turni finche nessuno ha riempito una shelf
-            System.out.println("Gioca il player numero "+ currentPlayer.nickname);
-
+        while(!this.lastTurn){  //turni finché nessuno ha riempito una shelf
+            System.out.println("Gioca: " + currentPlayer.nickname);
             // scelta delle Tiles di ogni player da passare a getTile
             // scelta della colonna
             // scelta ordine delle tiles
