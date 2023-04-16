@@ -12,6 +12,7 @@ import javax.swing.text.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
+import java.beans.PropertyChangeSupport;
 import java.text.*;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
@@ -33,6 +34,7 @@ public class Player  {
     private int points;
     private List<int[]> borderTiles;
     private boolean isChoosing;
+    PropertyChangeSupport propertyChangeSupport;
 
     public Player(String nickname){
         this.nickname = nickname;
@@ -41,6 +43,7 @@ public class Player  {
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
+        propertyChangeSupport = new PropertyChangeSupport(this);
 
     }
     public Player(String nickname,PersonalGoalCard chosenCard){
@@ -52,8 +55,9 @@ public class Player  {
     }
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
+        boolean oldValue = this.seat;
         this.seat = seat;
-
+        propertyChangeSupport.firePropertyChange("seat", oldValue, this.seat);
     }
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;
@@ -89,34 +93,6 @@ public class Player  {
     }
     public int getPoints(){return this.points;}
     public List<Tile> getChosenTiles(){return this.chosenTiles;}
-    public void printShelf() {
-        for (int i = 0; i < SHELF_ROWS; i++) {
-            System.out.println("  ");
-            for (int j = 0; j < SHELF_COLUMN; j++) {
-                if(j==0)
-                    System.out.print("|");
-                if (this.shelf.getTile(i, j) == null)
-                    System.out.print("  " + "|");
-                else {
-                    if (this.shelf.getTile(i, j).getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (this.shelf.getTile(i, j).getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (this.shelf.getTile(i, j).getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (this.shelf.getTile(i, j).getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (this.shelf.getTile(i, j).getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (this.shelf.getTile(i, j).getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
-                }
-
-            }
-        }
-        System.out.println("");
-    }
-
     public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
         int[] coordinates = new int[2];
@@ -179,7 +155,6 @@ public class Player  {
             }
         }
     }
-
     private int selectColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
@@ -197,6 +172,7 @@ public class Player  {
             }
         }
     }
+
 
 
     public void play(Board board, CommonGoalCard[] cards) {
@@ -217,7 +193,7 @@ public class Player  {
         }
 
         System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
-        this.printShelf();
+
         for(int i=0; i<SHELF_COLUMN; i++)
             System.out.print(" " + i + " ");
         System.out.println("");
@@ -236,7 +212,6 @@ public class Player  {
         } // controlla per ogni common se e stato fatto l obiettivo
 
     }   // finisce il turno
-
 
     private List<Tile> chooseOrder(List<Tile> chosenTiles){
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");

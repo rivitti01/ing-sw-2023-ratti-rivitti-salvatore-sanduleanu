@@ -4,8 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import it.polimi.ingsw.view.TextualUI;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,10 +22,13 @@ import static it.polimi.ingsw.model.Colors.*;
 public class Board {
     private Tile[][] board;
     private int size;
+    private PropertyChangeSupport propertyChangeSupport;
 
     public Board(int numberParticipants){
         String name = "Board" + numberParticipants;
         setupBoard(name);
+        propertyChangeSupport = new PropertyChangeSupport(this.board);
+        this.addPropertyChangeListener((PropertyChangeListener) new TextualUI.BoardChanged());
     }
     public Tile[][] getBoard(){
         return board;
@@ -54,6 +61,11 @@ public class Board {
         board = new Tile[size][size];
         makeBoard(newBoard);
     }
+
+    public int getSize() {
+        return size;
+    }
+
     public Tile getTile(int x, int y){
         return board[x][y];
     }
@@ -170,9 +182,21 @@ public class Board {
         }
         return goodTiles;
     }
+
+    private Tile[][] copyBoard(){
+        Tile[][] boardCopy = new Tile[this.board.length][this.board.length];
+        for (int i=0; i<this.board.length; i++){
+            for (int j=0; j<this.board.length; j++){
+                boardCopy[i][j] = this.getTile(i, j);
+            }
+        }
+        return boardCopy;
+    }
     public Tile popTile(int x, int y){
+        Tile[][] bCopy = copyBoard();
         Tile temp = getTile(x, y);
         board[x][y] = new Tile(null); //prima era board[x][y] = null;
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "board", bCopy, this));
         return temp;
     }
     public void fillBoard(Bag bag){
@@ -191,40 +215,12 @@ public class Board {
         }
 
     }
-    public void printBoard(){
 
-        System.out.print("   ");
-        for (int i=0; i<this.board.length; i++)
-            System.out.print("  " + i + "  ");
 
-        for(int i=0; i<this.board.length; i++) {
-            System.out.print("\n");
-            for (int j = 0; j < this.board.length; j++) {
-                if(j==0)
-                    System.out.print(" "+ i + " ");
-                if (this.getTile(i, j)==null || this.getTile(i, j).getColor()==null)
-                    System.out.print("     ");
-                else {
-                    if (this.getTile(i, j).getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                    else if (this.getTile(i, j).getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                    else if (this.getTile(i, j).getColor() == Color.TRANSPARENT)
-                        System.out.print("     ");
-                    else if (this.getTile(i, j).getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                    else if (this.getTile(i, j).getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                    else if (this.getTile(i, j).getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                    else if (this.getTile(i, j).getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                }
-            }
-
-        }
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

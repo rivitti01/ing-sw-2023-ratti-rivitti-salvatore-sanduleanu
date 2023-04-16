@@ -37,19 +37,23 @@ public class App
 
         // il GameModel dipende dagli input dell'utente quindi dovrebbe essere creato dal controller
         // ?GameController dovrebbe avere un riferimento alla view? (Damiani ce l'aveva)
-        GameController controller = new GameController();
+/*        GameController controller = new GameController();
         //Damiani in più non aveva in View il riferimento al controller ma era Observable(osservato) dal Controller e Observer del Model
         TextualUI view = new TextualUI(controller);
         view.run();
+*/
 
+        Board b = new Board(4);
+        Bag bag = new Bag();
+        b.fillBoard(bag);
+        b.popTile(0,3);
+        b.popTile(0, 4);
 
-
-/*        Shelf s = new Shelf();
+        Shelf s = new Shelf();
         List<Tile> tl = new ArrayList<>();
         tl.add(new Tile(Color.GREEN));
-        s.addPropertyChangeListener((PropertyChangeListener) new TextualUI.ShelfChange());
         s.dropTiles(tl, 1);
-*/
+
 
 
 

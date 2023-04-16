@@ -30,9 +30,11 @@ public class GameController  {
     public void setPlayerNickname(String s){
         this.players.add(new Player(s));
     }
+
     //crea il Model in base a numberPlayers e alla List di players
     public void initializeModel(){
         this.model = new Game(this.numberPlayers, this.players);
+
     }
 
 

@@ -26,18 +26,15 @@ public class Shelf {
 
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
-        sPcs = new PropertyChangeSupport(this);
+        sPcs = new PropertyChangeSupport(this.shelf);
+        this.addPropertyChangeListener((PropertyChangeListener) new TextualUI.ShelfChange());
     }
-
-
-
     public Shelf(Shelf shelf){
         this.shelf = shelf.shelf;
     }
     public Tile getTile(int row, int col){
         return this.shelf[row][col];
     }
-
     public void putTile(int row,int column, Tile tile){
         shelf[row][column] = tile;
     }
@@ -65,13 +62,11 @@ public class Shelf {
         }
         return column;
     }
-
     public Tile[] getRow(int index){
         Tile[] row;
         row = this.shelf[index];
         return row;
     }
-
     public Tile[][] getShelf() {
         return this.shelf.clone();
     }
@@ -84,7 +79,6 @@ public class Shelf {
         }
         return newShelf;
     }
-
     public int checkAdjacents(){
         Shelf copy = this.copyShelf();
         int points = 0;
@@ -107,7 +101,6 @@ public class Shelf {
         }
         return points;
     }
-
     private int countAdjacents(Shelf copy, int x, int y, int count){
         Color tmp = copy.getTile(x, y).getColor();
         copy.putTile(x, y, null);
@@ -123,7 +116,6 @@ public class Shelf {
 
         return count;
     }
-
     public void dropTiles(List<Tile> chosenTiles, int column){
         Shelf sCopy = this.copyShelf();
         int j=0;
@@ -144,15 +136,12 @@ public class Shelf {
         }
         return true;
     }
-
     public void setTile(int r, int c, Tile t){
         shelf[r][c]=t;
     }
-
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         sPcs.addPropertyChangeListener(listener);
     }
-
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         sPcs.removePropertyChangeListener(listener);
     }

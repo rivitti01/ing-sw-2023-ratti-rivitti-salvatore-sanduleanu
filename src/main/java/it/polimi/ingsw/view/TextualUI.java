@@ -1,9 +1,11 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Shelf;
+import it.polimi.ingsw.model.Tile;
 
 import javax.sound.midi.SysexMessage;
 import javax.swing.event.ChangeEvent;
@@ -36,8 +38,7 @@ public class TextualUI  implements  Runnable {
         int n = askNumber();
         controller.setPlayerNumber(n);
         for (int i = 0; i < n; i++) {
-            String s = askNickName(i);
-            controller.setPlayerNickname(s);
+            controller.setPlayerNickname(askNickName(i));
         }
         //dopo la scelta del numero giocatori e i nomi dei Players si crea il GameModel
         this.controller.initializeModel();
@@ -83,6 +84,51 @@ public class TextualUI  implements  Runnable {
         }
     }
 
+    public static class BoardChanged implements PropertyChangeListener{
+        private Board b;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if("board".equals(evt.getPropertyName())){
+                b = (Board) evt.getSource();
+
+                System.out.print("   ");
+                for (int i=0; i<this.b.getSize(); i++)
+                    System.out.print("  " + i + "  ");
+
+                for(int i=0; i<this.b.getSize(); i++) {
+                    System.out.print("\n");
+                    for (int j = 0; j < this.b.getSize(); j++) {
+                        if(j==0)
+                            System.out.print(" "+ i + " ");
+                        if (b.getTile(i, j)==null || b.getTile(i, j).getColor()==null)
+                            System.out.print("     ");
+                        else {
+                            if (b.getTile(i, j).getColor() == Color.WHITE)
+                                System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                            else if (b.getTile(i, j).getColor() == Color.YELLOW)
+                                System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                            else if (b.getTile(i, j).getColor() == Color.TRANSPARENT)
+                                System.out.print("     ");
+                            else if (b.getTile(i, j).getColor() == Color.BLUE)
+                                System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                            else if (b.getTile(i, j).getColor() == Color.GREEN)
+                                System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                            else if (b.getTile(i, j).getColor() == Color.PINK)
+                                System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                            else if (b.getTile(i, j).getColor() == Color.CYAN)
+                                System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
+                        }
+                    }
+
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("");
+            }
+        }
+
+    }
     public static class ShelfChange implements PropertyChangeListener{
         private Shelf s;
 
@@ -119,14 +165,14 @@ public class TextualUI  implements  Runnable {
     public static class FirstPlayerSet implements PropertyChangeListener{
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            String propertyname = evt.getPropertyName();
+            String propertyName = evt.getPropertyName();
 
-            if ("seat".equals(propertyname)){
+            if ("seat".equals(propertyName)){
                 Player p = (Player) evt.getSource();
                 System.out.println("The first player is: " + p.getNickname());
             }
-            if ("shelf".equals(propertyname)) System.out.println("Shelf changed");
-            if ("nickname".equals(propertyname)) System.out.println("Nickcame changed");
+            if ("shelf".equals(propertyName)) System.out.println("Shelf changed");
+            if ("nickname".equals(propertyName)) System.out.println("Nickname changed");
         }
     }
 

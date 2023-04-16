@@ -4,6 +4,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.view.TextualUI;
 
 import javax.swing.event.ChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +20,8 @@ public class Game  {
     private Player currentPlayer;
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
+
+    private PropertyChangeSupport listener;
 
     public Game(int participants, List<Player> players){
         commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
@@ -80,9 +83,7 @@ public class Game  {
             // scelta delle Tiles di ogni player da passare a getTile
             // scelta della colonna
             // scelta ordine delle tiles
-            this.board.printBoard();
             currentPlayer.play(this.board, this.commonGoals);
-            currentPlayer.printShelf();
 
             if(this.board.checkRefill())
                 this.board.fillBoard(this.bag);
