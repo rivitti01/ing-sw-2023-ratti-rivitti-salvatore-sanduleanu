@@ -59,7 +59,16 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         Scanner s = new Scanner(System.in);
         while (true) {
             System.out.println("Type in the number of players that will take part in this game:");
-            int input = s.nextInt();
+            int input = 0;
+            while (true) {
+                if (s.hasNextInt()) {
+                    input = s.nextInt();
+                    break;
+                } else {
+                    System.err.println("Enter a valid value");
+                    s.nextLine(); // Consuma il valore non intero inserito
+                }
+            }
             if (input < 2 || input > 4){
                 System.err.println("Sorry you cannot play with this much players :(");
                 System.err.println("Please enter a number in between 2 and 4:");
