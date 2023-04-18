@@ -2,7 +2,6 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.Algorythms.CommonGoalCard1;
 import it.polimi.ingsw.view.TextualUI;
 
 import java.beans.PropertyChangeListener;
@@ -37,11 +36,21 @@ public class App
 
         // il GameModel dipende dagli input dell'utente quindi dovrebbe essere creato dal controller
         // ?GameController dovrebbe avere un riferimento alla view? (Damiani ce l'aveva)
-/*        GameController controller = new GameController();
+        Game model = new Game();
+        GameController controller = new GameController(model);
+
+        GameView modelView = new GameView(model);
+        TextualUI view = new TextualUI(controller, model);
+
+
+
+
+//
+
         //Damiani in più non aveva in View il riferimento al controller ma era Observable(osservato) dal Controller e Observer del Model
-        TextualUI view = new TextualUI(controller);
-        view.run();
-*/
+
+    view.run();
+
 
         Board b = new Board(4);
         Bag bag = new Bag();
@@ -53,9 +62,6 @@ public class App
         List<Tile> tl = new ArrayList<>();
         tl.add(new Tile(Color.GREEN));
         s.dropTiles(tl, 1);
-
-
-
 
 
     }

@@ -78,7 +78,7 @@ public class BoardTest {
                 else tmp = this.board4.popTile(i, j);
             }
         }
-        this.board4.printBoard();
+
 
         //ok
         assertFalse(this.board2.checkRefill());

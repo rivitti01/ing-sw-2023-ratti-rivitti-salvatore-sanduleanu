@@ -27,7 +27,6 @@ public class Shelf {
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
         sPcs = new PropertyChangeSupport(this.shelf);
-        this.addPropertyChangeListener((PropertyChangeListener) new TextualUI.ShelfChange());
     }
     public Shelf(Shelf shelf){
         this.shelf = shelf.shelf;

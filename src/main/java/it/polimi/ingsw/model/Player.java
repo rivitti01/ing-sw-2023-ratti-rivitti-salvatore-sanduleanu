@@ -39,7 +39,6 @@ public class Player  {
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
-        shelf.addPropertyChangeListener((PropertyChangeListener) new ShelfChange());
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
@@ -57,7 +56,6 @@ public class Player  {
     public void setSeat(boolean seat) {
         boolean oldValue = this.seat;
         this.seat = seat;
-        propertyChangeSupport.firePropertyChange("seat", oldValue, this.seat);
     }
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;

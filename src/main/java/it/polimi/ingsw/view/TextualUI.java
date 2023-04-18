@@ -1,31 +1,28 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Color;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Shelf;
-import it.polimi.ingsw.model.Tile;
+import it.polimi.ingsw.model.*;
 
-import javax.sound.midi.SysexMessage;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
-import static it.polimi.ingsw.Costants.SHELF_ROWS;
+import static it.polimi.ingsw.Costants.*;
 import static it.polimi.ingsw.model.Colors.*;
-import static it.polimi.ingsw.model.Colors.ANSI_RESET;
 
 
-public class TextualUI  implements  Runnable {
+
+public class TextualUI  implements  Runnable, PropertyChangeListener {
     private GameController controller;
+    private Game model;
 
-    public TextualUI(GameController gc){
+
+
+    public TextualUI(GameController gc, Game model){
         this.controller = gc;
+        this.model = model;
+        this.model.addPropertyChangeListener(this);
     }
 
     @Override
@@ -42,6 +39,8 @@ public class TextualUI  implements  Runnable {
         }
         //dopo la scelta del numero giocatori e i nomi dei Players si crea il GameModel
         this.controller.initializeModel();
+
+        System.out.println("inizio gioco...");
 
 /*        while (true) {
             System.out.println("Turno di: " + this.controller.getCurrentPlayer().getNickname());
@@ -84,97 +83,78 @@ public class TextualUI  implements  Runnable {
         }
     }
 
-    public static class BoardChanged implements PropertyChangeListener{
-        private Board b;
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("board".equals(evt.getPropertyName())) {
+            Board b = (Board) evt.getSource();
 
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if("board".equals(evt.getPropertyName())){
-                b = (Board) evt.getSource();
+            System.out.print("   ");
+            System.out.print("   ");
+            for (int i = 0; i < b.getSize(); i++)
+                System.out.print("  " + i + "  ");
 
-                System.out.print("   ");
-                for (int i=0; i<this.b.getSize(); i++)
-                    System.out.print("  " + i + "  ");
-
-                for(int i=0; i<this.b.getSize(); i++) {
-                    System.out.print("\n");
-                    for (int j = 0; j < this.b.getSize(); j++) {
-                        if(j==0)
-                            System.out.print(" "+ i + " ");
-                        if (b.getTile(i, j)==null || b.getTile(i, j).getColor()==null)
+            for (int i = 0; i < b.getSize(); i++) {
+                System.out.print("\n");
+                for (int j = 0; j < b.getSize(); j++) {
+                    if (j == 0)
+                        System.out.print(" " + i + " ");
+                    if (b.getTile(i, j) == null || b.getTile(i, j).getColor() == null)
+                        System.out.print("     ");
+                    else {
+                        if (b.getTile(i, j).getColor() == Color.WHITE)
+                            System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                        else if (b.getTile(i, j).getColor() == Color.YELLOW)
+                            System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                        else if (b.getTile(i, j).getColor() == Color.TRANSPARENT)
                             System.out.print("     ");
-                        else {
-                            if (b.getTile(i, j).getColor() == Color.WHITE)
-                                System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                            else if (b.getTile(i, j).getColor() == Color.YELLOW)
-                                System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                            else if (b.getTile(i, j).getColor() == Color.TRANSPARENT)
-                                System.out.print("     ");
-                            else if (b.getTile(i, j).getColor() == Color.BLUE)
-                                System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                            else if (b.getTile(i, j).getColor() == Color.GREEN)
-                                System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                            else if (b.getTile(i, j).getColor() == Color.PINK)
-                                System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                            else if (b.getTile(i, j).getColor() == Color.CYAN)
-                                System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";"+ j + " " + ANSI_RESET);
-                        }
+                        else if (b.getTile(i, j).getColor() == Color.BLUE)
+                            System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                        else if (b.getTile(i, j).getColor() == Color.GREEN)
+                            System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                        else if (b.getTile(i, j).getColor() == Color.PINK)
+                            System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                        else if (b.getTile(i, j).getColor() == Color.CYAN)
+                            System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
                     }
-
                 }
-                System.out.println("");
-                System.out.println("");
-                System.out.println("");
+
             }
-        }
-
-    }
-    public static class ShelfChange implements PropertyChangeListener{
-        private Shelf s;
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if("shelf".equals(evt.getPropertyName())){
-                s = (Shelf)evt.getSource();
-                for (int i = 0; i < SHELF_ROWS; i++) {
-                    System.out.println("  ");
-                    for (int j = 0; j < SHELF_COLUMN; j++) {
-                        if(j==0)
-                            System.out.print("|");
-                        if (this.s.getTile(i, j) == null)
-                            System.out.print("  " + "|");
-                        else {
-                            if (this.s.getTile(i, j).getColor() == Color.WHITE)
-                                System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                            else if (this.s.getTile(i, j).getColor() == Color.YELLOW)
-                                System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                            else if (this.s.getTile(i, j).getColor() == Color.BLUE)
-                                System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                            else if (this.s.getTile(i, j).getColor() == Color.GREEN)
-                                System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                            else if (this.s.getTile(i, j).getColor() == Color.PINK)
-                                System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                            else if (this.s.getTile(i, j).getColor() == Color.CYAN)
-                                System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
-                        }
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+        } else if ("shelf".equals(evt.getPropertyName())) {
+            Shelf s = (Shelf) evt.getSource();
+            for (int i = 0; i < SHELF_ROWS; i++) {
+                System.out.println("  ");
+                for (int j = 0; j < SHELF_COLUMN; j++) {
+                    if (j == 0)
+                        System.out.print("|");
+                    if (s.getTile(i, j) == null)
+                        System.out.print("  " + "|");
+                    else {
+                        if (s.getTile(i, j).getColor() == Color.WHITE)
+                            System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (s.getTile(i, j).getColor() == Color.YELLOW)
+                            System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (s.getTile(i, j).getColor() == Color.BLUE)
+                            System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (s.getTile(i, j).getColor() == Color.GREEN)
+                            System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (s.getTile(i, j).getColor() == Color.PINK)
+                            System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                        else if (s.getTile(i, j).getColor() == Color.CYAN)
+                            System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
                     }
                 }
             }
+        }else if ("seat".equals(evt.getPropertyName())){
+            System.out.println("arivo quaa");
+            System.out.println("The first player is: " + evt.getNewValue());
         }
     }
-    public static class FirstPlayerSet implements PropertyChangeListener{
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            String propertyName = evt.getPropertyName();
 
-            if ("seat".equals(propertyName)){
-                Player p = (Player) evt.getSource();
-                System.out.println("The first player is: " + p.getNickname());
-            }
-            if ("shelf".equals(propertyName)) System.out.println("Shelf changed");
-            if ("nickname".equals(propertyName)) System.out.println("Nickname changed");
-        }
-    }
+
+
 
 
 

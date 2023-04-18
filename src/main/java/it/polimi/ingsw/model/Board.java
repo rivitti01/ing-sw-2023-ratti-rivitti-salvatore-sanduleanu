@@ -28,7 +28,6 @@ public class Board {
         String name = "Board" + numberParticipants;
         setupBoard(name);
         propertyChangeSupport = new PropertyChangeSupport(this.board);
-        this.addPropertyChangeListener((PropertyChangeListener) new TextualUI.BoardChanged());
     }
     public Tile[][] getBoard(){
         return board;

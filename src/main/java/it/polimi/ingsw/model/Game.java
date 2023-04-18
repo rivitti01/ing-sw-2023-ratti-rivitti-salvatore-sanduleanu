@@ -4,6 +4,8 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.view.TextualUI;
 
 import javax.swing.event.ChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,26 +23,22 @@ public class Game  {
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
 
-    private PropertyChangeSupport listener;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    public Game(int participants, List<Player> players){
-        commonGoals = new CommonGoalCard[COMMON_CARDS_PER_GAME];
-        numberPartecipants = participants;
-        this.bag = new Bag();
-        this.board = new Board(participants);
-        this.board.fillBoard(this.bag);
+
+
+    public void setGame(int numberParticipants, List<Player> players){
+        this.numberPartecipants = numberParticipants;
+        this.board = new Board(this.numberPartecipants);
         this.players = players;
-        this.lastTurn = false;
         setFirstPlayer();
-
-        DeckPersonal deckPersonal = new DeckPersonal();
-        for (Player p : this.players)
-            p.setPrivateCard(deckPersonal.popPersonalCard());
-
+        this.currentPlayer = this.players.get(0);
+        this.commonGoals = new CommonGoalCard[2];
         DeckCommon deckCommon = new DeckCommon();
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
-            commonGoals[i] = new CommonGoalCard(participants, deckCommon);
+            commonGoals[i] = new CommonGoalCard(this.numberPartecipants, deckCommon);
     }
+
 
 
     //Getters and Setters
@@ -57,6 +55,8 @@ public class Game  {
         }
         players = tempList;
         players.get(0).setSeat(true);
+        propertyChangeSupport.firePropertyChange("seat", null, this.players.get(0).getNickname());
+
     }
     public boolean isLastTurn() {
         return this.lastTurn;
@@ -69,6 +69,12 @@ public class Game  {
     }
     public Bag getBag() {
         return bag;
+    }
+    public CommonGoalCard[] getCommonGoals() {
+        return commonGoals;
+    }
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
 
@@ -101,6 +107,7 @@ public class Game  {
             currentPlayer = players.iterator().next();
         }
     }
+
     public void endGame(){
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
@@ -120,4 +127,12 @@ public class Game  {
         }
          return tempWinner;
     }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
 }

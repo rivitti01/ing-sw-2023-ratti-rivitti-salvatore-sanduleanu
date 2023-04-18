@@ -17,7 +17,8 @@ public class GameController  {
     //dovremmmo spostare la logica di startGame() di GameModel nel Controller
     Player currentPlayer;
 
-    public GameController (){
+    public GameController (Game model){
+        this.model = model;
         this.players = new ArrayList<>();
         this.numberPlayers = 0;
     }
@@ -33,8 +34,7 @@ public class GameController  {
 
     //crea il Model in base a numberPlayers e alla List di players
     public void initializeModel(){
-        this.model = new Game(this.numberPlayers, this.players);
-
+        model.setGame(this.numberPlayers, this.players);
     }
 
 
