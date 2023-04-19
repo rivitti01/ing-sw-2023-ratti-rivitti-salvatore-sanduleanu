@@ -37,10 +37,16 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         for (int i = 0; i < n; i++) {
             controller.setPlayerNickname(askNickName(i));
         }
-        //dopo la scelta del numero giocatori e i nomi dei Players si crea il GameModel
+        //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
         this.controller.initializeModel();
 
         System.out.println("inizio gioco...");
+
+        while(true){
+            System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
+                int[] coordinates = askCoordinates();
+
+        }
 
 /*        while (true) {
             System.out.println("Turno di: " + this.controller.getCurrentPlayer().getNickname());
@@ -55,6 +61,40 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
  */
     }
 
+    public int[] askCoordinates(){
+        Scanner scanner = new Scanner(System.in);
+        int[] coordinates = new int[2];
+
+        for(int i=0; i<MAX_TILES_PER_TURN; i++) {
+            while (true) {
+                System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
+
+                String s = scanner.nextLine();
+                if (!s.equals("")) {
+                    switch (s.toUpperCase()) {
+                        case "Q":
+                            if (i == 0)
+                                System.err.println("Selezionare almeno una tessera!");
+                            else
+                                return null;
+                            break;
+
+                        case "S":
+                            System.out.println("seleziona tessera");
+                            //while(true)... scelta x scelta y return
+                            break;
+                        default:
+                            System.err.println("Non conosco questo comando.\nRiprova");
+                            break;
+                    }
+                } else {
+                    System.err.println("Selezionare un comando!");
+                }
+
+            }
+        }
+        return null;
+    }
     public int askNumber() {
         Scanner s = new Scanner(System.in);
         while (true) {
@@ -157,7 +197,6 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 }
             }
         }else if ("seat".equals(evt.getPropertyName())){
-            System.out.println("arivo quaa");
             System.out.println("The first player is: " + evt.getNewValue());
         }
     }
