@@ -29,7 +29,7 @@ public class Player  {
     private Shelf shelf;
     private boolean seat;
     private boolean[] goalsCompleted;
-    private List<Tile> chosenTiles;
+    private List<int[]> chosenTiles;
     private PersonalGoalCard personalGoalCard;
     private int points;
     private List<int[]> borderTiles;
@@ -90,8 +90,11 @@ public class Player  {
         return this.seat;
     }
     public int getPoints(){return this.points;}
-    public List<Tile> getChosenTiles(){return this.chosenTiles;}
-    public void getTile(Board board, List<int[]> chosenCoordinates) {
+    public List<int[]> getChosenTiles(){return this.chosenTiles;}
+    public void addChosenTile(int[] tile){
+        this.chosenTiles.add(tile);
+    }
+  /*  public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);
         int[] coordinates = new int[2];
         boolean flag = true;
@@ -153,7 +156,9 @@ public class Player  {
             }
         }
     }
-    private int selectColumn() {
+
+   */
+  /*  private int selectColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
 
@@ -171,9 +176,8 @@ public class Player  {
         }
     }
 
-
-
-    public void play(Board board, CommonGoalCard[] cards) {
+   */
+  /*   public void play(Board board, CommonGoalCard[] cards) {
         chosenTiles = new ArrayList<>();
         borderTiles = new ArrayList<>();
         borderTiles = board.getAvailableTiles();
@@ -210,6 +214,8 @@ public class Player  {
         } // controlla per ogni common se e stato fatto l obiettivo
 
     }   // finisce il turno
+
+  */
 
     private List<Tile> chooseOrder(List<Tile> chosenTiles){
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");

@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.view.TextualUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static it.polimi.ingsw.Costants.END_GAME_POINT;
@@ -36,9 +37,26 @@ public class GameController  {
     public void initializeModel(){
         model.setGame(this.numberPlayers, this.players);
     }
+    public void nextPlayer(){
+       int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
+       if(indexCurrentPlayer == this.model.getPlayers().size()-1)
+           this.model.setCurrentPlayer(this.model.getPlayers().get(0));
+       else
+           this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+    }
+    public boolean checkCorrectCoordinates(int[] inputCoordinates){
+        List<int[]> availableCoordinates = model.getAvailableTilesForCurrentPlayer();
+        for(int i=0; i<availableCoordinates.size(); i++){
+            if(Arrays.equals(availableCoordinates.get(i), inputCoordinates))
+                return true;
+        }
+        return false;
+    }
+    public void addChosenTile(int[] coordinates){
+        this.model.getCurrentPlayer().addChosenTile(coordinates);
+    }
 
-
-    public void turnHandler(){  //sarebbe un pezzo di startGame() in model.Game
+ /*   public void turnHandler(){  //sarebbe un pezzo di startGame() in model.Game
         int index = 0;
         this.currentPlayer = players.get(index);
 
@@ -68,6 +86,6 @@ public class GameController  {
             currentPlayer = players.iterator().next();
         }
 
-    }
+    } */
 
 }

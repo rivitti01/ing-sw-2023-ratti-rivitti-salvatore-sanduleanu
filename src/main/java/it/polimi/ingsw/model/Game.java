@@ -29,7 +29,9 @@ public class Game  {
 
     public void setGame(int numberParticipants, List<Player> players){
         this.numberPartecipants = numberParticipants;
+        this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
+        this.board.fillBoard(this.bag);
         this.players = players;
         setFirstPlayer();
         this.currentPlayer = this.players.get(0);
@@ -76,11 +78,27 @@ public class Game  {
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
+    public List<int[]> getAvailableTilesForCurrentPlayer(){
+        int[]  chosenCoordinates1;
+        int[]  chosenCoordinates2;
+        try {
+            chosenCoordinates1 = this.currentPlayer.getChosenTiles().get(0);
+        }catch (IndexOutOfBoundsException e1){
+            chosenCoordinates1 = null;
+        }
+        try{
+            chosenCoordinates2 = this.currentPlayer.getChosenTiles().get(1);
+        }catch (IndexOutOfBoundsException e2){
+            chosenCoordinates2 = null;
+        }
+        return this.board.filterAvailableTiles(chosenCoordinates1, chosenCoordinates2, this.board.getAvailableTiles());
+    }
 
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 
-
-
-    public void startGame(){
+ /*   public void startGame(){
         int index = 0;
         currentPlayer = players.get(index);
 
@@ -107,6 +125,8 @@ public class Game  {
             currentPlayer = players.iterator().next();
         }
     }
+
+  */
 
     public void endGame(){
         for(Player p : this.players) {

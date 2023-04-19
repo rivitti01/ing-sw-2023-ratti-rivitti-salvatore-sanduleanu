@@ -6,6 +6,8 @@ import it.polimi.ingsw.model.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.Costants.*;
@@ -44,7 +46,10 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
 
         while(true){
             System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
-                int[] coordinates = askCoordinates();
+            askCoordinates();
+            askColumn();
+            askOrder();
+            this.controller.nextPlayer();
 
         }
 
@@ -61,39 +66,76 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
  */
     }
 
-    public int[] askCoordinates(){
+    private void askOrder() {
+    }
+
+    private void askColumn() {
+
+    }
+
+    public void askCoordinates(){
         Scanner scanner = new Scanner(System.in);
-        int[] coordinates = new int[2];
 
         for(int i=0; i<MAX_TILES_PER_TURN; i++) {
-            while (true) {
-                System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
+            if(!this.model.getAvailableTilesForCurrentPlayer().isEmpty()) {
+                while (true) {
+                    System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
 
-                String s = scanner.nextLine();
-                if (!s.equals("")) {
-                    switch (s.toUpperCase()) {
-                        case "Q":
-                            if (i == 0)
-                                System.err.println("Selezionare almeno una tessera!");
-                            else
-                                return null;
-                            break;
+                    String s = scanner.nextLine();
+                    if (!s.equals("")) {
+                        switch (s.toUpperCase()) {
+                            case "Q":
+                                if (i == 0)
+                                    System.err.println("Selezionare almeno una tessera!");
+                                else
+                                    break;
+                                break;
 
-                        case "S":
-                            System.out.println("seleziona tessera");
-                            //while(true)... scelta x scelta y return
-                            break;
-                        default:
-                            System.err.println("Non conosco questo comando.\nRiprova");
-                            break;
+                            case "S":
+                                System.out.println("seleziona tessera tra le seguenti disponibili");
+                                printBoard(this.model.getBoard());
+                                printAvailableTiles(this.model.getAvailableTilesForCurrentPlayer());
+                                //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
+                                while (true) {
+                                    try {
+                                        int[] coordinates = new int[2];
+                                        System.out.print("x: ");
+                                        coordinates[0] = scanner.nextInt();
+                                        scanner.nextLine();
+                                        System.out.print("y: ");
+                                        coordinates[1] = scanner.nextInt();
+                                        scanner.nextLine();
+                                        if (this.controller.checkCorrectCoordinates(coordinates)) {
+                                            this.controller.addChosenTile(coordinates);
+                                            break;
+                                        } else {
+                                            System.err.println("Coordinate non valide. Riprova");
+                                            System.out.println("");
+                                        }
+
+                                    } catch (InputMismatchException e1) {
+                                        System.err.println("Inserire un numero");
+                                        scanner.nextLine();
+                                        System.out.println("");
+                                    }
+                                }
+                                break;
+                            default:
+                                System.err.println("Non conosco questo comando.\nRiprova");
+                                break;
+                        }
+                    } else {
+                        System.err.println("Selezionare un comando!");
                     }
-                } else {
-                    System.err.println("Selezionare un comando!");
+                    break;
                 }
-
+            }else{
+                System.out.println("Non ci sono piu tessere disponibili");
+                return;
             }
+
         }
-        return null;
+        System.out.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
     }
     public int askNumber() {
         Scanner s = new Scanner(System.in);
@@ -132,70 +174,84 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         }
     }
 
+
+    void printBoard(Board b) {
+        System.out.print("   ");
+        System.out.print("   ");
+        for (int i = 0; i < b.getSize(); i++)
+            System.out.print("  " + i + "  ");
+
+        for (int i = 0; i < b.getSize(); i++) {
+            System.out.print("\n");
+            for (int j = 0; j < b.getSize(); j++) {
+                if (j == 0)
+                    System.out.print(" " + i + " ");
+                if (b.getTile(i, j) == null || b.getTile(i, j).getColor() == null)
+                    System.out.print("     ");
+                else {
+                    if (b.getTile(i, j).getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                    else if (b.getTile(i, j).getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                    else if (b.getTile(i, j).getColor() == Color.TRANSPARENT)
+                        System.out.print("     ");
+                    else if (b.getTile(i, j).getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                    else if (b.getTile(i, j).getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                    else if (b.getTile(i, j).getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                    else if (b.getTile(i, j).getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
+                }
+            }
+
+        }
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+    }
+    void printAvailableTiles(List<int[]> availableTiles) {
+        for(int i=0; i<availableTiles.size(); i++)
+            System.out.print(availableTiles.get(i)[0] + ";" + availableTiles.get(i)[1] + " ");
+        System.out.println("");
+    }
+    void printShelf(Shelf s) {
+        for (int i = 0; i < SHELF_ROWS; i++) {
+            System.out.println("  ");
+            for (int j = 0; j < SHELF_COLUMN; j++) {
+                if (j == 0)
+                    System.out.print("|");
+                if (s.getTile(i, j) == null)
+                    System.out.print("  " + "|");
+                else {
+                    if (s.getTile(i, j).getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (s.getTile(i, j).getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (s.getTile(i, j).getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (s.getTile(i, j).getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (s.getTile(i, j).getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (s.getTile(i, j).getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                }
+            }
+        }
+    }
+
+
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("board".equals(evt.getPropertyName())) {
             Board b = (Board) evt.getSource();
-
-            System.out.print("   ");
-            System.out.print("   ");
-            for (int i = 0; i < b.getSize(); i++)
-                System.out.print("  " + i + "  ");
-
-            for (int i = 0; i < b.getSize(); i++) {
-                System.out.print("\n");
-                for (int j = 0; j < b.getSize(); j++) {
-                    if (j == 0)
-                        System.out.print(" " + i + " ");
-                    if (b.getTile(i, j) == null || b.getTile(i, j).getColor() == null)
-                        System.out.print("     ");
-                    else {
-                        if (b.getTile(i, j).getColor() == Color.WHITE)
-                            System.out.print(ANSI_WHITE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                        else if (b.getTile(i, j).getColor() == Color.YELLOW)
-                            System.out.print(ANSI_YELLOW_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                        else if (b.getTile(i, j).getColor() == Color.TRANSPARENT)
-                            System.out.print("     ");
-                        else if (b.getTile(i, j).getColor() == Color.BLUE)
-                            System.out.print(ANSI_BLUE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                        else if (b.getTile(i, j).getColor() == Color.GREEN)
-                            System.out.print(ANSI_GREEN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                        else if (b.getTile(i, j).getColor() == Color.PINK)
-                            System.out.print(ANSI_PURPLE_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                        else if (b.getTile(i, j).getColor() == Color.CYAN)
-                            System.out.print(ANSI_CYAN_BACKGROUND + " " + i + ";" + j + " " + ANSI_RESET);
-                    }
-                }
-
-            }
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
+            printBoard(b);
         } else if ("shelf".equals(evt.getPropertyName())) {
             Shelf s = (Shelf) evt.getSource();
-            for (int i = 0; i < SHELF_ROWS; i++) {
-                System.out.println("  ");
-                for (int j = 0; j < SHELF_COLUMN; j++) {
-                    if (j == 0)
-                        System.out.print("|");
-                    if (s.getTile(i, j) == null)
-                        System.out.print("  " + "|");
-                    else {
-                        if (s.getTile(i, j).getColor() == Color.WHITE)
-                            System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (s.getTile(i, j).getColor() == Color.YELLOW)
-                            System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (s.getTile(i, j).getColor() == Color.BLUE)
-                            System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (s.getTile(i, j).getColor() == Color.GREEN)
-                            System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (s.getTile(i, j).getColor() == Color.PINK)
-                            System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                        else if (s.getTile(i, j).getColor() == Color.CYAN)
-                            System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    }
-                }
-            }
+            printShelf(s);
         }else if ("seat".equals(evt.getPropertyName())){
             System.out.println("The first player is: " + evt.getNewValue());
         }
