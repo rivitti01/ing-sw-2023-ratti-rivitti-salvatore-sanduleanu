@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.view;
 
 public class Colors {
     public static final String ANSI_RESET = "\u001B[0m";

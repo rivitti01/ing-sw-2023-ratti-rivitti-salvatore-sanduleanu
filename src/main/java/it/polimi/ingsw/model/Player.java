@@ -1,44 +1,30 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.view.TextualUI.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-
 import java.beans.PropertyChangeSupport;
-import java.text.*;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.List;
 
 import static it.polimi.ingsw.Costants.*;
-import static it.polimi.ingsw.model.Colors.*;
-import static it.polimi.ingsw.model.Colors.ANSI_RESET;
-import static javax.swing.UIManager.addPropertyChangeListener;
 
 public class Player  {
     final String nickname;
     private Shelf shelf;
     private boolean seat;
     private boolean[] goalsCompleted;
-    private List<int[]> chosenTiles;
+    private List<int[]> chosenCoordinates;
+    private List<Tile> chosenTiles;
     private PersonalGoalCard personalGoalCard;
     private int points;
-    private List<int[]> borderTiles;
-    private boolean isChoosing;
+
     PropertyChangeSupport propertyChangeSupport;
 
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
+        chosenCoordinates = new ArrayList<>();
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
@@ -90,9 +76,15 @@ public class Player  {
         return this.seat;
     }
     public int getPoints(){return this.points;}
-    public List<int[]> getChosenTiles(){return this.chosenTiles;}
-    public void addChosenTile(int[] tile){
+    public List<int[]> getChosenCoordinates(){return this.chosenCoordinates;}
+    public void addChosenCoordinate(int[] coordinates){
+        this.chosenCoordinates.add(coordinates);
+    }
+    public void addChosenTile(Tile tile){
         this.chosenTiles.add(tile);
+    }
+    public PersonalGoalCard getPersonalGoalCard(){
+        return this.personalGoalCard;
     }
   /*  public void getTile(Board board, List<int[]> chosenCoordinates) {
         Scanner scanner = new Scanner(System.in);

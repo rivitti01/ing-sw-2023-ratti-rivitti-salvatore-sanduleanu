@@ -39,6 +39,9 @@ public class Game  {
         DeckCommon deckCommon = new DeckCommon();
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++)
             commonGoals[i] = new CommonGoalCard(this.numberPartecipants, deckCommon);
+        DeckPersonal deckPersonal = new DeckPersonal();
+        for (int i=0; i<this.players.size(); i++)
+            this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
     }
 
 
@@ -60,34 +63,41 @@ public class Game  {
         propertyChangeSupport.firePropertyChange("seat", null, this.players.get(0).getNickname());
 
     }
+
     public boolean isLastTurn() {
         return this.lastTurn;
     }
+
     public List<Player> getPlayers() {
         return players;
     }
+
     public Board getBoard() {
         return board;
     }
+
     public Bag getBag() {
         return bag;
     }
+
     public CommonGoalCard[] getCommonGoals() {
         return commonGoals;
     }
+
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
+
     public List<int[]> getAvailableTilesForCurrentPlayer(){
         int[]  chosenCoordinates1;
         int[]  chosenCoordinates2;
         try {
-            chosenCoordinates1 = this.currentPlayer.getChosenTiles().get(0);
+            chosenCoordinates1 = this.currentPlayer.getChosenCoordinates().get(0);
         }catch (IndexOutOfBoundsException e1){
             chosenCoordinates1 = null;
         }
         try{
-            chosenCoordinates2 = this.currentPlayer.getChosenTiles().get(1);
+            chosenCoordinates2 = this.currentPlayer.getChosenCoordinates().get(1);
         }catch (IndexOutOfBoundsException e2){
             chosenCoordinates2 = null;
         }
@@ -97,6 +107,7 @@ public class Game  {
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
+
 
  /*   public void startGame(){
         int index = 0;
@@ -139,6 +150,7 @@ public class Game  {
         }
 
     }
+
     public Player findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
@@ -151,6 +163,7 @@ public class Game  {
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.addPropertyChangeListener(listener);
     }
+
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }

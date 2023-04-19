@@ -103,7 +103,7 @@ public class CommonGoalCard {
         return cardStrategy.algorythm(myShelf);
     }
 
-    public String getDescritpion(){
+    public String getDescription(){
         return description;
     }
 

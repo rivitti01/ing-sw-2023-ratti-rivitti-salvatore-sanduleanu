@@ -1,13 +1,11 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.view.TextualUI;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static it.polimi.ingsw.Costants.END_GAME_POINT;
 
 public class GameController  {
     //attributo a Model per poterlo modificare
@@ -46,15 +44,19 @@ public class GameController  {
     }
     public boolean checkCorrectCoordinates(int[] inputCoordinates){
         List<int[]> availableCoordinates = model.getAvailableTilesForCurrentPlayer();
-        for(int i=0; i<availableCoordinates.size(); i++){
-            if(Arrays.equals(availableCoordinates.get(i), inputCoordinates))
+        for (int[] availableCoordinate : availableCoordinates) {
+            if (Arrays.equals(availableCoordinate, inputCoordinates))
                 return true;
         }
         return false;
     }
-    public void addChosenTile(int[] coordinates){
-        this.model.getCurrentPlayer().addChosenTile(coordinates);
+    public void addChosenCoordinate(int[] coordinates){
+        this.model.getCurrentPlayer().addChosenCoordinate(coordinates);
     }
+    public void addChosenTile(int[] coordinates){
+        this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(coordinates[0], coordinates[1]));
+    }
+
 
  /*   public void turnHandler(){  //sarebbe un pezzo di startGame() in model.Game
         int index = 0;

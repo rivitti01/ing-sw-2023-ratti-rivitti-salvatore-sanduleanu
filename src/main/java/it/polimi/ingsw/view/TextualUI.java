@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.Costants.*;
-import static it.polimi.ingsw.model.Colors.*;
+import static it.polimi.ingsw.view.Colors.*;
 
 
 
@@ -76,66 +76,69 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     public void askCoordinates(){
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
+        printPersonalGoalShelf(this.model.getCurrentPlayer().getPersonalGoalCard());
+        System.out.println("\nQuesti sono gli Obiettivi Comuni:");
+        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            System.out.println(i+1 + ") " + this.model.getCommonGoals()[i].getDescription() + "\n");
+        }
+
         for(int i=0; i<MAX_TILES_PER_TURN; i++) {
             if(!this.model.getAvailableTilesForCurrentPlayer().isEmpty()) {
-                while (true) {
+                boolean chosen = false;
+                while (!chosen) {
+                    printBoard(this.model.getBoard());
                     System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
 
                     String s = scanner.nextLine();
-                    if (!s.equals("")) {
-                        switch (s.toUpperCase()) {
-                            case "Q":
-                                if (i == 0)
-                                    System.err.println("Selezionare almeno una tessera!");
-                                else
-                                    break;
-                                break;
 
-                            case "S":
-                                System.out.println("seleziona tessera tra le seguenti disponibili");
-                                printBoard(this.model.getBoard());
-                                printAvailableTiles(this.model.getAvailableTilesForCurrentPlayer());
-                                //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
-                                while (true) {
-                                    try {
-                                        int[] coordinates = new int[2];
-                                        System.out.print("x: ");
-                                        coordinates[0] = scanner.nextInt();
-                                        scanner.nextLine();
-                                        System.out.print("y: ");
-                                        coordinates[1] = scanner.nextInt();
-                                        scanner.nextLine();
-                                        if (this.controller.checkCorrectCoordinates(coordinates)) {
-                                            this.controller.addChosenTile(coordinates);
-                                            break;
-                                        } else {
-                                            System.err.println("Coordinate non valide. Riprova");
-                                            System.out.println("");
-                                        }
+                    switch (s.toUpperCase()) {
+                        case "Q":
+                            if (i == 0)
+                                System.err.println("Selezionare almeno una tessera!");
+                            else
+                                return;
+                            break;
 
-                                    } catch (InputMismatchException e1) {
-                                        System.err.println("Inserire un numero");
-                                        scanner.nextLine();
-                                        System.out.println("");
+                        case "S":
+                            System.out.println("seleziona tessera tra le seguenti disponibili");
+                            printAvailableTiles(this.model.getAvailableTilesForCurrentPlayer());
+                            //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
+                            while (!chosen) {
+                                try {
+                                    int[] coordinates = new int[2];
+                                    System.out.print("x: ");
+                                    coordinates[0] = scanner.nextInt();
+                                    scanner.nextLine();
+                                    System.out.print("y: ");
+                                    coordinates[1] = scanner.nextInt();
+                                    scanner.nextLine();
+                                    if (this.controller.checkCorrectCoordinates(coordinates)) {
+                                        this.controller.addChosenCoordinate(coordinates);
+                                        this.controller.addChosenTile(coordinates);
+                                        chosen = true;
+                                    } else {
+                                        System.err.println("Coordinate non valide. Riprova\n");
                                     }
+                                } catch (InputMismatchException e1) {
+                                    System.err.println("Inserire un numero");
+                                    scanner.nextLine();
+                                    System.out.println("");
                                 }
-                                break;
-                            default:
-                                System.err.println("Non conosco questo comando.\nRiprova");
-                                break;
-                        }
-                    } else {
-                        System.err.println("Selezionare un comando!");
+                            }
+                            break;
+                        default:
+                            System.err.println("Non conosco questo comando.\nRiprova");
+                            break;
                     }
-                    break;
                 }
             }else{
-                System.out.println("Non ci sono piu tessere disponibili");
+                System.err.println("Non ci sono piu tessere disponibili");
                 return;
             }
 
         }
-        System.out.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
+        System.err.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
     }
     public int askNumber() {
         Scanner s = new Scanner(System.in);
@@ -211,11 +214,13 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println("");
         System.out.println("");
     }
+
     void printAvailableTiles(List<int[]> availableTiles) {
         for(int i=0; i<availableTiles.size(); i++)
             System.out.print(availableTiles.get(i)[0] + ";" + availableTiles.get(i)[1] + " ");
         System.out.println("");
     }
+
     void printShelf(Shelf s) {
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
@@ -241,6 +246,35 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
             }
         }
     }
+
+    void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+        for (int i = 0; i < SHELF_ROWS; i++) {
+            System.out.println("  ");
+            for (int j = 0; j < SHELF_COLUMN; j++) {
+                if (j == 0)
+                    System.out.print("|");
+                if (personalGoalCard.getGoalsShelf()[i][j] == null)
+                    System.out.print("  " + "|");
+                else {
+                    if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.WHITE)
+                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.YELLOW)
+                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.BLUE)
+                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.GREEN)
+                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.PINK)
+                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.CYAN)
+                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                }
+            }
+        }
+        System.out.println("");
+        System.out.println("");
+    }
+
 
 
 

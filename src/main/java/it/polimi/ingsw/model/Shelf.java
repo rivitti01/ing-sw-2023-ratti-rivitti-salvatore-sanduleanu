@@ -67,7 +67,7 @@ public class Shelf {
         return row;
     }
     public Tile[][] getShelf() {
-        return this.shelf.clone();
+        return this.shelf;
     }
     public Shelf copyShelf(){
         Shelf newShelf = new Shelf();

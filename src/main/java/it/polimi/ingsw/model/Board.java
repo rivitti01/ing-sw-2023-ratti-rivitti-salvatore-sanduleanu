@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import it.polimi.ingsw.view.TextualUI;
 
 
 import java.beans.PropertyChangeEvent;
@@ -17,21 +16,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static it.polimi.ingsw.model.Colors.*;
-
 public class Board {
     private Tile[][] board;
     private int size;
+    private List<int[]> borderTiles;
     private PropertyChangeSupport propertyChangeSupport;
 
     public Board(int numberParticipants){
         String name = "Board" + numberParticipants;
         setupBoard(name);
+        this.borderTiles = getAvailableTiles();
         propertyChangeSupport = new PropertyChangeSupport(this.board);
     }
+
     public Tile[][] getBoard(){
         return board;
     }
+
     private void setupBoard(String boardName){
         String filePath = "src/main/resources/BoardFactor.json";
         File input = new File(filePath);
@@ -68,6 +69,7 @@ public class Board {
     public Tile getTile(int x, int y){
         return board[x][y];
     }
+
     public boolean checkRefill(){
         for(int i=0; i<size-1; i++){
             for(int j=0; j<size-1; j++) {
@@ -142,7 +144,6 @@ public class Board {
 
     }
 
-
     public List<int[]> filterAvailableTiles(int[] t1, int[] t2, List<int[]> borderTiles){
         //seleziona dalle available quelle con stesse coordinate di una tile o quelle che hanno una coordinata in comune con le altre due selezionate
         List<int[]> goodTiles = new ArrayList<>();
@@ -191,6 +192,7 @@ public class Board {
         }
         return boardCopy;
     }
+
     public Tile popTile(int x, int y){
         Tile[][] bCopy = copyBoard();
         Tile temp = getTile(x, y);
@@ -198,6 +200,7 @@ public class Board {
         propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "board", bCopy, this));
         return temp;
     }
+
     public void fillBoard(Bag bag){
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
@@ -206,6 +209,7 @@ public class Board {
             }
         }
     }
+
     private void makeBoard(List<Tile> newBoard){
         for (int i = 0; i< size; i++){
             for (int j = 0; j < size; j++){
@@ -215,10 +219,10 @@ public class Board {
 
     }
 
-
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
+
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
