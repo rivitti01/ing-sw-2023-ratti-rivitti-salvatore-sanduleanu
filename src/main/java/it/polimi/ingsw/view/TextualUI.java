@@ -74,8 +74,11 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     }
 
     public void askCoordinates(){
-        Scanner scanner = new Scanner(System.in);
+        //inizializzo le border tiles e le scelte che fa il player sono in base alle tiles disponibili all inizio del turno
+        this.controller.setBorderTiles();
+        List<int[]> borderTiles = this.model.getBoard().getBorderTiles();
 
+        Scanner scanner = new Scanner(System.in);
         System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
         printPersonalGoalShelf(this.model.getCurrentPlayer().getPersonalGoalCard());
         System.out.println("\nQuesti sono gli Obiettivi Comuni:");
@@ -113,7 +116,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                                     System.out.print("y: ");
                                     coordinates[1] = scanner.nextInt();
                                     scanner.nextLine();
-                                    if (this.controller.checkCorrectCoordinates(coordinates)) {
+                                    if (this.controller.checkCorrectCoordinates(coordinates, borderTiles)) {
                                         this.controller.addChosenCoordinate(coordinates);
                                         this.controller.addChosenTile(coordinates);
                                         chosen = true;

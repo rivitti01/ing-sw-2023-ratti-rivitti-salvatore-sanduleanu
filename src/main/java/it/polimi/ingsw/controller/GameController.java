@@ -42,9 +42,13 @@ public class GameController  {
        else
            this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
     }
-    public boolean checkCorrectCoordinates(int[] inputCoordinates){
-        List<int[]> availableCoordinates = model.getAvailableTilesForCurrentPlayer();
-        for (int[] availableCoordinate : availableCoordinates) {
+    // inizializza le tiles ai bordi prima di ogni scelta e fino alla fine delle selezioni come filtro di partenza si usano le border
+    public void setBorderTiles(){
+         this.model.getBoard().setBorderTiles(model.getBoard().getAvailableTiles());
+    }
+
+    public boolean checkCorrectCoordinates(int[] inputCoordinates, List<int[]> borderTiles){
+        for (int[] availableCoordinate : borderTiles) {
             if (Arrays.equals(availableCoordinate, inputCoordinates))
                 return true;
         }

@@ -101,7 +101,7 @@ public class Game  {
         }catch (IndexOutOfBoundsException e2){
             chosenCoordinates2 = null;
         }
-        return this.board.filterAvailableTiles(chosenCoordinates1, chosenCoordinates2, this.board.getAvailableTiles());
+        return this.board.filterAvailableTiles(chosenCoordinates1, chosenCoordinates2, this.board.getBorderTiles());
     }
 
     public void setCurrentPlayer(Player currentPlayer) {

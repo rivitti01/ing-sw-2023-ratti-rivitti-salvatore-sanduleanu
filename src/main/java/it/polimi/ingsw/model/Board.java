@@ -96,6 +96,15 @@ public class Board {
         return true;
     }
 
+    // serve all inizio della scelta del giocatore un riferimento alle Tiles disponibili prima delle scelte del giocatore per far funzionare bene il filtro
+    public void setBorderTiles(List<int[]> borderTiles) {
+        this.borderTiles = borderTiles;
+    }
+
+    public List<int[]> getBorderTiles() {
+        return borderTiles;
+    }
+
     public List<int[]> getAvailableTiles(){
         List<int[]> availableTiles = new ArrayList<>();
         int[] pos;
