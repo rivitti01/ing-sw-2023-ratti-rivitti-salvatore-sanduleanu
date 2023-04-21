@@ -208,6 +208,24 @@ public class Player  {
     }   // finisce il turno
 
   */
+    public void reset(CommonGoalCard[] cards){
+        chosenTiles = new ArrayList<>();
+        chosenCoordinates = new ArrayList<>(2);
+        for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
+            if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
+                addPoints(cards[i]);
+                this.goalsCompleted[i] = true;
+            }
+        } // controlla per ogni common se e stato fatto l obiettivo
+    }
+
+    public List<Tile> getChosenTiles() {
+        return chosenTiles;
+    }
+
+    public void setChosenTiles(List<Tile> chosenTiles) {
+        this.chosenTiles = chosenTiles;
+    }
 
     private List<Tile> chooseOrder(List<Tile> chosenTiles){
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");

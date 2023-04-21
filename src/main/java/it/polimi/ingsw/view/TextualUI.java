@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -47,10 +48,11 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         while(true){
             System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
             askCoordinates();
-            askColumn();
+            int column = askColumn();
             askOrder();
+            controller.getCurrentPlayer().getShelf().dropTiles(controller.getCurrentPlayer().getChosenTiles(),column);
+            printShelf(controller.getCurrentPlayer().getShelf());
             this.controller.nextPlayer();
-
         }
 
 /*        while (true) {
@@ -67,9 +69,43 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     }
 
     private void askOrder() {
+        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
+        List<Tile> tmp = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        do{
+            for (int i = 0; i < controller.getCurrentPlayer().getChosenTiles().size(); i++) {
+                System.out.println("[" + i + "]" + " " + controller.getCurrentPlayer().getChosenTiles().get(i).getColor());
+            }
+            try {
+                int pos = Integer.parseInt(scanner.nextLine());
+                if (pos < 0 || pos >= controller.getCurrentPlayer().getChosenTiles().size())
+                    System.out.println("posizione non valida!\nRiprovare");
+                else tmp.add(controller.getCurrentPlayer().getChosenTiles().remove(pos));
+            }catch(NumberFormatException e){
+                System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
+            }
+        }while (controller.getCurrentPlayer().getChosenTiles().size()!=0);
+        controller.getCurrentPlayer().setChosenTiles(tmp);
     }
 
-    private void askColumn() {
+    private int askColumn() {
+        Scanner scanner = new Scanner(System.in);
+        int column;
+        System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
+        while (true) {
+            try {
+                column = Integer.parseInt(scanner.nextLine());
+                if (column < 0 || column >= SHELF_COLUMN)
+                    System.out.println("posizione invalida! riprovare\n");
+                else if (model.getCurrentPlayer().getShelf().checkColumnEmptiness(column) < model.getCurrentPlayer().getChosenCoordinates().size())
+                    System.out.println("troppe tessere! Riprovare\n");
+                else {
+                    return column;
+                }
+            }catch (NumberFormatException e){
+                System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
+            }
+        }
 
     }
 
@@ -85,6 +121,9 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + this.model.getCommonGoals()[i].getDescription() + "\n");
         }
+        for (int[] cord : model.getCurrentPlayer().getChosenCoordinates()){
+            System.out.println(model.getCurrentPlayer().getNickname()+" "+cord[0] + " " + cord[1]);
+        }
 
         for(int i=0; i<MAX_TILES_PER_TURN; i++) {
             if(!this.model.getAvailableTilesForCurrentPlayer().isEmpty()) {
@@ -97,8 +136,9 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
 
                     switch (s.toUpperCase()) {
                         case "Q":
-                            if (i == 0)
+                            if (i == 0){
                                 System.err.println("Selezionare almeno una tessera!");
+                            }
                             else
                                 return;
                             break;
@@ -248,6 +288,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 }
             }
         }
+        System.out.println();
     }
 
     void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){

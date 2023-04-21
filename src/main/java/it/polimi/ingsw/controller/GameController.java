@@ -34,13 +34,16 @@ public class GameController  {
     //crea il Model in base a numberPlayers e alla List di players
     public void initializeModel(){
         model.setGame(this.numberPlayers, this.players);
+        currentPlayer = model.getCurrentPlayer();
     }
     public void nextPlayer(){
+       currentPlayer.reset(model.getCommonGoals());
        int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
        if(indexCurrentPlayer == this.model.getPlayers().size()-1)
            this.model.setCurrentPlayer(this.model.getPlayers().get(0));
        else
            this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+       currentPlayer = model.getCurrentPlayer();
     }
     // inizializza le tiles ai bordi prima di ogni scelta e fino alla fine delle selezioni come filtro di partenza si usano le border
     public void setBorderTiles(){
