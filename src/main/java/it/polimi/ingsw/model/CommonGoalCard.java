@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.ingsw.model.Algorythms.*;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,11 +22,13 @@ public class CommonGoalCard {
     private CardStrategy cardStrategy;
     private Stack<Integer> scores;
     private String description;
+    private PropertyChangeSupport propertyChangeSupport;
 
     public CommonGoalCard(int numberParticipants, DeckCommon deckCommon){
         setCardStrategy(deckCommon);
         fillStack(numberParticipants);
         description = cardStrategy.toString();
+        propertyChangeSupport = new PropertyChangeSupport(this);
     }
     public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
         this.cardStrategy = cardStrategy;
@@ -74,7 +79,9 @@ public class CommonGoalCard {
     }
 
     public int getPoint(){
-        return scores.pop();
+        int point = scores.pop();
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "commonPoint", 0, point));
+        return point;
     }
 
     public void fillStack(int numberParticipants){
@@ -105,6 +112,14 @@ public class CommonGoalCard {
 
     public String getDescription(){
         return description;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
 }

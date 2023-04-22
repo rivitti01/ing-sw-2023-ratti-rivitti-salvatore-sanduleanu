@@ -65,36 +65,4 @@ public class GameController  {
     }
 
 
- /*   public void turnHandler(){  //sarebbe un pezzo di startGame() in model.Game
-        int index = 0;
-        this.currentPlayer = players.get(index);
-
-        while(!this.model.isLastTurn()){
-            // scelta delle Tiles di currentPlayer
-            // scelta della colonna
-            // scelta ordine delle tiles
-            // inserimento
-
-            if(this.model.getBoard().checkRefill())
-                this.model.getBoard().fillBoard(this.model.getBag());
-
-            if (this.currentPlayer.getShelf().isFull()){
-                this.currentPlayer.addPoints(END_GAME_POINT);
-                break;
-            }
-            index = (index + 1) % players.size();
-            this.currentPlayer = players.get(index);
-        }
-
-        while(!players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo e quello con la sedia
-            //currentPlayer.play(board, commonGoals);
-            // scelta delle Tiles di currentPlayer
-            // scelta della colonna
-            // scelta ordine delle tiles
-            // inserimento
-            currentPlayer = players.iterator().next();
-        }
-
-    } */
-
 }

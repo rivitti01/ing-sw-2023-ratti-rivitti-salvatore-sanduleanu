@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
@@ -18,7 +20,6 @@ public class Player  {
     private List<Tile> chosenTiles;
     private PersonalGoalCard personalGoalCard;
     private int points;
-
     PropertyChangeSupport propertyChangeSupport;
 
     public Player(String nickname){
@@ -213,8 +214,10 @@ public class Player  {
         chosenCoordinates = new ArrayList<>(2);
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
             if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
-                addPoints(cards[i]);
+                int point = cards[i].getPoint();
+                addPoints(point);
                 this.goalsCompleted[i] = true;
+                propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerTakesCommonPoint", null, this.getNickname()));
             }
         } // controlla per ogni common se e stato fatto l obiettivo
     }
@@ -245,6 +248,14 @@ public class Player  {
             }
         }while (chosenTiles.size()!=0);
         return tmp;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
 

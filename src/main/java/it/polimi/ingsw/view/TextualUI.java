@@ -42,11 +42,17 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         }
         //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
         this.controller.initializeModel();
+        this.model.getCurrentPlayer().addPropertyChangeListener(this);
+        for(int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            this.model.getCommonGoals()[i].addPropertyChangeListener(this);
+        }
+
 
         System.out.println("inizio gioco...");
 
         while(true){
             System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
+            printShelf(controller.getCurrentPlayer().getShelf());
             askCoordinates();
             int column = askColumn();
             askOrder();
@@ -54,18 +60,6 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
             printShelf(controller.getCurrentPlayer().getShelf());
             this.controller.nextPlayer();
         }
-
-/*        while (true) {
-            System.out.println("Turno di: " + this.controller.getCurrentPlayer().getNickname());
-            //stampare la board
-            //stampare le coordinate disponibili
-            System.out.println("Questa e la tua carta obiettivo personale:");
-            System.out.println("scegli delle coordinate valide");
-            //controller deve chiamare getTile in Player con le coordinate come parametro al posto di avere gli Scanner in Player
-
-        }
-
- */
     }
 
     private void askOrder() {
@@ -289,6 +283,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
             }
         }
         System.out.println();
+        System.out.println();
     }
 
     void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
@@ -319,9 +314,6 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println("");
     }
 
-
-
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("board".equals(evt.getPropertyName())) {
@@ -332,69 +324,12 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
             printShelf(s);
         }else if ("seat".equals(evt.getPropertyName())){
             System.out.println("The first player is: " + evt.getNewValue());
+        } else if ("commonPoint".equals(evt.getPropertyName())) {
+            System.out.print("******** "+ evt.getNewValue() + " punti ");
+        } else if ("playerTakesCommonPoint".equals(evt.getPropertyName())) {
+            System.out.println("presi da " + evt.getNewValue() + " ********");
         }
     }
-
-
-
-
-
-
-
-    /*public Choice askPlayer() {
-        Scanner s = new Scanner(System.in);
-        System.out.println("Make your choice: ");
-        System.out.println(
-                "Signs: " +
-                        Arrays.stream(Choice.values())
-                                .map(Choice::name)
-                                .collect(
-                                        Collectors.joining(",", "[", "]")));
-        while (true) {
-            String input = s.next();
-            try {
-                return Choice.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.err.println("I don't know this sign: " + input);
-                System.err.println("Try again...");
-            }
-        }
-    }*/
-
- /*   public void update(TurnView model ) {
-        /*switch (arg) {
-            case CPU_CHOICE -> showChoices(model);
-            case OUTCOME -> {
-                showOutcome(model);
-                this.setState(State.WAITING_FOR_PLAYER);
-            }
-            default -> System.err.println("Ignoring event from " + model + ": " + arg);
-        }
-    }*/
-
-    /*private void showOutcome(TurnView model) {
-        Outcome o = model.getOutcome();
-        if (o == null) {
-            return;
-        }
-        // Output Outcome
-        switch (o) {
-            case WIN -> System.out.println("You win! :)");
-            case DRAW -> System.out.println("Draw... -.-");
-            case LOSE -> System.out.println("You lose! :(");
-        }
-    }*/
-
-    /*private void showChoices(TurnView model) {
-        Choice cpuChoice = model.getCpuChoice();
-        if (cpuChoice == null) {
-            return;
-        }
-        // Show CPU's choice
-        System.out.println("CPU chose: " + cpuChoice);
-    }
-
-    */
 
 
 }

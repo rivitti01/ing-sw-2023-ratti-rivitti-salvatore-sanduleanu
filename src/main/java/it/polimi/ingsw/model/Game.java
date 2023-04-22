@@ -109,36 +109,6 @@ public class Game  {
     }
 
 
- /*   public void startGame(){
-        int index = 0;
-        currentPlayer = players.get(index);
-
-        while(!this.lastTurn){  //turni finché nessuno ha riempito una shelf
-            System.out.println("Gioca: " + currentPlayer.nickname);
-            // scelta delle Tiles di ogni player da passare a getTile
-            // scelta della colonna
-            // scelta ordine delle tiles
-            currentPlayer.play(this.board, this.commonGoals);
-
-            if(this.board.checkRefill())
-                this.board.fillBoard(this.bag);
-
-            if (currentPlayer.getShelf().isFull()){
-                    currentPlayer.addPoints(END_GAME_POINT);
-                    lastTurn = true;
-                }
-            index = ( index + 1 ) % players.size();
-            currentPlayer = players.get(index);
-        }
-
-        while(!players.iterator().next().getSeat()){  // ultimi turni finche il giocatore dopo e quello con la sedia
-            currentPlayer.play(board, commonGoals);
-            currentPlayer = players.iterator().next();
-        }
-    }
-
-  */
-
     public void endGame(){
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
