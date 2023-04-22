@@ -52,12 +52,11 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
 
         while(true){
             System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
-            printShelf(controller.getCurrentPlayer().getShelf());
+            printShelf(model.getCurrentPlayer().getShelf());
             askCoordinates();
             int column = askColumn();
             askOrder();
-            controller.getCurrentPlayer().getShelf().dropTiles(controller.getCurrentPlayer().getChosenTiles(),column);
-            printShelf(controller.getCurrentPlayer().getShelf());
+            controller.dropTiles(controller.getCurrentPlayer().getChosenTiles(),column);
             this.controller.nextPlayer();
         }
     }
