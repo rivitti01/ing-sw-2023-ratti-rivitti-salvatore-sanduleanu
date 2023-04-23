@@ -71,7 +71,7 @@ public class Shelf {
     }
     public int getMaxColumnSpace(){
         int maxSpace = 0;
-        for (int i=0; i<SHELF_ROWS; i++){
+        for (int i=0; i<SHELF_COLUMN; i++){
             if(checkColumnEmptiness(i) > maxSpace)
                 maxSpace = checkColumnEmptiness(i);
         }

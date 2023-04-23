@@ -131,8 +131,8 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         for (int[] cord : model.getCurrentPlayer().getChosenCoordinates()){
             System.out.println(model.getCurrentPlayer().getNickname()+" "+cord[0] + " " + cord[1]);
         }
-
-        for(int i=0; i<controller.getMaxColumnSpace(); i++) {
+        int maxEmptySpace = controller.getMaxColumnSpace();
+        for(int i=0; i<maxEmptySpace; i++) {
             if(!this.model.getAvailableTilesForCurrentPlayer().isEmpty()) {
                 boolean chosen = false;
                 while (!chosen) {
