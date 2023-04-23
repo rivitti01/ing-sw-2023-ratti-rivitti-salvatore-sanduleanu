@@ -77,6 +77,9 @@ public class GameController  {
     public void addChosenTile(int[] coordinates){
         this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(coordinates[0], coordinates[1]));
     }
+    public void dropTiles(List<Tile> choosenTiles, int column){
+        currentPlayer.getShelf().dropTiles(choosenTiles,column);
+    }
 
     public String calculateWinner(){
         this.model.endGame();
