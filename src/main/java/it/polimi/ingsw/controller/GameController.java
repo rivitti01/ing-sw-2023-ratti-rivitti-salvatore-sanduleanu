@@ -3,14 +3,16 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.model.*;
 
 
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static it.polimi.ingsw.Costants.END_GAME_POINT;
 
 public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
-    // due attributi che derivano dall'input dell'utente
+    // due attributi che derivano da input dell'utente
     int numberPlayers;
     List<Player> players;
     //dovremmmo spostare la logica di startGame() di GameModel nel Controller
@@ -38,16 +40,28 @@ public class GameController  {
     }
     public void nextPlayer(){
        currentPlayer.reset(model.getCommonGoals());
+        // controlla se ha finito la shelf
+        if(this.model.getCurrentPlayer().getShelf().isFull()){
+            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);
+            this.model.setLastTurn(true);
+        }
        int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
        if(indexCurrentPlayer == this.model.getPlayers().size()-1)
            this.model.setCurrentPlayer(this.model.getPlayers().get(0));
        else
            this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
        currentPlayer = model.getCurrentPlayer();
+       //controlla se c'è bisogno di riempire la board per il player dopo
+        if(model.getBoard().checkRefill())
+            model.getBoard().fillBoard(model.getBag());
     }
     // inizializza le tiles ai bordi prima di ogni scelta e fino alla fine delle selezioni come filtro di partenza si usano le border
     public void setBorderTiles(){
          this.model.getBoard().setBorderTiles(model.getBoard().getAvailableTiles());
+    }
+    // restituisce la colonna con massimo spazio (utile quando si chiedono le coordinate nela TUI per esempio nel caso di shelf con solo l ultima riga vuota in modo da far scegliere solo una tile)
+    public int getMaxColumnSpace(){
+        return this.model.getCurrentPlayer().getShelf().getMaxColumnSpace();
     }
 
     public boolean checkCorrectCoordinates(int[] inputCoordinates, List<int[]> borderTiles){
@@ -62,6 +76,12 @@ public class GameController  {
     }
     public void addChosenTile(int[] coordinates){
         this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(coordinates[0], coordinates[1]));
+    }
+
+    public String calculateWinner(){
+        this.model.endGame();
+        Player winner = this.model.findWinner();
+        return winner.getNickname();
     }
 
 

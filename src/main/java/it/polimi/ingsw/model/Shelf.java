@@ -69,6 +69,14 @@ public class Shelf {
     public Tile[][] getShelf() {
         return this.shelf;
     }
+    public int getMaxColumnSpace(){
+        int maxSpace = 0;
+        for (int i=0; i<SHELF_ROWS; i++){
+            if(checkColumnEmptiness(i) > maxSpace)
+                maxSpace = checkColumnEmptiness(i);
+        }
+        return maxSpace;
+    }
     public Shelf copyShelf(){
         Shelf newShelf = new Shelf();
         for (int i = 0; i < SHELF_ROWS; i++){

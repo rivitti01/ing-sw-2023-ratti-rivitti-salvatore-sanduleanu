@@ -68,6 +68,10 @@ public class Game  {
         return this.lastTurn;
     }
 
+    public void setLastTurn(boolean lastTurn) {
+        this.lastTurn = lastTurn;
+    }
+
     public List<Player> getPlayers() {
         return players;
     }
@@ -113,10 +117,12 @@ public class Game  {
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
+            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerName", null, p.getNickname()));
+            propertyChangeSupport.firePropertyChange((new PropertyChangeEvent(this, "playerPoints", null, p.getPoints())));
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
-            //punti delle commonGoals gia eventualmente aggiunti ai punteggi in player.play()
-            //punto della fine della partita e stato gia assegnato in game.startGame()
+            //punti delle commonGoals gia eventualmente aggiunti
+            //punto della fine della partita gia assegnato
         }
 
     }

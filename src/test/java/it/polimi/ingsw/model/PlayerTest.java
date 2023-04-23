@@ -82,22 +82,6 @@ class PlayerTest {
 
     }
 
-    @Test
-    void getTile(){
-        //serve gestire lo scanner se no entra in wait
-        chosenCoords = new ArrayList<>();
-        this.p.getTile(this.board, chosenCoords);
-    }
 
-    @Test
-    void play() {
-        this.p.play(this.board, this.commonGoalCards);
-    }
-
-    @Test
-    void exeptionTester(){
-
-
-    }
 
 }
