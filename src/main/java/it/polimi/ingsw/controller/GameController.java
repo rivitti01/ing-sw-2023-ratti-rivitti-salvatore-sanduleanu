@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static it.polimi.ingsw.Costants.END_GAME_POINT;
+import static it.polimi.ingsw.Costants.MAX_TILES_PER_TURN;
 
 public class GameController  {
     //attributo a Model per poterlo modificare
@@ -61,7 +62,8 @@ public class GameController  {
     }
     // restituisce la colonna con massimo spazio (utile quando si chiedono le coordinate nela TUI per esempio nel caso di shelf con solo l ultima riga vuota in modo da far scegliere solo una tile)
     public int getMaxColumnSpace(){
-        return this.model.getCurrentPlayer().getShelf().getMaxColumnSpace();
+        int flag = this.model.getCurrentPlayer().getShelf().getMaxColumnSpace();
+        return Math.min(flag, MAX_TILES_PER_TURN);
     }
 
     public boolean checkCorrectCoordinates(int[] inputCoordinates, List<int[]> borderTiles){
