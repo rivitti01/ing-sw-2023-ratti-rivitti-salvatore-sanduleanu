@@ -28,10 +28,8 @@ public class Shelf {
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
         sPcs = new PropertyChangeSupport(this.shelf);
     }
-    public Shelf(Shelf shelf){
-        this.shelf = shelf.shelf;
-    }
     public Tile getTile(int row, int col){
+
         return this.shelf[row][col];
     }
     public void putTile(int row,int column, Tile tile){
@@ -60,6 +58,7 @@ public class Shelf {
             column[i] = this.shelf[i][index];
         }
         return column;
+
     }
     public Tile[] getRow(int index){
         Tile[] row;

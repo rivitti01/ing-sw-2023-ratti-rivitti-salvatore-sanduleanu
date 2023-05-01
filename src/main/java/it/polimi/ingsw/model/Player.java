@@ -11,7 +11,7 @@ import java.util.List;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Player  {
+public class Player  implements PropertyChangeListener{
     final String nickname;
     private Shelf shelf;
     private boolean seat;
@@ -20,24 +20,16 @@ public class Player  {
     private List<Tile> chosenTiles;
     private PersonalGoalCard personalGoalCard;
     private int points;
-    PropertyChangeSupport propertyChangeSupport;
+    PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
+        shelf.addPropertyChangeListener(this);
         chosenCoordinates = new ArrayList<>();
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
-        propertyChangeSupport = new PropertyChangeSupport(this);
-
-    }
-    public Player(String nickname,PersonalGoalCard chosenCard){
-        this.nickname = nickname;
-        shelf = new Shelf();
-        this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
-        points = 0;
-        setPrivateCard(chosenCard);
     }
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
@@ -132,7 +124,6 @@ public class Player  {
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
-        shelf.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
@@ -140,5 +131,8 @@ public class Player  {
     }
 
 
-
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(evt.getSource(), evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
+    }
 }

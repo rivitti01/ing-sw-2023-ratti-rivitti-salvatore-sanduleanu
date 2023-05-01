@@ -18,14 +18,14 @@ import static it.polimi.ingsw.view.Colors.*;
 
 public class TextualUI  implements  Runnable, PropertyChangeListener {
     private GameController controller;
-    private Game model;
+    private GameView modelView;
 
 
 
-    public TextualUI(GameController gc, Game model){
+    public TextualUI(GameController gc, GameView modelView){
         this.controller = gc;
-        this.model = model;
-        this.model.addPropertyChangeListener(this);
+        this.modelView = modelView;
+        this.modelView.addPropertyChangeListener(this);
     }
 
     @Override
@@ -38,61 +38,77 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         int n = askNumber();
         controller.setPlayerNumber(n);
         for (int i = 0; i < n; i++) {
-            controller.setPlayerNickname(askNickName(i));
+            askNickName(i);
         }
+        System.out.println("The game has started!");
         //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
         this.controller.initializeModel();
-        this.model.getCurrentPlayer().addPropertyChangeListener(this);
+        /*this.modelView.getCurrentPlayer().addPropertyChangeListener(this);
         for(int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            this.model.getCommonGoals()[i].addPropertyChangeListener(this);
+            this.modelView.getCommonGoals()[i].addPropertyChangeListener(this);
         }
-
-
-        System.out.println("inizio gioco...");
-
-        while(!model.isLastTurn()){
-            System.out.println("È il turno di " + this.model.getCurrentPlayer().getNickname());
-            printShelf(model.getCurrentPlayer().getShelf());
-            askCoordinates();
+        while(!modelView.isLastTurn()){
+            System.out.println("È il turno di " + this.modelView.getCurrentPlayerNickname() + ".");
+            printShelf(modelView.getCurrentPlayerShelf());
+            int tilesNum = askCoordinates();
             int column = askColumn();
-            askOrder();
-            controller.dropTiles(controller.getCurrentPlayer().getChosenTiles(),column);
-            this.controller.nextPlayer();
+            if (tilesNum > 1 ) askOrder();
+            controller.dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
         }
-        while(!this.controller.getCurrentPlayer().getSeat()){
-            System.out.println("È l'ULTIMO turno di " + this.model.getCurrentPlayer().getNickname());
-            printShelf(controller.getCurrentPlayer().getShelf());
-            askCoordinates();
+        while(!this.modelView.getCurrentPlayerSeat()){
+            System.out.println("È L'ULTIMO TURNO PER: " + this.modelView.getCurrentPlayerNickname());
+            printShelf(modelView.getCurrentPlayerShelf());
+            int tilesNum = askCoordinates();
             int column = askColumn();
-            askOrder();
-            controller.getCurrentPlayer().getShelf().dropTiles(controller.getCurrentPlayer().getChosenTiles(),column);
-            printShelf(controller.getCurrentPlayer().getShelf());
-            this.controller.nextPlayer();
+            if (tilesNum > 1) askOrder();
+            modelView.getCurrentPlayerShelf().dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
         }
         System.out.println("LA PARTITA È FINITA");
-        System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");
-        String winner = controller.calculateWinner();
-        System.out.println("Ha vinto " + winner);
+        System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");*/
     }
 
+    public void newTurn(GameView modelview){
+        System.out.println("È il turno di " + modelview.getCurrentPlayerNickname() + ".");
+        System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
+        printPersonalGoalShelf(modelview.getCurrentPlayerPersonalCard());
+        System.out.println("\nQuesti sono gli Obiettivi Comuni:");
+        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            System.out.println(i+1 + ") " + modelview.getCommonGoals()[i].getDescription() + "\n");
+        }
+        printShelf(modelview.getCurrentPlayerShelf());
+        printBoard(modelview.getBoard());
+        int tilesNum = askCoordinates();
+        int column = askColumn();
+        if (tilesNum > 1 ) askOrder();
+        controller.dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
+    }
+
+    public void lastTurn(GameView modelview){
+        System.out.println("È L'ULTIMO TURNO PER: " + modelview.getCurrentPlayerNickname());
+        printShelf(modelView.getCurrentPlayerShelf());
+        int tilesNum = askCoordinates();
+        int column = askColumn();
+        if (tilesNum > 1) askOrder();
+        modelview.getCurrentPlayerShelf().dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
+    }
     private void askOrder() {
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
         List<Tile> tmp = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         do{
-            for (int i = 0; i < controller.getCurrentPlayer().getChosenTiles().size(); i++) {
-                System.out.println("[" + i + "]" + " " + controller.getCurrentPlayer().getChosenTiles().get(i).getColor());
+            for (int i = 0; i < modelView.getCurrentPlayerChosenTiles().size(); i++) {
+                System.out.println("[" + i + "]" + " " + modelView.getCurrentPlayerChosenTiles().get(i).getColor());
             }
             try {
                 int pos = Integer.parseInt(scanner.nextLine());
-                if (pos < 0 || pos >= controller.getCurrentPlayer().getChosenTiles().size())
+                if (pos < 0 || pos >= modelView.getCurrentPlayerChosenTiles().size())
                     System.out.println("posizione non valida!\nRiprovare");
-                else tmp.add(controller.getCurrentPlayer().getChosenTiles().remove(pos));
+                else tmp.add(modelView.getCurrentPlayerChosenTiles().remove(pos));
             }catch(NumberFormatException e){
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
-        }while (controller.getCurrentPlayer().getChosenTiles().size()!=0);
-        controller.getCurrentPlayer().setChosenTiles(tmp);
+        }while (modelView.getCurrentPlayerChosenTiles().size()!=0);
+        controller.setChosenTiles(tmp);
     }
 
     private int askColumn() {
@@ -104,7 +120,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 column = Integer.parseInt(scanner.nextLine());
                 if (column < 0 || column >= SHELF_COLUMN)
                     System.out.println("posizione invalida! riprovare\n");
-                else if (model.getCurrentPlayer().getShelf().checkColumnEmptiness(column) < model.getCurrentPlayer().getChosenCoordinates().size())
+                else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
                     System.out.println("troppe tessere! Riprovare\n");
                 else {
                     return column;
@@ -116,27 +132,24 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
 
     }
 
-    public void askCoordinates(){
+    public int askCoordinates(){
+        //ritorna il numero di tiles scelte. utile cosi che viene scelta una sola tiles non avviene la chiamata a askOrder
         //inizializzo le border tiles e le scelte che fa il player sono in base alle tiles disponibili all inizio del turno
+        int cont = 0;
+
         this.controller.setBorderTiles();
-        List<int[]> borderTiles = this.model.getBoard().getBorderTiles();
+        List<int[]> borderTiles = this.modelView.getBoard().getBorderTiles();
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
-        printPersonalGoalShelf(this.model.getCurrentPlayer().getPersonalGoalCard());
-        System.out.println("\nQuesti sono gli Obiettivi Comuni:");
-        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            System.out.println(i+1 + ") " + this.model.getCommonGoals()[i].getDescription() + "\n");
+
+        for (int[] cord : modelView.getCurrentPlayerChosenCoordinates()){
+            System.out.println(modelView.getCurrentPlayerNickname()+" "+cord[0] + " " + cord[1]);
         }
-        for (int[] cord : model.getCurrentPlayer().getChosenCoordinates()){
-            System.out.println(model.getCurrentPlayer().getNickname()+" "+cord[0] + " " + cord[1]);
-        }
-        int maxEmptySpace = controller.getMaxColumnSpace();
+        int maxEmptySpace = modelView.getMaxColumnSpace();
         for(int i=0; i<maxEmptySpace; i++) {
-            if(!this.model.getAvailableTilesForCurrentPlayer().isEmpty()) {
+            if(!this.modelView.getAvailableTilesForCurrentPlayer().isEmpty()) {
                 boolean chosen = false;
                 while (!chosen) {
-                    printBoard(this.model.getBoard());
                     System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
 
                     String s = scanner.nextLine();
@@ -146,11 +159,11 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                             if (i == 0) {
                                 System.err.println("Selezionare almeno una tessera!");
                             } else
-                                return;
+                                return i;
                         }
                         case "S" -> {
                             System.out.println("seleziona tessera tra le seguenti disponibili");
-                            printAvailableTiles(this.model.getAvailableTilesForCurrentPlayer());
+                            printAvailableTiles(this.modelView.getAvailableTilesForCurrentPlayer());
                             //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
                             while (!chosen) {
                                 try {
@@ -179,12 +192,13 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                     }
                 }
             }else{
-                System.err.println("Non ci sono piu tessere disponibili");
-                return;
+                System.out.println("Non ci sono più tessere disponibili\n");
+                return i;
             }
-
+            cont = i;
         }
         System.err.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
+        return cont;
     }
     public int askNumber() {
         Scanner s = new Scanner(System.in);
@@ -209,8 +223,9 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         }
     }
 
-    private String askNickName(int index) {
-        while (true) {
+    private void askNickName(int index) {
+        boolean validName = false;
+        while (!validName) {
             Scanner s = new Scanner (System.in);
             System.out.println("Player " + index + ", choose your nickname for the game:");
             String nickName = s.next();
@@ -218,7 +233,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 System.err.println("Sorry there was something wrong with your nickname :(");
                 System.err.println("Please try again:");
             } else {
-                return nickName;
+                validName = controller.setPlayerNickname(nickName);
             }
         }
     }
@@ -267,6 +282,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     }
 
     void printShelf(Shelf s) {
+        System.out.println("Ecco la tua attuale shelf...");
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
@@ -324,25 +340,40 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("board".equals(evt.getPropertyName())) {
-            Board b = (Board) evt.getSource();
-            printBoard(b);
-        } else if ("shelf".equals(evt.getPropertyName())) {
-            Shelf s = (Shelf) evt.getSource();
-            printShelf(s);
-        }else if ("seat".equals(evt.getPropertyName())){
-            System.out.println("The first player is: " + evt.getNewValue());
-        } else if ("commonPoint".equals(evt.getPropertyName())) {
-            System.out.print("************ "+ evt.getNewValue() + " punti ");
-        } else if ("playerTakesCommonPoint".equals(evt.getPropertyName())) {
-            System.out.println("presi da " + evt.getNewValue() + " ************");
-        } else if ("playerTakesEndPoint".equals(evt.getPropertyName())) {
-            System.out.println("************ " + evt.getNewValue() + "prende il punto Fine-Partita [1] ************");
-        } else if ("playerName".equals(evt.getPropertyName())) {
-            System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
-        } else if ("playerPoints".equals(evt.getPropertyName())) {
-            System.out.println(evt.getNewValue() + "\n------------------");
+        if (evt.getSource() instanceof GameView){
+            if ("board".equals(evt.getPropertyName())) {
+                printBoard((Board) evt.getNewValue());
+            } else if ("shelf".equals(evt.getPropertyName())) {
+                printShelf((Shelf)evt.getNewValue());
+            }else if ("seat".equals(evt.getPropertyName())){
+                Player p = (Player)evt.getNewValue();
+                System.out.println("The first player is: " + p.getNickname());
+            } else if ("commonPoint".equals(evt.getPropertyName())) {
+                System.out.print("************ "+ evt.getNewValue() + " punti ");
+            } else if ("playerTakesCommonPoint".equals(evt.getPropertyName())) {
+                System.out.println("presi da " + evt.getNewValue() + " ************");
+            } else if ("playerTakesEndPoint".equals(evt.getPropertyName())) {
+                System.out.println("************ " + evt.getNewValue() + "prende il punto Fine-Partita [1] ************");
+            } else if ("playerName".equals(evt.getPropertyName())) {
+                System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
+            } else if ("playerPoints".equals(evt.getPropertyName())) {
+                System.out.println(evt.getNewValue() + "\n------------------");
+            } else if ("nextPlayer".equals(evt.getPropertyName())) {
+                newTurn((GameView) evt.getSource());
+            } else if ("Last Turn".equals(evt.getPropertyName())){
+                lastTurn((GameView) evt.getSource());
+            } else if ("winner".equals(evt.getPropertyName())){
+                System.out.println("THE WINNER IS: " + evt.getNewValue());
+            } else if ("end".equals(evt.getPropertyName())){
+                System.out.println("LA PARTITA È FINITA");
+                System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");
+            } else if ("start".equals(evt.getPropertyName())){
+                newTurn((GameView) evt.getSource());
+            }
+        } else {
+            System.err.println("Ignoring event from ");
         }
+
     }
 
 

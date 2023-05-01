@@ -40,7 +40,7 @@ public class App
         GameController controller = new GameController(model);
 
         GameView modelView = new GameView(model);
-        TextualUI view = new TextualUI(controller, model);
+        TextualUI view = new TextualUI(controller, modelView);
 
 
 
@@ -52,7 +52,7 @@ public class App
     view.run();
 
 
-        Board b = new Board(4);
+        /*Board b = new Board(4);
         Bag bag = new Bag();
         b.fillBoard(bag);
         b.popTile(0,3);
@@ -61,7 +61,7 @@ public class App
         Shelf s = new Shelf();
         List<Tile> tl = new ArrayList<>();
         tl.add(new Tile(Color.GREEN));
-        s.dropTiles(tl, 1);
+        s.dropTiles(tl, 1);*/
 
 
     }

@@ -13,7 +13,7 @@ import java.util.Random;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Game  {
+public class Game implements PropertyChangeListener {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
@@ -22,7 +22,8 @@ public class Game  {
     private Player currentPlayer;
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
-
+    private boolean start = false;
+    private boolean end=false;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 
@@ -42,6 +43,10 @@ public class Game  {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
+        board.addPropertyChangeListener(this);
+        for (Player p: this.players) {
+            p.addPropertyChangeListener(this);
+        }
     }
 
 
@@ -60,7 +65,7 @@ public class Game  {
         }
         players = tempList;
         players.get(0).setSeat(true);
-        propertyChangeSupport.firePropertyChange("seat", null, this.players.get(0).getNickname());
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "seat", null, this.players.get(0)));
 
     }
 
@@ -71,6 +76,7 @@ public class Game  {
     public void setLastTurn(boolean lastTurn) {
         this.lastTurn = lastTurn;
     }
+
 
     public List<Player> getPlayers() {
         return players;
@@ -109,11 +115,29 @@ public class Game  {
     }
 
     public void setCurrentPlayer(Player currentPlayer) {
+        Player oldPlayer = this.currentPlayer;
         this.currentPlayer = currentPlayer;
+        if (!lastTurn) {
+            propertyChangeSupport.firePropertyChange("nextPlayer", oldPlayer, this.currentPlayer);
+        } else {
+            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "Last Turn", oldPlayer, this.currentPlayer));
+        }
     }
 
+    public void setStart(boolean s){
+        boolean old = this.start;
+        this.start = s;
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "start", old, this.start));
+    }
+
+    public void setEnd(boolean e){
+        boolean old = this.end;
+        this.end = e;
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "end", old, this.end));
+    }
 
     public void endGame(){
+        setEnd(true);
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
@@ -127,13 +151,13 @@ public class Game  {
 
     }
 
-    public Player findWinner(){
+    public void findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
             if(players.get(i).getPoints() >= players.get(i-1).getPoints())
                 tempWinner = players.get(i);
         }
-         return tempWinner;
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "winner", null, tempWinner));
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -144,4 +168,8 @@ public class Game  {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
+    }
 }
