@@ -341,37 +341,23 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() instanceof GameView){
-            if ("board".equals(evt.getPropertyName())) {
-                printBoard((Board) evt.getNewValue());
-            } else if ("shelf".equals(evt.getPropertyName())) {
-                printShelf((Shelf)evt.getNewValue());
-            }else if ("seat".equals(evt.getPropertyName())){
-                Player p = (Player)evt.getNewValue();
-                System.out.println("The first player is: " + p.getNickname());
-            } else if ("commonPoint".equals(evt.getPropertyName())) {
-                System.out.print("************ "+ evt.getNewValue() + " punti ");
-            } else if ("playerTakesCommonPoint".equals(evt.getPropertyName())) {
-                System.out.println("presi da " + evt.getNewValue() + " ************");
-            } else if ("playerTakesEndPoint".equals(evt.getPropertyName())) {
-                System.out.println("************ " + evt.getNewValue() + "prende il punto Fine-Partita [1] ************");
-            } else if ("playerName".equals(evt.getPropertyName())) {
-                System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
-            } else if ("playerPoints".equals(evt.getPropertyName())) {
-                System.out.println(evt.getNewValue() + "\n------------------");
-            } else if ("nextPlayer".equals(evt.getPropertyName())) {
-                newTurn((GameView) evt.getSource());
-            } else if ("Last Turn".equals(evt.getPropertyName())){
-                lastTurn((GameView) evt.getSource());
-            } else if ("winner".equals(evt.getPropertyName())){
-                System.out.println("THE WINNER IS: " + evt.getNewValue());
-            } else if ("end".equals(evt.getPropertyName())){
-                System.out.println("LA PARTITA È FINITA");
-                System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");
-            } else if ("start".equals(evt.getPropertyName())){
-                newTurn((GameView) evt.getSource());
+            switch (evt.getPropertyName()){
+                case "board" -> printBoard((Board) evt.getNewValue());
+                case "shelf" -> printShelf((Shelf)evt.getNewValue());
+                case "seat"  ->System.out.println("The first player is: " + ((Player) evt.getNewValue()).getNickname());
+                case "commonPoint" -> System.out.print("************ "+ evt.getNewValue() + " punti ");
+                case "playerTakesCommonPoint" -> System.out.println("presi da " + evt.getNewValue() + " ************");
+                case "playerTakesEndPoint" -> System.out.println("************ " + evt.getNewValue() + " prende il punto Fine-Partita [1] ************");
+                case "playerName" -> System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
+                case "playerPoints" -> System.out.println(evt.getNewValue() + "\n------------------");
+                case "nextPlayer", "start" -> newTurn((GameView) evt.getSource());
+                case "Last Turn" -> lastTurn((GameView) evt.getSource());
+                case "winner" -> System.out.println("THE WINNER IS: " + evt.getNewValue());
+                case "end" -> System.out.println("LA PARTITA È FINITA\n------------------\n\nPUNTEGGI FINALI\n\n------------------");
+                default -> System.err.println("Ignoring event from " + evt.getPropertyName());
             }
         } else {
-            System.err.println("Ignoring event from ");
+            System.err.println("Ignoring event from "+ evt.getSource().toString());
         }
 
     }
