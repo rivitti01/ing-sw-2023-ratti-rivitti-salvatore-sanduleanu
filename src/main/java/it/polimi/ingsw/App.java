@@ -50,6 +50,7 @@ public class App
         //Damiani in più non aveva in View il riferimento al controller ma era Observable(osservato) dal Controller e Observer del Model
 
     view.run();
+    //ciao questa è una prova di commit
 
 
         /*Board b = new Board(4);
