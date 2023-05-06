@@ -2,7 +2,9 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard3 implements CardStrategy {
+import java.io.Serializable;
+
+public class CommonGoalCard3 implements CardStrategy, Serializable {
     private Shelf tmpShelf;
     public boolean algorythm(Shelf myShelf) {
         if (myShelf == null) {

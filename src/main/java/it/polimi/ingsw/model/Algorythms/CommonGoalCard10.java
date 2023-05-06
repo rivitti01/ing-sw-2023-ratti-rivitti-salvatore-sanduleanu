@@ -4,12 +4,13 @@ import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static it.polimi.ingsw.Costants.SHELF_COLUMN;
 import static it.polimi.ingsw.Costants.SHELF_ROWS;
 
-public class CommonGoalCard10 implements CardStrategy {
+public class CommonGoalCard10 implements CardStrategy, Serializable {
 
     private boolean[] colorsOccurrence; //array in cui memorizzo se l'i-esimo colore è presente oppure no
 

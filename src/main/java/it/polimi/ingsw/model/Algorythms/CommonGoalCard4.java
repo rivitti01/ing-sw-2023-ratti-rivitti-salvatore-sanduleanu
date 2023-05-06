@@ -3,11 +3,13 @@ package it.polimi.ingsw.model.Algorythms;
 import it.polimi.ingsw.model.Shelf;
 
 
+import java.io.Serializable;
+
 import static it.polimi.ingsw.Costants.SHELF_COLUMN;
 import static it.polimi.ingsw.Costants.SHELF_ROWS;
 
 
-public class CommonGoalCard4 implements CardStrategy {
+public class CommonGoalCard4 implements CardStrategy, Serializable {
 
     public boolean algorythm(Shelf myShelf) {
         Shelf copiedShelf = myShelf.copyShelf();

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
-public enum Color {
+import java.io.Serializable;
+
+public enum Color implements Serializable {
     PINK, GREEN, BLUE, YELLOW, WHITE, CYAN, TRANSPARENT
 }

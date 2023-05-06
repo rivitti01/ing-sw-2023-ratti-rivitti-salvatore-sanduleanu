@@ -1,12 +1,14 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.distributed.Message;
 import it.polimi.ingsw.model.*;
 
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -18,55 +20,50 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 
-public class TextualUI  implements  Runnable, PropertyChangeListener {
+public class TUISocket  implements  Runnable, PropertyChangeListener {
     private GameController controller;
     private GameView modelView;
+    private String nickname;
+    private Socket socket;
+    List<int[]> choosenCoordinates;
+    List<Tile> tiles;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 
 
-    public TextualUI(GameController gc, GameView modelView){
+    public TUISocket(GameController gc, GameView modelView, String nickname, Socket socket){
         this.controller = gc;
         this.modelView = modelView;
+        this.nickname = nickname;
+        this.socket = socket;
+        //this.modelView.addPropertyChangeListener(this);
     }
 
     @Override
     public void run() {
-        //noinspection InfiniteLoopStatement
-
-        System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
-        /* Player chooses */
-        //Damiani nel suo codice non ha dipendenze dal controller in textualUI (con Observable<Choice> indica che Controller è un suo listener il quale cambia in base alle notifiche)
-        int n = askNumber();
-        controller.setPlayerNumber(n);
-        for (int i = 0; i < n; i++) {
-            askNickName(i);
+        if (modelView.getCurrentPlayerNickname().equals(nickname)){
+            newTurnNotMine(modelView);
+        }else {
+            try {
+                newTurn(modelView);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        System.out.println("The game has started!");
-        //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
-        this.controller.initializeModel();
-        /*this.modelView.getCurrentPlayer().addPropertyChangeListener(this);
-        for(int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            this.modelView.getCommonGoals()[i].addPropertyChangeListener(this);
+    }
+    public void newTurnNotMine(GameView modelview){
+        System.out.println("È il turno di " + modelview.getCurrentPlayerNickname() + ".");
+        System.out.println("Questi sono gli obiettivi comuni:");
+        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            System.out.println(i+1 + ") " + modelview.getCommonGoals()[i].getDescription() + "\n");
         }
-        while(!modelView.isLastTurn()){
-            System.out.println("È il turno di " + this.modelView.getCurrentPlayerNickname() + ".");
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1 ) askOrder();
-            controller.dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }
-        while(!this.modelView.getCurrentPlayerSeat()){
-            System.out.println("È L'ULTIMO TURNO PER: " + this.modelView.getCurrentPlayerNickname());
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1) askOrder();
-            modelView.getCurrentPlayerShelf().dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }*/
+        printShelf(modelview.getCurrentPlayerShelf());
+        printBoard(modelview.getBoard());
     }
 
-    public void newTurn(GameView modelview){
+    public void newTurn(GameView modelview) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
         System.out.println("È il turno di " + modelview.getCurrentPlayerNickname() + ".");
         System.out.println("Questa è la tua Carta Obiettivo Personale");
         printPersonalGoalShelf(modelview.getCurrentPlayerPersonalCard());
@@ -77,9 +74,12 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         printShelf(modelview.getCurrentPlayerShelf());
         printBoard(modelview.getBoard());
         int tilesNum = askCoordinates();
+        popTiles(choosenCoordinates);
         int column = askColumn();
         if (tilesNum > 1 ) askOrder();
-        controller.dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
+        Message message = new Message(column,choosenCoordinates);
+        objectOutputStream.writeObject(message);
+        //controller.dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
     }
 
     public void lastTurn(GameView modelview){
@@ -93,21 +93,33 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
     private void askOrder() {
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
         List<Tile> tmp = new ArrayList<>();
+        List<int[]> tmpCord = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         do{
-            for (int i = 0; i < modelView.getCurrentPlayerChosenTiles().size(); i++) {
-                System.out.println("[" + i + "]" + " " + modelView.getCurrentPlayerChosenTiles().get(i).getColor());
+            for (int i = 0; i < tiles.size(); i++) {
+                System.out.println("[" + i + "]" + " " + tiles.get(i).getColor());
             }
-            try {
+            try{
                 int pos = Integer.parseInt(scanner.nextLine());
-                if (pos < 0 || pos >= modelView.getCurrentPlayerChosenTiles().size())
+                if (pos < 0 || pos >= tiles.size())
                     System.out.println("posizione non valida!\nRiprovare");
-                else tmp.add(modelView.getCurrentPlayerChosenTiles().remove(pos));
+                else{
+                    tmp.add(tiles.remove(pos));
+                    tmpCord.add(choosenCoordinates.remove(pos));
+                }
             }catch(NumberFormatException e){
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
-        }while (modelView.getCurrentPlayerChosenTiles().size()!=0);
-        controller.setChosenTiles(tmp);
+        }while (tiles.size()!=0);
+        //controller.setChosenTiles(tmp);
+        tiles = tmp;
+        choosenCoordinates = tmpCord;
+    }
+    public void popTiles(List<int[]> coordinates){
+        tiles = new ArrayList<>();
+        for (int[] coordinate : coordinates) {
+            tiles.add(modelView.getBoard().popTile(coordinate[0], coordinate[1]));
+        }
     }
 
     private int askColumn() {
@@ -119,7 +131,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 column = Integer.parseInt(scanner.nextLine());
                 if (column < 0 || column >= SHELF_COLUMN)
                     System.out.println("posizione invalida! riprovare\n");
-                else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
+                else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < tiles.size())
                     System.out.println("troppe tessere! Riprovare\n");
                 else {
                     return column;
@@ -136,8 +148,9 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         //inizializzo le border tiles e le scelte che fa il player sono in base alle tiles disponibili all inizio del turno
         int cont = 0;
 
-        this.controller.setBorderTiles();
-        List<int[]> borderTiles = this.modelView.getBoard().getBorderTiles();
+        //this.controller.setBorderTiles();
+        List<int[]> borderTiles = modelView.getBoard().getAvailableTiles(); //this.modelView.getBoard().getBorderTiles()
+        choosenCoordinates = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -146,7 +159,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         }
         int maxEmptySpace = modelView.getMaxColumnSpace();
         for(int i=0; i<maxEmptySpace; i++) {
-            if(!this.modelView.getAvailableTilesForCurrentPlayer().isEmpty()) {
+            if(true) { //!this.modelView.getAvailableTilesForCurrentPlayer().isEmpty()
                 boolean chosen = false;
                 while (!chosen) {
                     System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
@@ -173,9 +186,10 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                                     System.out.print("y: ");
                                     coordinates[1] = scanner.nextInt();
                                     scanner.nextLine();
-                                    if (this.controller.checkCorrectCoordinates(coordinates, borderTiles)) {
-                                        this.controller.addChosenCoordinate(coordinates);
-                                        this.controller.addChosenTile(coordinates);
+                                    if (borderTiles.contains(coordinates)) { //this.controller.checkCorrectCoordinates(coordinates, borderTiles)
+                                        //this.controller.addChosenCoordinate(coordinates);
+                                        //this.controller.addChosenTile(coordinates);
+                                        choosenCoordinates.add(coordinates);
                                         chosen = true;
                                     } else {
                                         System.err.println("Coordinate non valide. Riprova\n");
@@ -349,7 +363,13 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
                 case "playerTakesEndPoint" -> System.out.println("************ " + evt.getNewValue() + " prende il punto Fine-Partita [1] ************");
                 case "playerName" -> System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
                 case "playerPoints" -> System.out.println(evt.getNewValue() + "\n------------------");
-                case "nextPlayer", "start" -> newTurn((GameView) evt.getSource());
+                case "nextPlayer", "start" -> {
+                    try {
+                        newTurn((GameView) evt.getSource());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 case "Last Turn" -> lastTurn((GameView) evt.getSource());
                 case "winner" -> System.out.println("THE WINNER IS: " + evt.getNewValue());
                 case "end" -> System.out.println("LA PARTITA È FINITA\n------------------\n\nPUNTEGGI FINALI\n\n------------------");
@@ -359,6 +379,13 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
             System.err.println("Ignoring event from "+ evt.getSource().toString());
         }
 
+    }
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
 

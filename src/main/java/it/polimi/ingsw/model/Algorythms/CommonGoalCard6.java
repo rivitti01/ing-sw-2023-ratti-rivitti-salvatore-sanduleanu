@@ -2,7 +2,9 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard6 implements CardStrategy{
+import java.io.Serializable;
+
+public class CommonGoalCard6 implements CardStrategy, Serializable {
     public String toString(){
         return "Otto tessere dello stesso tipo. " +
                 "Non ci sono restrizioni sulla posizione di queste tessere.";

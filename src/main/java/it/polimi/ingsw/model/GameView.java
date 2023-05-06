@@ -4,18 +4,20 @@ package it.polimi.ingsw.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.List;
 
 import static it.polimi.ingsw.Costants.MAX_TILES_PER_TURN;
 
-public class GameView  implements PropertyChangeListener {
-    private Game model;
-    PropertyChangeSupport propertyChangeSupport;
+public class GameView implements Serializable {
+    static final long serialVersionUID = 1L;
+    private final Game model;
+    //PropertyChangeSupport propertyChangeSupport;
 
     public GameView(Game model){
         this.model = model;
-        propertyChangeSupport = new PropertyChangeSupport(this);
-        this.model.addPropertyChangeListener(this);
+        //propertyChangeSupport = new PropertyChangeSupport(this);
+        //this.model.addPropertyChangeListener(this);
     }
     public boolean isLastTurn(){
         return this.model.isLastTurn();
@@ -43,18 +45,17 @@ public class GameView  implements PropertyChangeListener {
         int flag = this.model.getCurrentPlayer().getShelf().getMaxColumnSpace();
         return Math.min(flag, MAX_TILES_PER_TURN);
     }
-
+    public CommonGoalCard[] getCommonGoals(){return this.model.getCommonGoals();}
+    /*
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-
-    public CommonGoalCard[] getCommonGoals(){return this.model.getCommonGoals();}
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
     }
+     */
 }

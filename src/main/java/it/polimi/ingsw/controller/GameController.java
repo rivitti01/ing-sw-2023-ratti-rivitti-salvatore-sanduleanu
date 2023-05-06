@@ -62,7 +62,7 @@ public class GameController  {
     }
     // inizializza le tiles ai bordi prima di ogni scelta e fino alla fine delle selezioni come filtro di partenza si usano le border
     public void setBorderTiles(){
-         this.model.getBoard().setBorderTiles(model.getBoard().getAvailableTiles());
+         this.model.getBoard().setBorderTiles(); //model.getBoard().getAvailableTiles()
     }
     // restituisce la colonna con massimo spazio (utile quando si chiedono le coordinate nela TUI per esempio nel caso di shelf con solo l ultima riga vuota in modo da far scegliere solo una tile)
 

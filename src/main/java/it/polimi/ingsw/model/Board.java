@@ -12,11 +12,12 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Board {
+public class Board implements Serializable {
     private Tile[][] board;
     private int size;
     private List<int[]> borderTiles;
@@ -97,8 +98,8 @@ public class Board {
     }
 
     // serve all inizio della scelta del giocatore un riferimento alle Tiles disponibili prima delle scelte del giocatore per far funzionare bene il filtro
-    public void setBorderTiles(List<int[]> borderTiles) {
-        this.borderTiles = borderTiles;
+    public void setBorderTiles() { //List<int[]> borderTiles
+        this.borderTiles = getBorderTiles();
     }
 
     public List<int[]> getBorderTiles() {

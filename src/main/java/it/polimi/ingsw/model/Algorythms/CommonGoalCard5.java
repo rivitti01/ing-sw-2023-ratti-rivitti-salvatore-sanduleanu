@@ -3,9 +3,10 @@ import static it.polimi.ingsw.Costants.*;
 import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CommonGoalCard5 implements CardStrategy {
+public class CommonGoalCard5 implements CardStrategy, Serializable {
 
     public boolean algorythm(Shelf myShelf) {
 

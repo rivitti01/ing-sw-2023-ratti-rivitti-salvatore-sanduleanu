@@ -2,7 +2,9 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-public class CommonGoalCard11 implements CardStrategy{
+import java.io.Serializable;
+
+public class CommonGoalCard11 implements CardStrategy, Serializable {
     public String toString(){
         return "Cinque tessere dello stesso tipo che formano una X.";
     }

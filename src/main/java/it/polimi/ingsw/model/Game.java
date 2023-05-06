@@ -7,13 +7,14 @@ import javax.swing.event.ChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Game implements PropertyChangeListener {
+public class Game implements PropertyChangeListener, Serializable {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
@@ -24,8 +25,8 @@ public class Game implements PropertyChangeListener {
     private boolean lastTurn;
     private boolean start = false;
     private boolean end=false;
+    //private PropertyChangeListener listener;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
 
 
     public void setGame(int numberParticipants, List<Player> players){
@@ -66,7 +67,8 @@ public class Game implements PropertyChangeListener {
         players = tempList;
         players.get(0).setSeat(true);
         propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "seat", null, this.players.get(0)));
-
+        //PropertyChangeEvent evt = new PropertyChangeEvent(this, "seat", null, this.players.get(0));
+        //this.listener.propertyChange(evt);
     }
 
     public boolean isLastTurn() {
@@ -149,6 +151,9 @@ public class Game implements PropertyChangeListener {
             //punto della fine della partita gia assegnato
         }
 
+    }
+    public int getNumberPartecipants(){
+        return numberPartecipants;
     }
 
     public void findWinner(){

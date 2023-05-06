@@ -4,6 +4,7 @@ package it.polimi.ingsw.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 //import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static it.polimi.ingsw.Costants.*;
 
-public class Player  implements PropertyChangeListener{
+public class Player  implements PropertyChangeListener, Serializable {
     final String nickname;
     private Shelf shelf;
     private boolean seat;

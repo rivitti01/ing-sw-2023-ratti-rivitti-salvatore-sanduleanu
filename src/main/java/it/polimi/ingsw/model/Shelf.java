@@ -9,6 +9,7 @@ import static it.polimi.ingsw.Costants.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -19,7 +20,7 @@ import javax.swing.event.ChangeListener;
 
 
 
-public class Shelf {
+public class Shelf implements Serializable {
     private Tile[][] shelf;
     private PropertyChangeSupport sPcs;
 

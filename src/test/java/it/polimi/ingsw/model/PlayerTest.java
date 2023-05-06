@@ -26,10 +26,14 @@ class PlayerTest {
     void setup(){
         this.bag = new Bag();
         this.chosenCard = new PersonalGoalCard("goalStrategy1");
-        this.p = new Player("denis", this.chosenCard);
-        this.p2 = new Player("denis2", this.chosenCard);
-        this.p3 = new Player("denis3", this.chosenCard);
-        this.p4 = new Player("denis4", this.chosenCard);
+        this.p = new Player("denis");
+        this.p2 = new Player("denis2");
+        this.p3 = new Player("denis3");
+        this.p4 = new Player("denis4");
+        p.setPrivateCard(chosenCard);
+        p2.setPrivateCard(chosenCard);
+        p3.setPrivateCard(chosenCard);
+        p4.setPrivateCard(chosenCard);
         this.board = new Board(4);
         this.board.fillBoard(bag);
         this.deckCommon = new DeckCommon();
