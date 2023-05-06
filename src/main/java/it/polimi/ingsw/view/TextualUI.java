@@ -1,11 +1,9 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.controller.GameController;
+
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.ViewListener;
 
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -16,55 +14,17 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 
-public class TextualUI  implements  Runnable, PropertyChangeListener {
-    private GameController controller;
-    private GameView modelView;
+public class TextualUI  implements  Runnable {
 
-
-
-    public TextualUI(GameController gc, GameView modelView){
-        this.controller = gc;
-        this.modelView = modelView;
-        this.modelView.addPropertyChangeListener(this);
-    }
+    private static int lastMethodCalled = 0; //keeps track of what method was invoked last
+    private ViewListener listener;
 
     @Override
     public void run() {
-        //noinspection InfiniteLoopStatement
-
-        System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
-        /* Player chooses */
-        //Damiani nel suo codice non ha dipendenze dal controller in textualUI (con Observable<Choice> indica che Controller è un suo listener il quale cambia in base alle notifiche)
-        int n = askNumber();
-        controller.setPlayerNumber(n);
-        for (int i = 0; i < n; i++) {
-            askNickName(i);
-        }
-        System.out.println("The game has started!");
-        //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
-        this.controller.initializeModel();
-        /*this.modelView.getCurrentPlayer().addPropertyChangeListener(this);
-        for(int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            this.modelView.getCommonGoals()[i].addPropertyChangeListener(this);
-        }
-        while(!modelView.isLastTurn()){
-            System.out.println("È il turno di " + this.modelView.getCurrentPlayerNickname() + ".");
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1 ) askOrder();
-            controller.dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }
-        while(!this.modelView.getCurrentPlayerSeat()){
-            System.out.println("È L'ULTIMO TURNO PER: " + this.modelView.getCurrentPlayerNickname());
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1) askOrder();
-            modelView.getCurrentPlayerShelf().dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }
-        System.out.println("LA PARTITA È FINITA");
-        System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");*/
+        System.out.println("It's your turn!");
+        int tilesNum = askCoordinates();
+        int column = askColumn();
+        if (tilesNum > 1 ) askOrder();
     }
 
     public void newTurn(GameView modelview){
@@ -223,23 +183,25 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         }
     }
 
-    private void askNickName(int index) {
+    public void askNickName() {
         boolean validName = false;
+        String nickName = null;
         while (!validName) {
             Scanner s = new Scanner (System.in);
-            System.out.println("Player " + index + ", choose your nickname for the game:");
-            String nickName = s.next();
+            System.out.println("Choose your nickname for the game:");
+            nickName = s.next();
             if (nickName.length() == 0){
                 System.err.println("Sorry there was something wrong with your nickname :(");
                 System.err.println("Please try again:");
             } else {
-                validName = controller.setPlayerNickname(nickName);
+                validName=true;
             }
         }
+        listener.clientConnection(nickName);
     }
 
 
-    void printBoard(Board b) {
+    public void printBoard(Board b) {
         System.out.print("   ");
         System.out.print("   ");
         for (int i = 0; i < b.getSize(); i++)
@@ -276,12 +238,12 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println();
     }
 
-    void printAvailableTiles(List<int[]> availableTiles) {
+    public void printAvailableTiles(List<int[]> availableTiles) {
         for (int[] availableTile : availableTiles) System.out.print(availableTile[0] + ";" + availableTile[1] + " ");
         System.out.println();
     }
 
-    void printShelf(Shelf s) {
+    public void printShelf(Shelf s) {
         System.out.println("Ecco la tua attuale shelf...");
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
@@ -310,7 +272,7 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println();
     }
 
-    void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+    public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
@@ -338,29 +300,18 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println();
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource() instanceof GameView){
-            switch (evt.getPropertyName()){
-                case "board" -> printBoard((Board) evt.getNewValue());
-                case "shelf" -> printShelf((Shelf)evt.getNewValue());
-                case "seat"  ->System.out.println("The first player is: " + ((Player) evt.getNewValue()).getNickname());
-                case "commonPoint" -> System.out.print("************ "+ evt.getNewValue() + " punti ");
-                case "playerTakesCommonPoint" -> System.out.println("presi da " + evt.getNewValue() + " ************");
-                case "playerTakesEndPoint" -> System.out.println("************ " + evt.getNewValue() + " prende il punto Fine-Partita [1] ************");
-                case "playerName" -> System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
-                case "playerPoints" -> System.out.println(evt.getNewValue() + "\n------------------");
-                case "nextPlayer", "start" -> newTurn((GameView) evt.getSource());
-                case "Last Turn" -> lastTurn((GameView) evt.getSource());
-                case "winner" -> System.out.println("THE WINNER IS: " + evt.getNewValue());
-                case "end" -> System.out.println("LA PARTITA È FINITA\n------------------\n\nPUNTEGGI FINALI\n\n------------------");
-                default -> System.err.println("Ignoring event from " + evt.getPropertyName());
-            }
-        } else {
-            System.err.println("Ignoring event from "+ evt.getSource().toString());
-        }
-
+    public void addListener (ViewListener l){
+        this.listener = l;
     }
 
+    public void printGame(GameView gameView){
+        printBoard(gameView.getBoard());
+        printShelf(gameView.getPlayerShelf());
+        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
+        }
+        printPersonalGoalShelf(gameView.getPersonal());
+    }
 
 }
+

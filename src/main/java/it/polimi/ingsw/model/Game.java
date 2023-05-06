@@ -1,14 +1,13 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.view.TextualUI;
-
-import javax.swing.event.ChangeListener;
+import it.polimi.ingsw.distributed.Client;
+import it.polimi.ingsw.util.ModelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static it.polimi.ingsw.Costants.*;
@@ -24,16 +23,15 @@ public class Game implements PropertyChangeListener {
     private boolean lastTurn;
     private boolean start = false;
     private boolean end=false;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
+    private ModelListener listener;
 
-
-    public void setGame(int numberParticipants, List<Player> players){
+    public void startGame(int numberParticipants, Map<Player, Client> players){
         this.numberPartecipants = numberParticipants;
         this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
-        this.players = players;
+        this.players = new ArrayList<>(players.keySet());
         setFirstPlayer();
         this.currentPlayer = this.players.get(0);
         this.commonGoals = new CommonGoalCard[2];
@@ -43,10 +41,8 @@ public class Game implements PropertyChangeListener {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
-        board.addPropertyChangeListener(this);
-        for (Player p: this.players) {
-            p.addPropertyChangeListener(this);
-        }
+        listener.printGame();
+        listener.newTurn(currentPlayer);
     }
 
 
@@ -65,8 +61,7 @@ public class Game implements PropertyChangeListener {
         }
         players = tempList;
         players.get(0).setSeat(true);
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "seat", null, this.players.get(0)));
-
+        setCurrentPlayer(players.get(0));
     }
 
     public boolean isLastTurn() {
@@ -115,13 +110,7 @@ public class Game implements PropertyChangeListener {
     }
 
     public void setCurrentPlayer(Player currentPlayer) {
-        Player oldPlayer = this.currentPlayer;
         this.currentPlayer = currentPlayer;
-        if (!lastTurn) {
-            propertyChangeSupport.firePropertyChange("nextPlayer", oldPlayer, this.currentPlayer);
-        } else {
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "Last Turn", oldPlayer, this.currentPlayer));
-        }
     }
 
     public void setStart(boolean s){
@@ -168,8 +157,16 @@ public class Game implements PropertyChangeListener {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
+    public void addModelListener(ModelListener l){
+        this.listener = l ;
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
+    }
+
+    public void printMisake(String s) {
+        listener.printMistake(s);
     }
 }

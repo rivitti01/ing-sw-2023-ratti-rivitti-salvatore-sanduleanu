@@ -1,10 +1,12 @@
 package it.polimi.ingsw.distributed;
 
-import it.polimi.ingsw.model.GameView;
+import it.polimi.ingsw.model.Tile;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.util.List;
 
-public interface Server extends Remote {
-
+public interface Server{
+    void clientConnection(Client c, String nickName);
+    void orederSetting(List<Tile> chosenTiles);
+    void checkingCoordinates(int[] coordinates);
+    void columnSetting(int i);
 }

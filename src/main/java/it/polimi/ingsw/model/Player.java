@@ -18,6 +18,7 @@ public class Player  implements PropertyChangeListener{
     private boolean[] goalsCompleted;
     private List<int[]> chosenCoordinates;
     private List<Tile> chosenTiles;
+    private int chosenColumn;
     private PersonalGoalCard personalGoalCard;
     private int points;
     PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);

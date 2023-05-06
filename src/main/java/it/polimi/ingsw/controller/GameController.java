@@ -1,45 +1,38 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.model.*;
 
 
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.security.auth.kerberos.KerberosTicket;
+import java.util.*;
+
 import static it.polimi.ingsw.Costants.END_GAME_POINT;
-import static it.polimi.ingsw.Costants.MAX_TILES_PER_TURN;
 
 public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
     // due attributi che derivano da input dell'utente
-    int numberPlayers;
-    private List<Player> players;
+    private final int numberPlayers;
+    private Map<Player, Client> players;
+
     //dovremmmo spostare la logica di startGame() di GameModel nel Controller
 
-    public GameController (Game model){
+    public GameController (Game model, Map<String, Client> playersNames, int numberPartecipants){
         this.model = model;
-        this.players = new ArrayList<>();
-        this.numberPlayers = 0;
-    }
-
-    public void setPlayerNumber(int n){
-        this.numberPlayers = n;
-    }
-    public boolean setPlayerNickname(String s){
-        for (Player p:players) {
-            if (p.getNickname().equals(s)) return false;
+        this.players = new HashMap<>();
+        this.numberPlayers = numberPartecipants;
+        for(String s: playersNames.keySet()){
+            this.players.put(new Player(s), playersNames.get(s) );
         }
-        this.players.add(new Player(s));
-        return true;
+        this.model.startGame(this.numberPlayers, this.players);
     }
 
-    //crea il Model in base a numberPlayers e alla List di players
-    public void initializeModel(){
-        model.setGame(this.numberPlayers, this.players);
-        model.setStart(true);
+    public Map<Player, Client> getPlayers() {
+        return players;
     }
+//crea il Model in base a numberPlayers e alla List di players
+
     public void nextPlayer(){
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //controlla se c'è bisogno di riempire la board per il player dopo
@@ -60,6 +53,11 @@ public class GameController  {
                 this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
         }
     }
+
+    public void setChosenColumn(int c){
+        //controllo sulla colonna
+        //settaggio della colonna
+    }
     // inizializza le tiles ai bordi prima di ogni scelta e fino alla fine delle selezioni come filtro di partenza si usano le border
     public void setBorderTiles(){
          this.model.getBoard().setBorderTiles(model.getBoard().getAvailableTiles());
@@ -67,7 +65,7 @@ public class GameController  {
     // restituisce la colonna con massimo spazio (utile quando si chiedono le coordinate nela TUI per esempio nel caso di shelf con solo l ultima riga vuota in modo da far scegliere solo una tile)
 
 
-    public boolean checkCorrectCoordinates(int[] inputCoordinates, List<int[]> borderTiles){
+    public boolean checkCorrectCoordinates(int[] inputCoordinates){
         for (int[] availableCoordinate : borderTiles) {
             if (Arrays.equals(availableCoordinate, inputCoordinates))
                 return true;
@@ -80,8 +78,8 @@ public class GameController  {
     public void addChosenTile(int[] coordinates){
         this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(coordinates[0], coordinates[1]));
     }
-    public void dropTiles(List<Tile> choosenTiles, int column){
-        model.getCurrentPlayer().getShelf().dropTiles(choosenTiles,column);
+    public void dropTiles(List<Tile> chosenTiles){
+        model.getCurrentPlayer().getShelf().dropTiles(chosenTiles);
         nextPlayer();
     }
 
@@ -93,4 +91,6 @@ public class GameController  {
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
+
+
 }
