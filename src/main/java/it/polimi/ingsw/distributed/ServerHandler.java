@@ -18,13 +18,17 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
     private String nickname;
     private Boolean started;
     private final Object lock0;
-    ObjectInputStream objectInputStream;
-    ObjectOutputStream objectOutputStream;
-    public ServerHandler(Socket socket,Game model,Object lock0){
+    private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
+    private boolean creator;
+    private boolean canPlay;
+    public ServerHandler(Socket socket,Game model,Object lock0, Boolean creator){
         this.socket = socket;
         this.model = model;
         this.lock0 = lock0;
         started = false;
+        this.creator = creator;
+        canPlay = true;
     }
 
     @Override
@@ -35,22 +39,22 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
             objectInputStream = new ObjectInputStream(socket.getInputStream());
             System.out.println("aspetto messaggio "+ socket.getPort());
             waitAndSetNickname(); // il primo messaggio che voglio ricevere e il nome utente del client a cui è collegato questo ServerHandler
-            synchronized (lock0) {
-                if(!started) {
-                    Message message = waitMessage();//aspetto che il primo client imposta il numero di giocatori nella partita
-                    readMessageOnConsole(message);
-                    fireMessage(message); //propago il messaggio a ServerSocketImpl
-                }
-                lock0.notifyAll();
-            }
-
-            //objectOutputStream.writeObject(new GameView(model));
-
-        } catch (IOException | ClassNotFoundException e) {
+            setUp();
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
 
+    }
+    public void setUp() throws IOException, ClassNotFoundException, InterruptedException {
+        if (creator){
+            objectOutputStream.writeObject("playerNumber");
+            Message message = (Message) objectInputStream.readObject();
+            readMessageOnConsole(message);
+            fireMessage(message);
+        }else {
+            objectOutputStream.writeObject("NoPlayerNumber");
+        }
     }
     public void setStarted(){
         started = true;
@@ -117,7 +121,14 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
         return nickname;
     }
 
-    public void setStarted(Boolean started) {
+    public void setStarted(boolean started) {
         this.started = started;
+    }
+    public void setCanPlay(boolean canPlay) throws IOException, InterruptedException {
+        this.canPlay = canPlay;
+        objectOutputStream.writeObject("cantPlay");
+    }
+    public boolean getCanPlay(){
+        return canPlay;
     }
 }

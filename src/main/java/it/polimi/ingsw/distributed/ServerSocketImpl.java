@@ -25,7 +25,6 @@ public class ServerSocketImpl implements PropertyChangeListener {
 
 
     Map<Integer,ServerHandler> clients;
-    Map<ServerHandler,Thread> clientsPorcess;
 
     public ServerSocketImpl(int port) throws IOException {
         this.port = port;
@@ -37,7 +36,6 @@ public class ServerSocketImpl implements PropertyChangeListener {
     public void StartServer() throws IOException, ClassNotFoundException{
 
         clients = new HashMap<>();
-        clientsPorcess = new HashMap<>();
 
         System.out.println("Open server socket on "+ port+ " port.");
 
@@ -54,12 +52,17 @@ public class ServerSocketImpl implements PropertyChangeListener {
             System.out.println("Aspetto connessione");
             Socket socket = serverSocket.accept();
             System.out.println("["+i+"]"+" connessione accettata");
-            ServerHandler serverHandler = new ServerHandler(socket,model, lock0);
+            ServerHandler serverHandler;
+            if (clients.size() == 0){
+                serverHandler = new ServerHandler(socket,model, lock0,true);
+            }else {
+                serverHandler = new ServerHandler(socket,model, lock0,false);
+            }
             clients.put(i,serverHandler);
             serverHandler.addPropertyChangeListener(this);
             Thread thread = new Thread(serverHandler);
-            clientsPorcess.put(serverHandler,thread);
             thread.start();
+
             if (i > 3){
                 while (true){
                     //stay open
@@ -88,11 +91,21 @@ public class ServerSocketImpl implements PropertyChangeListener {
             controller.setPlayerNumber((int) evt.getNewValue());
             playerNumber = (int) evt.getNewValue();
             System.out.println("Preparo il gioco per "+ evt.getNewValue() + " giocatori");
-            if (playerNumber == clients.size()){
+            if (clients.size() >= playerNumber ){
                 for (int i = 0; i < clients.size(); i++){
-                    controller.setPlayerNickname(clients.get(i).getNickname());
-                    clients.get(i).setStarted(true);
-                    //clients.get(i).setStarted();
+                    if (i < playerNumber) {
+                        controller.setPlayerNickname(clients.get(i).getNickname());
+                        clients.get(i).setStarted(true);
+                    }else {
+                        try {
+                            clients.get(i).setCanPlay(false);
+                        } catch (IOException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                for (int i = 0; i < clients.size(); i++){
+                    if (!clients.get(i).getCanPlay()) clients.remove(i);
                 }
                 controller.initializeModel();
                 System.out.println("inizializzo");
@@ -101,6 +114,7 @@ public class ServerSocketImpl implements PropertyChangeListener {
         if (Objects.equals(evt.getPropertyName(), "nickname")){
             controller.setPlayerNickname((String) evt.getNewValue());
             System.out.println("C'è un giocatore di nome "+ evt.getNewValue());
+            if (clients.size() == playerNumber) propertyChange(new PropertyChangeEvent(null,"playerNumber",null,playerNumber));
 
         }
 

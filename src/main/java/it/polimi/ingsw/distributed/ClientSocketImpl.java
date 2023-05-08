@@ -38,9 +38,16 @@ public class ClientSocketImpl implements PropertyChangeListener {
         nickname = message.getNickName();
         objectOutputStream.writeObject(message);
         objectOutputStream.flush();
-        System.out.println("Inserisci il numero di giocatori");
-        message = new Message(scanner.nextInt());
-        objectOutputStream.writeObject(message);//trovare modo per evitare questa riga se uno dei client ha già inserito il numero di partecipanti
+        String setUp = (String) objectInputStream.readObject();
+        if (setUp.equals("playerNumber")){
+            System.out.println("Inserisci il numero di giocatori");
+            message = new Message(scanner.nextInt());
+            objectOutputStream.writeObject(message);
+        }
+        if (setUp.equals("cantPlay")){
+            System.out.println("Il server ha già una partita piena, non puoi giocare");
+        }
+
         modelView = (GameView) objectInputStream.readObject();
         //GameController controller = new GameController(modelView);
         view = new TUISocket(null,modelView,nickname,socket);
