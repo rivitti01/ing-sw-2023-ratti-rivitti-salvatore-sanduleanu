@@ -91,6 +91,7 @@ public class ServerSocketImpl implements PropertyChangeListener {
             if (playerNumber == clients.size()){
                 for (int i = 0; i < clients.size(); i++){
                     controller.setPlayerNickname(clients.get(i).getNickname());
+                    clients.get(i).setStarted(true);
                     //clients.get(i).setStarted();
                 }
                 controller.initializeModel();

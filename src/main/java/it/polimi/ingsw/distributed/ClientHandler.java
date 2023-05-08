@@ -20,7 +20,10 @@ public class ClientHandler implements Runnable{
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
-        } catch (IOException e) {
+            Message message = (Message) objectInputStream.readObject();
+
+
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 

@@ -36,11 +36,12 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
             System.out.println("aspetto messaggio "+ socket.getPort());
             waitAndSetNickname(); // il primo messaggio che voglio ricevere e il nome utente del client a cui è collegato questo ServerHandler
             synchronized (lock0) {
-                if(model.getNumberPartecipants() == 0) {
+                if(!started) {
                     Message message = waitMessage();//aspetto che il primo client imposta il numero di giocatori nella partita
                     readMessageOnConsole(message);
                     fireMessage(message); //propago il messaggio a ServerSocketImpl
                 }
+                lock0.notifyAll();
             }
 
             //objectOutputStream.writeObject(new GameView(model));
@@ -114,5 +115,9 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
     }
     public String getNickname(){
         return nickname;
+    }
+
+    public void setStarted(Boolean started) {
+        this.started = started;
     }
 }
