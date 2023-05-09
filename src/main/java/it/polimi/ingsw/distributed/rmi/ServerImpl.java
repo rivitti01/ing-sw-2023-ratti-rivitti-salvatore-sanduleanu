@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.ErrorType;
 import it.polimi.ingsw.util.ModelListener;
 
 import java.rmi.RemoteException;
@@ -19,6 +20,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private GameController controller;
     private Map<String, Client> connectedClients;
     private int numPartecipants;
+    private boolean gameAlreadyStarted;
 
     protected ServerImpl() throws RemoteException {
         connectedClients = new HashMap<>();
@@ -27,11 +29,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     protected ServerImpl(int port) throws RemoteException {
         super(port);
         connectedClients = new HashMap<>();
+        this.gameAlreadyStarted = false;
     }
 
     protected ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         connectedClients = new HashMap<>();
+        this.gameAlreadyStarted = false;
     }
 
     public boolean nameControl(String newName){
@@ -43,20 +47,25 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void clientConnection(Client c, String nickName) {
-        if (nameControl(nickName)){
-            if (connectedClients.size()==0){
-                this.numPartecipants = c.askNumberPartecipants();
-                connectedClients.put(nickName, c);
+        if (!this.gameAlreadyStarted) {
+            if (nameControl(nickName)) {
+                if (connectedClients.size() == 0) {
+                    c.askNumberPartecipants();
+                    connectedClients.put(nickName, c);
+                } else {
+                    connectedClients.put(nickName, c);
+                }
+                if (connectedClients.size() == this.numPartecipants) {
+                    this.model = new Game();
+                    this.model.addModelListener(this);
+                    this.gameAlreadyStarted = true;
+                    this.controller = new GameController(model, this.connectedClients, this.numPartecipants);
+                }
             } else {
-                connectedClients.put(nickName, c);
-            }
-            if (connectedClients.size()==this.numPartecipants){
-                this.model = new Game();
-                this.controller = new GameController(model, this.connectedClients, this.numPartecipants);
-                this.model.addModelListener(this);
+                c.error(ErrorType.INVALID_NICKNAME);
             }
         } else {
-            c.nameError();
+            c.error(ErrorType.GAME_ALREADY_STARTED);
         }
     }
     @Override
@@ -75,6 +84,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     }
 
     @Override
+    public void endsSelection() {
+        this.model.selectionControl();
+    }
+
+    @Override
+    public void numberPartecipantsSetting(int n) {
+        this.numPartecipants = n;
+    }
+
+    @Override
     public void printGame() {
         for(String s:  connectedClients.keySet()){
             for (Player p: this.controller.getPlayers().keySet()){
@@ -85,18 +104,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
     }
 
-
-
     @Override
-    public void chosenTileError(Client c) {
-        System.err.println("The selected tile cannot be taken. Choose another one:");
-        c.chosenTileError();
-    }
-
-    @Override
-    public void chosenColumnError(Client c) {
-        System.err.println("The selected column cannot be chosen for room problems. Choose another one:");
-        c.chosenColumnError();
+    public void error(ErrorType e, Player currentPlayer) {
+        String nickName = currentPlayer.getNickname();
+        this.connectedClients.get(nickName).error(e);
     }
 
     @Override
@@ -104,6 +115,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         String nickName = currentPlayer.getNickname();
         connectedClients.get(nickName).run();
     }
+
+    @Override
+    public void askNumberPartecipants() {
+        connectedClients.get(this.model.getCurrentPlayer().getNickname()).askNumberPartecipants();
+    }
+
 
 
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
 
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 public class Player  implements PropertyChangeListener{
     final String nickname;
@@ -78,6 +78,7 @@ public class Player  implements PropertyChangeListener{
     }
     public void addChosenTile(Tile tile){
         this.chosenTiles.add(tile);
+
     }
     public PersonalGoalCard getPersonalGoalCard(){
         return this.personalGoalCard;

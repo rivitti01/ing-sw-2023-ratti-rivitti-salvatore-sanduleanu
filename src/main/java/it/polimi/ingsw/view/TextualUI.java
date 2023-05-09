@@ -2,6 +2,7 @@ package it.polimi.ingsw.view;
 
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.ErrorType;
 import it.polimi.ingsw.util.ViewListener;
 
 import java.util.ArrayList;
@@ -9,49 +10,29 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 import static it.polimi.ingsw.view.Colors.*;
 
 
 
-public class TextualUI  implements  Runnable {
+public class TextualUI {
 
-    private static int lastMethodCalled = 0; //keeps track of what method was invoked last
     private ViewListener listener;
-
-    @Override
     public void run() {
         System.out.println("It's your turn!");
-        int tilesNum = askCoordinates();
-        int column = askColumn();
-        if (tilesNum > 1 ) askOrder();
-    }
+        chooseAction();
 
-    public void newTurn(GameView modelview){
-        System.out.println("È il turno di " + modelview.getCurrentPlayerNickname() + ".");
-        System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
-        printPersonalGoalShelf(modelview.getCurrentPlayerPersonalCard());
-        System.out.println("\nQuesti sono gli Obiettivi Comuni:");
-        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            System.out.println(i+1 + ") " + modelview.getCommonGoals()[i].getDescription() + "\n");
-        }
-        printShelf(modelview.getCurrentPlayerShelf());
-        printBoard(modelview.getBoard());
-        int tilesNum = askCoordinates();
-        int column = askColumn();
-        if (tilesNum > 1 ) askOrder();
-        controller.dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
     }
 
     public void lastTurn(GameView modelview){
         System.out.println("È L'ULTIMO TURNO PER: " + modelview.getCurrentPlayerNickname());
         printShelf(modelView.getCurrentPlayerShelf());
-        int tilesNum = askCoordinates();
+        int tilesNum = chooseAction();
         int column = askColumn();
         if (tilesNum > 1) askOrder();
         modelview.getCurrentPlayerShelf().dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
     }
-    private void askOrder() {
+    public void askOrder() {
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
         List<Tile> tmp = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
@@ -71,7 +52,7 @@ public class TextualUI  implements  Runnable {
         controller.setChosenTiles(tmp);
     }
 
-    private int askColumn() {
+    public int askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
         System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
@@ -92,95 +73,55 @@ public class TextualUI  implements  Runnable {
 
     }
 
-    public int askCoordinates(){
-        //ritorna il numero di tiles scelte. utile cosi che viene scelta una sola tiles non avviene la chiamata a askOrder
-        //inizializzo le border tiles e le scelte che fa il player sono in base alle tiles disponibili all inizio del turno
-        int cont = 0;
-
-        this.controller.setBorderTiles();
-        List<int[]> borderTiles = this.modelView.getBoard().getBorderTiles();
-
+    public void chooseAction() {
         Scanner scanner = new Scanner(System.in);
-
-        for (int[] cord : modelView.getCurrentPlayerChosenCoordinates()){
-            System.out.println(modelView.getCurrentPlayerNickname()+" "+cord[0] + " " + cord[1]);
-        }
-        int maxEmptySpace = modelView.getMaxColumnSpace();
-        for(int i=0; i<maxEmptySpace; i++) {
-            if(!this.modelView.getAvailableTilesForCurrentPlayer().isEmpty()) {
-                boolean chosen = false;
-                while (!chosen) {
-                    System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
-
-                    String s = scanner.nextLine();
-
-                    switch (s.toUpperCase()) {
-                        case "Q" -> {
-                            if (i == 0) {
-                                System.err.println("Selezionare almeno una tessera!");
-                            } else
-                                return i;
-                        }
-                        case "S" -> {
-                            System.out.println("seleziona tessera tra le seguenti disponibili");
-                            printAvailableTiles(this.modelView.getAvailableTilesForCurrentPlayer());
-                            //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
-                            while (!chosen) {
-                                try {
-                                    int[] coordinates = new int[2];
-                                    System.out.print("x: ");
-                                    coordinates[0] = scanner.nextInt();
-                                    scanner.nextLine();
-                                    System.out.print("y: ");
-                                    coordinates[1] = scanner.nextInt();
-                                    scanner.nextLine();
-                                    if (this.controller.checkCorrectCoordinates(coordinates, borderTiles)) {
-                                        this.controller.addChosenCoordinate(coordinates);
-                                        this.controller.addChosenTile(coordinates);
-                                        chosen = true;
-                                    } else {
-                                        System.err.println("Coordinate non valide. Riprova\n");
-                                    }
-                                } catch (InputMismatchException e1) {
-                                    System.err.println("Inserire un numero");
-                                    scanner.nextLine();
-                                    System.out.println();
-                                }
-                            }
-                        }
-                        default -> System.err.println("Non conosco questo comando.\nRiprova");
+        while(true) {
+            System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
+            String s = scanner.nextLine();
+            switch (s.toUpperCase()) {
+                case "Q" -> {
+                    listener.endsSelection();
+                    
+                }
+                case "S" -> {
+                    System.out.println("seleziona una tessera:");
+                    try {
+                        int[] coordinates = new int[2];
+                        System.out.print("x: ");
+                        coordinates[0] = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.print("y: ");
+                        coordinates[1] = scanner.nextInt();
+                        scanner.nextLine();
+                        this.listener.checkingCoordinates(coordinates);
+                    } catch (InputMismatchException e1) {
+                        System.err.println("Inserire un numero");
+                        scanner.nextLine();
+                        System.out.println();
                     }
                 }
-            }else{
-                System.out.println("Non ci sono più tessere disponibili\n");
-                return i;
+                default -> System.err.println("Non conosco questo comando.\nRiprova");
             }
-            cont = i;
         }
-        System.err.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
-        return cont;
     }
-    public int askNumber() {
+    public void askNumber() {
         Scanner s = new Scanner(System.in);
+        System.out.println("Type in the number of players that will take part in this game:");
+        int input;
         while (true) {
-            System.out.println("Type in the number of players that will take part in this game:");
-            int input;
-            while (true) {
-                if (s.hasNextInt()) {
-                    input = s.nextInt();
-                    break;
-                } else {
-                    System.err.println("Enter a valid value");
-                    s.nextLine(); // Consuma il valore non intero inserito
-                }
-            }
-            if (input < 2 || input > 4){
-                System.err.println("Sorry you cannot play with this much players :(");
-                System.err.println("Please enter a number in between 2 and 4:");
+            if (s.hasNextInt()) {
+                input = s.nextInt();
+                break;
             } else {
-                return input;
+                System.err.println("Enter a valid value");
+                s.nextLine(); // Consuma il valore non intero inserito
             }
         }
+        if (input < 2 || input > 4){
+            System.err.println("Sorry you cannot play with this much players :(");
+            System.err.println("Please enter a number in between 2 and 4:");
+        }
+        this.listener.numberPartecipantsSetting(input);
     }
 
     public void askNickName() {
@@ -200,6 +141,31 @@ public class TextualUI  implements  Runnable {
         listener.clientConnection(nickName);
     }
 
+    public void error(ErrorType e){
+        switch (e){
+            case TILE_UNAVAILABLE -> {
+                System.err.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
+                chooseAction();
+            }
+            case INVALID_NICKNAME -> {
+                System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
+                askNickName();
+            }
+            case COLUMN_UNAVAILABLE -> {
+                System.err.println("Errore nella scelta della colonna, scegline un'altra:");
+                askColumn();
+            }
+            case WRONG_ACTION -> {
+                System.err.println("Scegliere almeno una tile prima di procedere:");
+                chooseAction();
+            }
+            case GAME_ALREADY_STARTED -> System.err.println("Ci dispiace c'è già una partita in atto. Non puoi giocare.");
+            case MAX_TILES_CHOSEN -> {
+                System.err.println("Hai raggiunto il numero massimo di tessere prendibili.");
+                askColumn();
+            }
+        }
+    }
 
     public void printBoard(Board b) {
         System.out.print("   ");
@@ -306,7 +272,9 @@ public class TextualUI  implements  Runnable {
 
     public void printGame(GameView gameView){
         printBoard(gameView.getBoard());
-        printShelf(gameView.getPlayerShelf());
+        for (Shelf s: gameView.getPlayersShelves()) {
+            printShelf(s);
+        }
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
         }

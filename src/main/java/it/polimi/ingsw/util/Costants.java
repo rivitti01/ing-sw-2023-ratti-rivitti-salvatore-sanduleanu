@@ -1,4 +1,4 @@
-package it.polimi.ingsw;
+package it.polimi.ingsw.util;
 
 public class Costants {
     public static final int SHELF_ROWS = 6;

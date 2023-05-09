@@ -12,11 +12,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Objects;
 import java.util.Stack;
-
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
-import static it.polimi.ingsw.Costants.SHELF_ROWS;
 
 public class CommonGoalCard {
     private CardStrategy cardStrategy;

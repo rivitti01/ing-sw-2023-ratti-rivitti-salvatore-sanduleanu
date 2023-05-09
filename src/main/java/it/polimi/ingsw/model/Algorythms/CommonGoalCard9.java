@@ -6,8 +6,8 @@ import it.polimi.ingsw.model.Tile;
 
 import java.util.Arrays;
 
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
-import static it.polimi.ingsw.Costants.SHELF_ROWS;
+import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
+import static it.polimi.ingsw.util.Costants.SHELF_ROWS;
 
 public class CommonGoalCard9 implements CardStrategy {
 

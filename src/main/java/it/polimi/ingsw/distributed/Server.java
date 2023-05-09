@@ -9,4 +9,6 @@ public interface Server{
     void orederSetting(List<Tile> chosenTiles);
     void checkingCoordinates(int[] coordinates);
     void columnSetting(int i);
+    void endsSelection();
+    void numberPartecipantsSetting(int n);
 }

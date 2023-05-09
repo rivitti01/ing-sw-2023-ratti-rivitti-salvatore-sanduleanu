@@ -2,8 +2,8 @@ package it.polimi.ingsw.model.Algorythms;
 
 import it.polimi.ingsw.model.Shelf;
 
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
-import static it.polimi.ingsw.Costants.SHELF_ROWS;
+import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
+import static it.polimi.ingsw.util.Costants.SHELF_ROWS;
 
 public class CommonGoalCard7 implements CardStrategy {
 

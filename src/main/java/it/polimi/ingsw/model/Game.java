@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 
 import it.polimi.ingsw.distributed.Client;
+import it.polimi.ingsw.util.ErrorType;
 import it.polimi.ingsw.util.ModelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 public class Game implements PropertyChangeListener {
     private int numberPartecipants;
@@ -41,6 +42,7 @@ public class Game implements PropertyChangeListener {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
+        board.setBorderTiles(board.getBorderTiles());
         listener.printGame();
         listener.newTurn(currentPlayer);
     }
@@ -166,7 +168,15 @@ public class Game implements PropertyChangeListener {
         propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
     }
 
-    public void printMisake(String s) {
-        listener.printMistake(s);
+    public void selectionControl() {
+        if (this.currentPlayer.getChosenTiles().size()==0) {
+            listener.error(ErrorType.WRONG_ACTION, this.getCurrentPlayer());
+        }
+    }
+
+    public void checkMaxNumberOfTilesChosen() {
+        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size()){
+            this.listener.error(ErrorType.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+        }
     }
 }

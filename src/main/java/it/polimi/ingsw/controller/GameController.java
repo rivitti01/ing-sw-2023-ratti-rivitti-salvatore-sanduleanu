@@ -4,10 +4,9 @@ import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.model.*;
 
 
-import javax.security.auth.kerberos.KerberosTicket;
 import java.util.*;
 
-import static it.polimi.ingsw.Costants.END_GAME_POINT;
+import static it.polimi.ingsw.util.Costants.END_GAME_POINT;
 
 public class GameController  {
     //attributo a Model per poterlo modificare
@@ -65,18 +64,14 @@ public class GameController  {
     // restituisce la colonna con massimo spazio (utile quando si chiedono le coordinate nela TUI per esempio nel caso di shelf con solo l ultima riga vuota in modo da far scegliere solo una tile)
 
 
-    public boolean checkCorrectCoordinates(int[] inputCoordinates){
-        for (int[] availableCoordinate : borderTiles) {
-            if (Arrays.equals(availableCoordinate, inputCoordinates))
-                return true;
+    public void checkCorrectCoordinates(int[] inputCoordinates){
+        for (int[] availableCoordinate : this.model.getBoard().getBorderTiles()) {
+            if (Arrays.equals(availableCoordinate, inputCoordinates)) {
+                this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
+                this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(inputCoordinates[0], inputCoordinates[1]));
+                this.model.checkMaxNumberOfTilesChosen();
+            }
         }
-        return false;
-    }
-    public void addChosenCoordinate(int[] coordinates){
-        this.model.getCurrentPlayer().addChosenCoordinate(coordinates);
-    }
-    public void addChosenTile(int[] coordinates){
-        this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().popTile(coordinates[0], coordinates[1]));
     }
     public void dropTiles(List<Tile> chosenTiles){
         model.getCurrentPlayer().getShelf().dropTiles(chosenTiles);
@@ -91,6 +86,7 @@ public class GameController  {
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
+
 
 
 }

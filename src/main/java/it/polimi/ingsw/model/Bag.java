@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model;
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 import java.util.ArrayList;
 import java.util.List;

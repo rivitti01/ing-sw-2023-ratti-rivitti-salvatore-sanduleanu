@@ -1,22 +1,11 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.view.TextualUI;
-import it.polimi.ingsw.view.TextualUI.*;
-
-import static com.sun.java.accessibility.util.SwingEventMonitor.addChangeListener;
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-
 
 
 public class Shelf {

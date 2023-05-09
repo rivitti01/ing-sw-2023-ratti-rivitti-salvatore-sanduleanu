@@ -4,6 +4,7 @@ import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.model.Tile;
+import it.polimi.ingsw.util.ErrorType;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.view.TextualUI;
 
@@ -43,6 +44,8 @@ public class ClientImpl extends UnicastRemoteObject implements Client, Runnable,
     }
 
 
+
+
     @Override
     public void clientConnection(String nickName) {
         this.stub.clientConnection(this, nickName);
@@ -65,28 +68,27 @@ public class ClientImpl extends UnicastRemoteObject implements Client, Runnable,
     }
 
     @Override
+    public void numberPartecipantsSetting(int n) {
+
+    }
+
+    @Override
+    public void endsSelection() {
+        this.stub.endsSelection();
+    }
+
+    @Override
     public void printGame(GameView gameView) {
         this.view.printGame(gameView);
     }
 
     @Override
-    public void nameError() {
-        System.err.println("Nome già in uso, sceglierne un altro:");
-        this.view.askNickName();
+    public void error(ErrorType e) {
+        this.view.error(e);
     }
 
     @Override
-    public void chosenTileError() {
-
-    }
-
-    @Override
-    public int askNumberPartecipants() {
-        return this.view.askNumber();
-    }
-
-    @Override
-    public void chosenColumnError() {
-
+    public void askNumberPartecipants() {
+        this.view.askNumber();
     }
 }
