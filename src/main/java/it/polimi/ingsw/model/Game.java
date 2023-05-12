@@ -2,10 +2,9 @@ package it.polimi.ingsw.model;
 
 
 import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.util.ErrorType;
+import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Random;
 
 import static it.polimi.ingsw.util.Costants.*;
 
-public class Game implements PropertyChangeListener {
+public class Game {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
@@ -118,13 +117,13 @@ public class Game implements PropertyChangeListener {
     public void setStart(boolean s){
         boolean old = this.start;
         this.start = s;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "start", old, this.start));
+
     }
 
     public void setEnd(boolean e){
         boolean old = this.end;
         this.end = e;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "end", old, this.end));
+
     }
 
     public void endGame(){
@@ -132,8 +131,6 @@ public class Game implements PropertyChangeListener {
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerName", null, p.getNickname()));
-            propertyChangeSupport.firePropertyChange((new PropertyChangeEvent(this, "playerPoints", null, p.getPoints())));
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
@@ -148,35 +145,27 @@ public class Game implements PropertyChangeListener {
             if(players.get(i).getPoints() >= players.get(i-1).getPoints())
                 tempWinner = players.get(i);
         }
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "winner", null, tempWinner));
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.addPropertyChangeListener(listener);
-    }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.removePropertyChangeListener(listener);
-    }
 
     public void addModelListener(ModelListener l){
         this.listener = l ;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
-    }
+
 
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
-            listener.error(ErrorType.WRONG_ACTION, this.getCurrentPlayer());
+            listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+        } else {
+            this.listener.askColumn();
         }
     }
 
     public void checkMaxNumberOfTilesChosen() {
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size()){
-            this.listener.error(ErrorType.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+            this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }
     }
 }

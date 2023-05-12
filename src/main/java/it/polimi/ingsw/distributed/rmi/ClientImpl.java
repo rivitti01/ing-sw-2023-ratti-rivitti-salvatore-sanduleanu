@@ -4,7 +4,7 @@ import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.model.Tile;
-import it.polimi.ingsw.util.ErrorType;
+import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.view.TextualUI;
 
@@ -43,7 +43,10 @@ public class ClientImpl extends UnicastRemoteObject implements Client, Runnable,
         this.view.run();
     }
 
-
+    @Override
+    public void askColumn() {
+        this.view.askColumn();
+    }
 
 
     @Override
@@ -83,7 +86,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, Runnable,
     }
 
     @Override
-    public void error(ErrorType e) {
+    public void error(Warnings e) {
         this.view.error(e);
     }
 

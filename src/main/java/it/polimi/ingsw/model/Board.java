@@ -20,13 +20,12 @@ public class Board {
     private Tile[][] board;
     private int size;
     private List<int[]> borderTiles;
-    private PropertyChangeSupport propertyChangeSupport;
+
 
     public Board(int numberParticipants){
         String name = "Board" + numberParticipants;
         setupBoard(name);
         this.borderTiles = getAvailableTiles();
-        propertyChangeSupport = new PropertyChangeSupport(this.board);
     }
 
     public Tile[][] getBoard(){
@@ -206,7 +205,6 @@ public class Board {
         Tile[][] bCopy = copyBoard();
         Tile temp = getTile(x, y);
         board[x][y] = new Tile(null); //prima era board[x][y] = null;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "board", bCopy, this));
         return temp;
     }
 
@@ -226,13 +224,5 @@ public class Board {
             }
         }
 
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

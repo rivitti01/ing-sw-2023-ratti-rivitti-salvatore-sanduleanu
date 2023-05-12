@@ -2,7 +2,7 @@ package it.polimi.ingsw.view;
 
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.util.ErrorType;
+import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
 
 import java.util.ArrayList;
@@ -20,14 +20,14 @@ public class TextualUI {
     private ViewListener listener;
     public void run() {
         System.out.println("It's your turn!");
-        chooseAction();
-
+        askTiles();
+        askColumn();
     }
 
     public void lastTurn(GameView modelview){
         System.out.println("È L'ULTIMO TURNO PER: " + modelview.getCurrentPlayerNickname());
         printShelf(modelView.getCurrentPlayerShelf());
-        int tilesNum = chooseAction();
+        int tilesNum = askTiles();
         int column = askColumn();
         if (tilesNum > 1) askOrder();
         modelview.getCurrentPlayerShelf().dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
@@ -73,15 +73,15 @@ public class TextualUI {
 
     }
 
-    public void chooseAction() {
+    public void askTiles() {
         Scanner scanner = new Scanner(System.in);
-        while(true) {
+        while (true) {
+            System.out.println("Inserire uno dei seguenti comanti.");
             System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
             String s = scanner.nextLine();
             switch (s.toUpperCase()) {
                 case "Q" -> {
                     listener.endsSelection();
-                    
                 }
                 case "S" -> {
                     System.out.println("seleziona una tessera:");
@@ -141,23 +141,23 @@ public class TextualUI {
         listener.clientConnection(nickName);
     }
 
-    public void error(ErrorType e){
+    public void error(Warnings e){
         switch (e){
-            case TILE_UNAVAILABLE -> {
+            case INVALID_TILE -> {
                 System.err.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
-                chooseAction();
+                askTiles();
             }
             case INVALID_NICKNAME -> {
                 System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
                 askNickName();
             }
-            case COLUMN_UNAVAILABLE -> {
+            case INVALID_COLUMN -> {
                 System.err.println("Errore nella scelta della colonna, scegline un'altra:");
                 askColumn();
             }
-            case WRONG_ACTION -> {
+            case INVALID_ACTION -> {
                 System.err.println("Scegliere almeno una tile prima di procedere:");
-                chooseAction();
+                askTiles();
             }
             case GAME_ALREADY_STARTED -> System.err.println("Ci dispiace c'è già una partita in atto. Non puoi giocare.");
             case MAX_TILES_CHOSEN -> {

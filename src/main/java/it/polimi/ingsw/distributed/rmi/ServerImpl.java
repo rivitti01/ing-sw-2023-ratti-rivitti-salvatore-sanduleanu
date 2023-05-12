@@ -4,7 +4,7 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.util.ErrorType;
+import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
 
 import java.rmi.RemoteException;
@@ -62,10 +62,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     this.controller = new GameController(model, this.connectedClients, this.numPartecipants);
                 }
             } else {
-                c.error(ErrorType.INVALID_NICKNAME);
+                c.error(Warnings.INVALID_NICKNAME);
             }
         } else {
-            c.error(ErrorType.GAME_ALREADY_STARTED);
+            c.error(Warnings.GAME_ALREADY_STARTED);
         }
     }
     @Override
@@ -76,6 +76,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void checkingCoordinates(int[] coordinates) {
         this.controller.checkCorrectCoordinates(coordinates);
+        printGame(); //TODO: aggiungere alla stampa del gioco un array che tiene conto delle tiles scelte dal giocatore
     }
 
     @Override
@@ -105,7 +106,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     }
 
     @Override
-    public void error(ErrorType e, Player currentPlayer) {
+    public void error(Warnings e, Player currentPlayer) {
         String nickName = currentPlayer.getNickname();
         this.connectedClients.get(nickName).error(e);
     }
@@ -121,6 +122,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         connectedClients.get(this.model.getCurrentPlayer().getNickname()).askNumberPartecipants();
     }
 
+    @Override
+    public void askColumn() {
+        connectedClients.get(this.model.getCurrentPlayer().getNickname()).askColumn();
+    }
 
 
 }
