@@ -11,7 +11,7 @@ import java.util.List;
 
 import static it.polimi.ingsw.util.Costants.*;
 
-public class Player  implements PropertyChangeListener{
+public class Player {
     final String nickname;
     private Shelf shelf;
     private boolean seat;
@@ -21,16 +21,15 @@ public class Player  implements PropertyChangeListener{
     private int chosenColumn;
     private PersonalGoalCard personalGoalCard;
     private int points;
-    PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
-        shelf.addPropertyChangeListener(this);
         chosenCoordinates = new ArrayList<>();
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
         points = 0;
+        chosenColumn = -1;
     }
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
@@ -42,8 +41,6 @@ public class Player  implements PropertyChangeListener{
     }
     public void addPoints(int points){
         this.points += points;
-        if(points == END_GAME_POINT)
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerTakesEndPoint", null, this.getNickname()));
     }
     public void addPoints(CommonGoalCard card){
         this.points += card.getPoint();
@@ -87,23 +84,20 @@ public class Player  implements PropertyChangeListener{
         chosenTiles = new ArrayList<>();
         chosenCoordinates = new ArrayList<>(2);
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
-            if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) {
+            if (!this.goalsCompleted[i] && cards[i].algorythm(this.shelf)) { // controlla per ogni common se e stato fatto l obiettivo
                 int point = cards[i].getPoint();
                 addPoints(point);
                 this.goalsCompleted[i] = true;
-                propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerTakesCommonPoint", null, this.getNickname()));
             }
-        } // controlla per ogni common se e stato fatto l obiettivo
+        }
     }
 
     public List<Tile> getChosenTiles() {
         return chosenTiles;
     }
-
     public void setChosenTiles(List<Tile> chosenTiles) {
         this.chosenTiles = chosenTiles;
     }
-
     private List<Tile> chooseOrder(List<Tile> chosenTiles){
         System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");
         List<Tile> tmp = new ArrayList<>();
@@ -124,17 +118,12 @@ public class Player  implements PropertyChangeListener{
         return tmp;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+
+    ////////////////////////////////////////////
+    public int getChosenColumn() {
+        return chosenColumn;
     }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(evt.getSource(), evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
+    public void setChosenColumn(int chosenColumn) {
+        this.chosenColumn = chosenColumn;
     }
 }

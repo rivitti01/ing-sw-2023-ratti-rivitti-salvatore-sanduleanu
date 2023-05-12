@@ -4,7 +4,10 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
+import it.polimi.ingsw.util.Warnings;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +17,7 @@ import static it.polimi.ingsw.util.Costants.*;
 
 public class Game {
     private int numberPartecipants;
-    private List<Player> players;
+    private List<Player> players= new ArrayList<>();
     private CommonGoalCard[] commonGoals;
     private Board board;
     private Bag bag;
@@ -23,15 +26,17 @@ public class Game {
     private boolean lastTurn;
     private boolean start = false;
     private boolean end=false;
-
     private ModelListener listener;
+    private Warnings errorType = null;
 
-    public void startGame(int numberParticipants, Map<Player, Client> players){
+    public void startGame(int numberParticipants, Map<String, Client> players){
         this.numberPartecipants = numberParticipants;
         this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
-        this.players = new ArrayList<>(players.keySet());
+        for(Map.Entry<String, Client> entry : players.entrySet()){
+            this.players.add(new Player(entry.getKey()));
+        }
         setFirstPlayer();
         this.currentPlayer = this.players.get(0);
         this.commonGoals = new CommonGoalCard[2];
@@ -42,10 +47,10 @@ public class Game {
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
         board.setBorderTiles(board.getBorderTiles());
+
         listener.printGame();
         listener.newTurn(currentPlayer);
     }
-
 
 
     //Getters and Setters
@@ -64,36 +69,28 @@ public class Game {
         players.get(0).setSeat(true);
         setCurrentPlayer(players.get(0));
     }
-
     public boolean isLastTurn() {
         return this.lastTurn;
     }
-
     public void setLastTurn(boolean lastTurn) {
         this.lastTurn = lastTurn;
+        listener.isLastTurn();
     }
-
-
     public List<Player> getPlayers() {
-        return players;
+        return this.players;
     }
-
     public Board getBoard() {
         return board;
     }
-
     public Bag getBag() {
         return bag;
     }
-
     public CommonGoalCard[] getCommonGoals() {
         return commonGoals;
     }
-
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
-
     public List<int[]> getAvailableTilesForCurrentPlayer(){
         int[]  chosenCoordinates1;
         int[]  chosenCoordinates2;
@@ -109,22 +106,45 @@ public class Game {
         }
         return this.board.filterAvailableTiles(chosenCoordinates1, chosenCoordinates2, this.board.getBorderTiles());
     }
-
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+        listener.newTurn(this.currentPlayer);
     }
-
     public void setStart(boolean s){
         boolean old = this.start;
         this.start = s;
-
     }
-
     public void setEnd(boolean e){
         boolean old = this.end;
         this.end = e;
-
     }
+    ////////////////////////////////////////////////////
+    public Tile popTileFromBoard(int[] coordinates){
+        Tile poppedTile = this.board.popTile(coordinates[0], coordinates[1]);
+        listener.printGame();
+        return poppedTile;
+    }
+    public void setChosenColumnByPlayer(int c){
+        this.currentPlayer.setChosenColumn(c);
+        listener.askOrder();
+    }
+    public Warnings getErrorType() {
+        return errorType;
+    }
+    public void setErrorType(Warnings errorType){
+        this.errorType = errorType;
+        listener.error(errorType, this.currentPlayer);
+    }
+    public void droppedTile(Tile tile, int column){
+        this.currentPlayer.getChosenTiles().remove(tile);
+        this.currentPlayer.getShelf().dropTile(tile, column);
+        listener.printGame();
+        if(!this.currentPlayer.getChosenTiles().isEmpty())
+            listener.askOrder();
+    }
+
+    ////////////////////////////////////////////////////
+
 
     public void endGame(){
         setEnd(true);
@@ -138,7 +158,6 @@ public class Game {
         }
 
     }
-
     public void findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
@@ -148,21 +167,14 @@ public class Game {
     }
 
 
-
     public void addModelListener(ModelListener l){
         this.listener = l ;
     }
-
-
-
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
             listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
-        } else {
-            this.listener.askColumn();
         }
     }
-
     public void checkMaxNumberOfTilesChosen() {
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size()){
             this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());

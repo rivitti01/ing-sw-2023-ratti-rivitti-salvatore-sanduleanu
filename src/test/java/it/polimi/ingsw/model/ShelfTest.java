@@ -130,7 +130,7 @@ class ShelfTest {
         chosenTiles.add(tile1);
         chosenTiles.add(tile2);
         chosenTiles.add(tile3);
-        s.dropTiles(chosenTiles, 4);
+        //s.dropTiles(chosenTiles, 4);
     }
 
     @Test

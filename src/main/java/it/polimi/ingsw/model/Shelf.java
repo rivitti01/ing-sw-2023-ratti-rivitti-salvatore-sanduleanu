@@ -111,17 +111,12 @@ public class Shelf {
 
         return count;
     }
-    public void dropTiles(List<Tile> chosenTiles, int column){
-        Shelf sCopy = this.copyShelf();
+    public void dropTile(Tile tile, int column){
         int j=0;
         while(j+1<SHELF_ROWS && this.getTile(j+1, column)==null) {
             j++;
         }
-        for (Tile chosenTile : chosenTiles) {
-            putTile(j, column, chosenTile);
-            j--;
-        }
-        sPcs.firePropertyChange(new PropertyChangeEvent(this, "shelf", sCopy, this));
+        putTile(j, column, tile);
     }
     public boolean isFull(){
         for (int i = 0; i < SHELF_ROWS; i++){

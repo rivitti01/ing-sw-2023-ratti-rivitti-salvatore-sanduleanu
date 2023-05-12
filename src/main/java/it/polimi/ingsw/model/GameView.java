@@ -2,25 +2,27 @@ package it.polimi.ingsw.model;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GameView  implements Serializable {
 
     static final long serialVersionUID = 1L;
     private final Board board;
     private final String nickName;
-    private final List<Shelf> playersShelves; //TODO: fare una mappa <String, Shelf> per stampare le shelf associate al loro nome
+    private final Map<String, Shelf> playersShelves;
     private final PersonalGoalCard personal;
     private final String[] commons;
+    private final List<Tile> chosenTiles;
+
 
     public GameView(Game model, Player p){
-        this.playersShelves = new ArrayList<>();
+        this.chosenTiles = model.getCurrentPlayer().getChosenTiles();
+        this.playersShelves = new HashMap<>();
         this.commons = new String[2];
         this.board = model.getBoard();
-        this.nickName = p.getNickname();
+        this.nickName = model.getCurrentPlayer().getNickname();
         for (Player player: model.getPlayers()){
-            this.playersShelves.add(player.getShelf());
+            this.playersShelves.put(player.getNickname(), player.getShelf());
         }
         this.personal = p.getPersonalGoalCard();
         for(int i = 0 ; i<2 ; i++){
@@ -28,18 +30,22 @@ public class GameView  implements Serializable {
         }
     }
 
+
     public String getNickName() {
-        return nickName;
+        return this.nickName;
     }
 
-    public List<Shelf> getPlayersShelves() {
+    public Map<String, Shelf> getPlayersShelves() {
         return this.playersShelves;
+    }
+
+    public List<Tile> getChosenTiles() {
+        return chosenTiles;
     }
 
     public PersonalGoalCard getPersonal() {
         return personal;
     }
-
     public Board getBoard(){
         return this.board;
     }

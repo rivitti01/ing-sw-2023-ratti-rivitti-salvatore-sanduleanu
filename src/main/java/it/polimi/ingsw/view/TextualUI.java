@@ -16,67 +16,59 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 public class TextualUI {
-
     private ViewListener listener;
-    public void run() {
-        System.out.println("It's your turn!");
-        askTiles();
-        askColumn();
+
+
+    public void newTurn(){
+        System.out.println("È IL TUO TURNO");
+        chooseAction();
     }
 
-    public void lastTurn(GameView modelview){
-        System.out.println("È L'ULTIMO TURNO PER: " + modelview.getCurrentPlayerNickname());
-        printShelf(modelView.getCurrentPlayerShelf());
-        int tilesNum = askTiles();
-        int column = askColumn();
-        if (tilesNum > 1) askOrder();
-        modelview.getCurrentPlayerShelf().dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
+    public void lastTurn(){
+        System.out.println("È IL TUO ULTIMO TURNO");
+        chooseAction();
     }
     public void askOrder() {
-        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
-        List<Tile> tmp = new ArrayList<>();
+        System.out.println("seleziona la tile da inserire prima: ");
         Scanner scanner = new Scanner(System.in);
-        do{
-            for (int i = 0; i < modelView.getCurrentPlayerChosenTiles().size(); i++) {
-                System.out.println("[" + i + "]" + " " + modelView.getCurrentPlayerChosenTiles().get(i).getColor());
-            }
+        int tilePosition = -1;
+        while(true) {
             try {
-                int pos = Integer.parseInt(scanner.nextLine());
-                if (pos < 0 || pos >= modelView.getCurrentPlayerChosenTiles().size())
-                    System.out.println("posizione non valida!\nRiprovare");
-                else tmp.add(modelView.getCurrentPlayerChosenTiles().remove(pos));
-            }catch(NumberFormatException e){
+                tilePosition = Integer.parseInt(scanner.nextLine());
+                listener.tileToDrop(tilePosition);
+                return;
+            } catch (NumberFormatException e) {
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
-        }while (modelView.getCurrentPlayerChosenTiles().size()!=0);
-        controller.setChosenTiles(tmp);
+        }
     }
 
-    public int askColumn() {
+
+
+    public void askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
         System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
         while (true) {
             try {
                 column = Integer.parseInt(scanner.nextLine());
-                if (column < 0 || column >= SHELF_COLUMN)
-                    System.out.println("posizione invalida! riprovare\n");
-                else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
-                    System.out.println("troppe tessere! Riprovare\n");
-                else {
-                    return column;
-                }
+                //if (column < 0 || column >= SHELF_COLUMN)
+                //System.out.println("posizione invalida! riprovare\n");
+                //else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
+                //System.out.println("troppe tessere! Riprovare\n");     TODO: farlo fare al controller
+                // else {
+                this.listener.columnSetting(column);
+                return;
+                //}
             }catch (NumberFormatException e){
                 System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
             }
         }
 
     }
-
-    public void askTiles() {
+    public void chooseAction() {
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Inserire uno dei seguenti comanti.");
+        while(true) {
             System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
             String s = scanner.nextLine();
             switch (s.toUpperCase()) {
@@ -123,7 +115,6 @@ public class TextualUI {
         }
         this.listener.numberPartecipantsSetting(input);
     }
-
     public void askNickName() {
         boolean validName = false;
         String nickName = null;
@@ -140,12 +131,11 @@ public class TextualUI {
         }
         listener.clientConnection(nickName);
     }
-
     public void error(Warnings e){
         switch (e){
             case INVALID_TILE -> {
                 System.err.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
-                askTiles();
+                chooseAction();
             }
             case INVALID_NICKNAME -> {
                 System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
@@ -157,16 +147,25 @@ public class TextualUI {
             }
             case INVALID_ACTION -> {
                 System.err.println("Scegliere almeno una tile prima di procedere:");
-                askTiles();
+                chooseAction();
             }
             case GAME_ALREADY_STARTED -> System.err.println("Ci dispiace c'è già una partita in atto. Non puoi giocare.");
             case MAX_TILES_CHOSEN -> {
                 System.err.println("Hai raggiunto il numero massimo di tessere prendibili.");
                 askColumn();
             }
+            case INVALID_ORDER -> {
+                System.err.println("AOO metti una posizione sensata.");
+                askOrder();
+            }
         }
     }
 
+
+
+    public void lastTurnReached(String nickname){
+        System.out.println(nickname + "ha riempito la shelf\nInizia l'ultimo giro");
+    }
     public void printBoard(Board b) {
         System.out.print("   ");
         System.out.print("   ");
@@ -203,14 +202,12 @@ public class TextualUI {
         System.out.println();
         System.out.println();
     }
-
     public void printAvailableTiles(List<int[]> availableTiles) {
         for (int[] availableTile : availableTiles) System.out.print(availableTile[0] + ";" + availableTile[1] + " ");
         System.out.println();
     }
-
-    public void printShelf(Shelf s) {
-        System.out.println("Ecco la tua attuale shelf...");
+    public void printShelf(Shelf s, String nickname) {
+        System.out.println("shelf di: " + nickname);
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
@@ -237,7 +234,6 @@ public class TextualUI {
         System.out.println();
         System.out.println();
     }
-
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
@@ -265,20 +261,41 @@ public class TextualUI {
         System.out.println();
         System.out.println();
     }
+    public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
+        if (!chosenTiles.isEmpty()) {
+            System.out.println("tessere scelte da: " + nickname);
+            for (int i = 0; i < chosenTiles.size(); i++)
+                if (chosenTiles.get(i).getColor().equals(Color.BLUE))
+                    System.out.println(i + 1 + ") " + ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.WHITE))
+                    System.out.println(i + 1 + ") " + ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.YELLOW))
+                    System.out.println(i + 1 + ") " + ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.PINK))
+                    System.out.println(i + 1 + ") " + ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.GREEN))
+                    System.out.println(i + 1 + ") " + ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.CYAN))
+                    System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
+        }
+    }
+
 
     public void addListener (ViewListener l){
         this.listener = l;
     }
 
+
     public void printGame(GameView gameView){
         printBoard(gameView.getBoard());
-        for (Shelf s: gameView.getPlayersShelves()) {
-            printShelf(s);
+        for(String nickname:  gameView.getPlayersShelves().keySet()) {
+            printShelf(gameView.getPlayersShelves().get(nickname), nickname);
         }
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
         }
         printPersonalGoalShelf(gameView.getPersonal());
+        printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
     }
 
 }

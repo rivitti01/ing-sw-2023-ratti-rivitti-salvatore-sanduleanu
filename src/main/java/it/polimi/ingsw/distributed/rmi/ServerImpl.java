@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
 
+
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
@@ -22,21 +23,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private int numPartecipants;
     private boolean gameAlreadyStarted;
 
-    protected ServerImpl() throws RemoteException {
+    public ServerImpl() throws RemoteException {
         connectedClients = new HashMap<>();
     }
-
-    protected ServerImpl(int port) throws RemoteException {
+    public ServerImpl(int port) throws RemoteException {
         super(port);
         connectedClients = new HashMap<>();
         this.gameAlreadyStarted = false;
     }
-
-    protected ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+    public ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         connectedClients = new HashMap<>();
         this.gameAlreadyStarted = false;
     }
+
 
     public boolean nameControl(String newName){
         for (String s: connectedClients.keySet()){
@@ -45,6 +45,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         return true;
     }
 
+
+    //********** SERVER METHODS
     @Override
     public void clientConnection(Client c, String nickName) {
         if (!this.gameAlreadyStarted) {
@@ -59,7 +61,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     this.model = new Game();
                     this.model.addModelListener(this);
                     this.gameAlreadyStarted = true;
-                    this.controller = new GameController(model, this.connectedClients, this.numPartecipants);
+                    this.controller = new GameController(this.model, this.connectedClients, this.numPartecipants);
                 }
             } else {
                 c.error(Warnings.INVALID_NICKNAME);
@@ -69,62 +71,61 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
     }
     @Override
-    public void orederSetting(List<Tile> chosenTiles) {
-        this.controller.dropTiles(chosenTiles);
+    public void tileToDrop(int tilePosition) {
+        this.controller.dropTile(tilePosition);
     }
-
     @Override
     public void checkingCoordinates(int[] coordinates) {
         this.controller.checkCorrectCoordinates(coordinates);
-        printGame(); //TODO: aggiungere alla stampa del gioco un array che tiene conto delle tiles scelte dal giocatore
     }
-
     @Override
     public void columnSetting(int c) {
         controller.setChosenColumn(c);
     }
-
     @Override
     public void endsSelection() {
         this.model.selectionControl();
     }
 
-    @Override
-    public void numberPartecipantsSetting(int n) {
-        this.numPartecipants = n;
-    }
 
+    //************ MODEL LISTENER METHODS
     @Override
     public void printGame() {
         for(String s:  connectedClients.keySet()){
-            for (Player p: this.controller.getPlayers().keySet()){
+            for (Player p: this.model.getPlayers()){
                 if (s.equals(p.getNickname())){
                     connectedClients.get(s).printGame(new GameView(this.model, p));
                 }
             }
         }
     }
-
     @Override
     public void error(Warnings e, Player currentPlayer) {
         String nickName = currentPlayer.getNickname();
         this.connectedClients.get(nickName).error(e);
     }
-
     @Override
     public void newTurn(Player currentPlayer) {
         String nickName = currentPlayer.getNickname();
-        connectedClients.get(nickName).run();
+        if(!this.model.isLastTurn())
+            connectedClients.get(nickName).newTurn();
+        else
+            connectedClients.get(nickName).lastTurn();
     }
-
     @Override
     public void askNumberPartecipants() {
         connectedClients.get(this.model.getCurrentPlayer().getNickname()).askNumberPartecipants();
     }
-
     @Override
-    public void askColumn() {
-        connectedClients.get(this.model.getCurrentPlayer().getNickname()).askColumn();
+    public void askOrder(){
+        this.connectedClients.get(this.model.getCurrentPlayer().getNickname());
+    }
+    @Override
+    public void isLastTurn(){
+        for(String nickname : this.connectedClients.keySet()){
+            this.connectedClients.get(nickname).lastTurnNotification(this.model.getCurrentPlayer().getNickname());
+        }
+
     }
 
 

@@ -18,13 +18,12 @@ public class CommonGoalCard {
     private CardStrategy cardStrategy;
     private Stack<Integer> scores;
     private String description;
-    private PropertyChangeSupport propertyChangeSupport;
+
 
     public CommonGoalCard(int numberParticipants, DeckCommon deckCommon){
         setCardStrategy(deckCommon);
         fillStack(numberParticipants);
         description = cardStrategy.toString();
-        propertyChangeSupport = new PropertyChangeSupport(this);
     }
     public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
         this.cardStrategy = cardStrategy;
@@ -76,7 +75,6 @@ public class CommonGoalCard {
 
     public int getPoint(){
         int point = scores.pop();
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "commonPoint", 0, point));
         return point;
     }
 
@@ -110,12 +108,5 @@ public class CommonGoalCard {
         return description;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
 
 }
