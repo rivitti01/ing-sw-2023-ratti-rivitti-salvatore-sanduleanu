@@ -64,6 +64,7 @@ public class ServerSocketImpl implements PropertyChangeListener {
             thread.start();
 
             if (i > 3){
+                System.out.println("Raggiunto numero massimo di client");
                 while (true){
                     //stay open
                 }
@@ -72,54 +73,112 @@ public class ServerSocketImpl implements PropertyChangeListener {
         }
 
     }
+    public void sendModelView(Game model) throws InterruptedException {
+        GameView modelView = new GameView(model);
+        //wait(1500);
+        for (int i = 0; i < clients.size(); i++){
+            try {
+                clients.get(i).sendModelView(modelView); //invio il nuovo gameView ai client
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
+    }
+    public void setPlayerNumber(int number) throws IOException, InterruptedException {
+        controller.setPlayerNumber(number);
+        playerNumber = number;
+        System.out.println("Preparo il gioco per "+ number + " giocatori");
+        boolean start = true;
+        if (clients.size() >= playerNumber ){
+            for (int i = 0; i < clients.size(); i++){
+                if (i < playerNumber && clients.get(i).getNickname()==null){
+                    start = false;
+                    break;
+                }
+                if (i >= playerNumber && clients.get(i).getNickname()==null){
+                    clients.get(i).sendString("cantPlay");
+                    clients.remove(i);
+                }
+            }
+            if (start){
+                controller.initializeModel();
+                System.out.println("inizializzo");
+                //wait(1500);
+                //sendModelView(model);
+            }
+        }
+
+
+        /*
+        if (clients.size() >= playerNumber ){
+            for (int i = 0; i < clients.size(); i++){
+                if (i < playerNumber) {
+                    controller.setPlayerNickname(clients.get(i).getNickname());
+                    clients.get(i).setStarted(true);
+                }else {
+                    try {
+                        clients.get(i).setCanPlay(false);
+                    } catch (IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            for (int i = 0; i < clients.size(); i++){
+                if (!clients.get(i).getCanPlay()) clients.remove(i);
+            }
+            controller.initializeModel();
+            System.out.println("inizializzo");
+            sendModelView(model);
+        }*/
+    }
+    private void setNickname(PropertyChangeEvent evt) throws IOException, ClassNotFoundException, InterruptedException {
+        ServerHandler serverHandler = (ServerHandler) evt.getOldValue();
+        String nickname = (String) evt.getNewValue();
+        if (controller.setPlayerNickname(nickname)){
+            serverHandler.setNickname(nickname);
+            serverHandler.sendString("ok");
+            System.out.println("C'è un giocatore di nome "+ evt.getNewValue());
+            if (clients.size() == playerNumber){
+                //wait(1500);
+                setPlayerNumber(playerNumber);
+            }
+        }else {
+            serverHandler.sendString("ko");
+            for (int i = 0; i < clients.size(); i++) {
+                if (clients.get(i).equals(serverHandler)){
+                    clients.get(i).waitAndSetNickname();
+                }
+            }
+        }
+    }
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("start")){
             System.out.println("qui il model dovrebbe essere fatto e dovrebbe essere propagato ai client");
             model = (Game) evt.getSource();
-            GameView modelView = new GameView(model);
-            for (int i = 0; i < clients.size(); i++){
-                try {
-                    clients.get(i).sendModelView(modelView); //invio il nuovo gameView ai client
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                sendModelView(model);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         if (Objects.equals(evt.getPropertyName(), "playerNumber")){
-            controller.setPlayerNumber((int) evt.getNewValue());
-            playerNumber = (int) evt.getNewValue();
-            System.out.println("Preparo il gioco per "+ evt.getNewValue() + " giocatori");
-            if (clients.size() >= playerNumber ){
-                for (int i = 0; i < clients.size(); i++){
-                    if (i < playerNumber) {
-                        controller.setPlayerNickname(clients.get(i).getNickname());
-                        clients.get(i).setStarted(true);
-                    }else {
-                        try {
-                            clients.get(i).setCanPlay(false);
-                        } catch (IOException | InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-                for (int i = 0; i < clients.size(); i++){
-                    if (!clients.get(i).getCanPlay()) clients.remove(i);
-                }
-                controller.initializeModel();
-                System.out.println("inizializzo");
+            int number = (int) evt.getNewValue();
+            try {
+                setPlayerNumber(number);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
         }
         if (Objects.equals(evt.getPropertyName(), "nickname")){
-            controller.setPlayerNickname((String) evt.getNewValue());
-            System.out.println("C'è un giocatore di nome "+ evt.getNewValue());
-            if (clients.size() == playerNumber) propertyChange(new PropertyChangeEvent(null,"playerNumber",null,playerNumber));
-
+            try {
+                setNickname(evt);
+            } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-
-
     }
 
 }

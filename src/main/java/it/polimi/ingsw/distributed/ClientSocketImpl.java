@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class ClientSocketImpl implements PropertyChangeListener {
@@ -18,6 +19,8 @@ public class ClientSocketImpl implements PropertyChangeListener {
     private TUISocket view;
     GameView modelView;
     private String nickname;
+    ObjectInputStream objectInputStream;
+    ObjectOutputStream objectOutputStream;
 
     public ClientSocketImpl(int port, String ip) {
         this.port = port;
@@ -29,31 +32,57 @@ public class ClientSocketImpl implements PropertyChangeListener {
         Scanner scanner = new Scanner(System.in);
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
-        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectInputStream = new ObjectInputStream(inputStream);
+        objectOutputStream = new ObjectOutputStream(outputStream);
 
 
-        System.out.println("Inserisci nome utente");
-        Message message = new Message(scanner.nextLine());
-        nickname = message.getNickName();
-        objectOutputStream.writeObject(message);
-        objectOutputStream.flush();
-        String setUp = (String) objectInputStream.readObject();
-        if (setUp.equals("playerNumber")){
-            System.out.println("Inserisci il numero di giocatori");
-            message = new Message(scanner.nextInt());
-            objectOutputStream.writeObject(message);
+        setNickname();
+
+        Object object = objectInputStream.readObject();
+        String setUp = null;
+        if (object instanceof GameView){
+            modelView = (GameView) object;
+            view = new TUISocket(null,modelView,nickname,socket);
+            view.addPropertyChangeListener(this);
+            int i = 0;
+            while (true){
+                if (i > 0){
+                    modelView = (GameView) objectInputStream.readObject();
+                    if (modelView.getCurrentPlayerNickname().equals(nickname)) view.newTurn(modelView);
+                    else view.newTurnNotMine(modelView);
+                }else {
+                    if (modelView.getCurrentPlayerNickname().equals(nickname)) view.newTurn(modelView);
+                    else view.newTurnNotMine(modelView);
+                }
+                i++;
+            }
+        }else {
+            setUp = (String) object;
         }
-        if (setUp.equals("cantPlay")){
+
+        //String setUp = (String) objectInputStream.readObject();
+        if (Objects.equals(setUp, "playerNumber")){
+            System.out.println("Inserisci il numero di giocatori");
+            Message message = new Message(scanner.nextInt());
+            sendMessage(message);
+        }
+        if (Objects.equals(setUp, "NoPlayerNumber")){
+            System.out.println("Partita in fase di completamento, aspetto il model");
+        }
+        /*if (setUp.equals("cantPlay")){
+            System.out.println("Il server ha già una partita piena, non puoi giocare");
+        }*/
+        object = objectInputStream.readObject();
+        if (object instanceof GameView){
+            modelView = (GameView) object;
+        }else {
             System.out.println("Il server ha già una partita piena, non puoi giocare");
         }
-
-        modelView = (GameView) objectInputStream.readObject();
+        //modelView = (GameView) objectInputStream.readObject();
         //GameController controller = new GameController(modelView);
         view = new TUISocket(null,modelView,nickname,socket);
         view.addPropertyChangeListener(this);
-        //Thread thread = new Thread(view);
-        //thread.start();
+
         int i = 0;
         while (true){
             if (i > 0){
@@ -74,6 +103,29 @@ public class ClientSocketImpl implements PropertyChangeListener {
 
 
 
+    }
+
+    private void setNickname() throws IOException, ClassNotFoundException {
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Inserisci nome utente");
+            Message message = new Message(scanner.nextLine());
+            objectOutputStream.writeObject(message);
+            objectOutputStream.flush();
+            String tmp = (String) objectInputStream.readObject();
+            if (tmp.equals("ko")){
+                System.out.println("Esiste già un giocatore con questo nome utente, si prega di ripetere.");
+            }else{
+                System.out.println("Nome utente impostato correttamente");
+                nickname = message.getNickName();
+                break;
+            }
+        }
+
+    }
+    private void sendMessage(Message message) throws IOException {
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ServerHandler implements Runnable, PropertyChangeListener {
+public class ServerHandler implements Runnable { //, PropertyChangeListener
     private final Socket socket;
     private final Game model;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -43,27 +43,26 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        while (true){
+
+        }
 
 
     }
     public void setUp() throws IOException, ClassNotFoundException, InterruptedException {
         if (creator){
-            objectOutputStream.writeObject("playerNumber");
+            sendString("playerNumber");
             Message message = (Message) objectInputStream.readObject();
             readMessageOnConsole(message);
             fireMessage(message);
         }else {
-            objectOutputStream.writeObject("NoPlayerNumber");
+            sendString("NoPlayerNumber");
         }
-    }
-    public void setStarted(){
-        started = true;
     }
     public void waitAndSetNickname() throws IOException, ClassNotFoundException {
         Message message = (Message) objectInputStream.readObject();
-        nickname = message.getNickName();
         if (message.getNickName()!=null){
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(socket,"nickname",this,message.getNickName()));
+            fireMessage(message);
         }
         System.out.println("Client"+socket.getPort()+ ": nome assegnato -> "+nickname);
     }
@@ -94,6 +93,7 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
     public void sendModelView(GameView gameView) throws IOException {
         gameView.getBoard().setBorderTiles();
         objectOutputStream.writeObject(gameView);
+        objectOutputStream.flush();
     }
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.addPropertyChangeListener(listener);
@@ -105,20 +105,23 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
     public Socket getSocket(){
         return socket;
     }
+    /*
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            try {
+                System.out.println("lo mando?");
+                sendModelView(new GameView((Game) evt.getSource()));
+                System.out.println("mandato");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        try {
-            System.out.println("lo mando?");
-            sendModelView(new GameView((Game) evt.getSource()));
-            System.out.println("mandato");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
+        }*/
     public String getNickname(){
         return nickname;
+    }
+    public void setNickname(String nickname){
+        this.nickname = nickname;
     }
 
     public void setStarted(boolean started) {
@@ -130,5 +133,9 @@ public class ServerHandler implements Runnable, PropertyChangeListener {
     }
     public boolean getCanPlay(){
         return canPlay;
+    }
+    public void sendString(String string) throws IOException {
+        objectOutputStream.writeObject(string);
+        objectOutputStream.flush();
     }
 }
