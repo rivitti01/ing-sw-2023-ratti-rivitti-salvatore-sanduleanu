@@ -13,7 +13,6 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
@@ -24,6 +23,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private boolean gameAlreadyStarted;
 
     public ServerImpl() throws RemoteException {
+        super();
         connectedClients = new HashMap<>();
     }
     public ServerImpl(int port) throws RemoteException {
@@ -52,7 +52,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if (!this.gameAlreadyStarted) {
             if (nameControl(nickName)) {
                 if (connectedClients.size() == 0) {
-                    c.askNumberPartecipants();
+                    try {
+                        c.askNumberParticipants();
+                    } catch (RemoteException e){
+                        System.err.println("Unable to ask the number of participants the client: "
+                                + e.getMessage() + ". Skipping the update...");
+                    }
+
                     connectedClients.put(nickName, c);
                 } else {
                     connectedClients.put(nickName, c);
@@ -64,10 +70,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     this.controller = new GameController(this.model, this.connectedClients, this.numPartecipants);
                 }
             } else {
-                c.error(Warnings.INVALID_NICKNAME);
+                try {
+                    c.error(Warnings.INVALID_NICKNAME);
+                } catch (RemoteException e){
+                    System.err.println("Unable to advise the client about the invalidation of the chosen nick name:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         } else {
-            c.error(Warnings.GAME_ALREADY_STARTED);
+            try {
+                c.error(Warnings.GAME_ALREADY_STARTED);
+            } catch (RemoteException e){
+                System.err.println("Unable to advice the client about the game being already full:" +
+                        e.getMessage() + ". Skipping the update...");
+            }
         }
     }
     @Override
@@ -87,14 +103,22 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.model.selectionControl();
     }
 
-
+    @Override
+    public void numberOfParticipantsSetting(int n) {
+        this.numPartecipants = n;
+    }
     //************ MODEL LISTENER METHODS
     @Override
     public void printGame() {
         for(String s:  connectedClients.keySet()){
             for (Player p: this.model.getPlayers()){
                 if (s.equals(p.getNickname())){
-                    connectedClients.get(s).printGame(new GameView(this.model, p));
+                    try {
+                        connectedClients.get(s).printGame(new GameView(this.model, p));
+                    } catch (RemoteException e){
+                        System.err.println("Unable to print the game:" +
+                                e.getMessage() + ". Skipping the update...");
+                    }
                 }
             }
         }
@@ -102,31 +126,61 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void error(Warnings e, Player currentPlayer) {
         String nickName = currentPlayer.getNickname();
-        this.connectedClients.get(nickName).error(e);
+        try {
+            this.connectedClients.get(nickName).error(e);
+        } catch (RemoteException exception){
+            System.err.println("Unable to advise the client about a game error:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
     }
     @Override
     public void newTurn(Player currentPlayer) {
         String nickName = currentPlayer.getNickname();
-        if(!this.model.isLastTurn())
-            connectedClients.get(nickName).newTurn();
-        else
-            connectedClients.get(nickName).lastTurn();
-    }
-    @Override
-    public void askNumberPartecipants() {
-        connectedClients.get(this.model.getCurrentPlayer().getNickname()).askNumberPartecipants();
+        if(!this.model.isLastTurn()) {
+            try {
+                connectedClients.get(nickName).newTurn();
+            } catch (RemoteException exception) {
+                System.err.println("Unable to start a new turn:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
+        }
+        else {
+            try {
+                connectedClients.get(nickName).lastTurn();
+            } catch (RemoteException exception) {
+                System.err.println("Unable to start the last turn:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
+        }
     }
     @Override
     public void askOrder(){
-        this.connectedClients.get(this.model.getCurrentPlayer().getNickname());
+        try {
+            this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askOrder();
+        } catch (RemoteException e){
+            System.err.println("Unable to ask the current player the order:" +
+                    e.getMessage() + ". Skipping the update...");
+        }
     }
     @Override
     public void isLastTurn(){
         for(String nickname : this.connectedClients.keySet()){
-            this.connectedClients.get(nickname).lastTurnNotification(this.model.getCurrentPlayer().getNickname());
+            try {
+                this.connectedClients.get(nickname).lastTurnNotification(this.model.getCurrentPlayer().getNickname());
+            } catch (RemoteException exception) {
+                System.err.println("Unable to advice the clients about the last round beginning:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
         }
-
     }
 
-
+    @Override
+    public void askColumn() {
+        try {
+            this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askColumn();
+        } catch (RemoteException e){
+            System.err.println("Unable to ask the current player the column:" +
+                    e.getMessage() + ". Skipping the update...");
+        }
+    }
 }

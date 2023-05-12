@@ -173,6 +173,8 @@ public class Game {
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
             listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+        } else {
+            listener.askColumn();
         }
     }
     public void checkMaxNumberOfTilesChosen() {

@@ -41,27 +41,59 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     // ***************** VIEW LISTENER METHODS
     @Override
     public void clientConnection(String nickName) {
-        this.stub.clientConnection(this, nickName);
-    }
-    @Override
-    public void checkingCoordinates(int[] coordinates) {
-        this.stub.checkingCoordinates(coordinates);
-    }
-    @Override
-    public void tileToDrop(int tilePosition) {
-        this.stub.tileToDrop(tilePosition);
-    }
-    @Override
-    public void columnSetting(int i) {
-        this.stub.columnSetting(i);
-    }
-    @Override
-    public void numberPartecipantsSetting(int n) {
+        try {
+            this.stub.clientConnection(this, nickName);
+        } catch (RemoteException exception){
+            System.err.println("Unable to connect the player to the game:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
 
     }
     @Override
+    public void checkingCoordinates(int[] coordinates) {
+        try {
+            this.stub.checkingCoordinates(coordinates);
+        } catch (RemoteException exception){
+            System.err.println("Unable to send the tile coordinates to the server:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
+
+    }
+    @Override
+    public void tileToDrop(int tilePosition) {
+        try {
+            this.stub.tileToDrop(tilePosition);
+        } catch (RemoteException exception){
+            System.err.println("Unable to send the tile order to the server:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
+    }
+    @Override
+    public void columnSetting(int i) {
+        try {
+            this.stub.columnSetting(i);
+        } catch (RemoteException exception){
+            System.err.println("Unable to send the tile order to the server:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
+    }
+    @Override
+    public void numberPartecipantsSetting(int n) {
+        try {
+            this.stub.numberOfParticipantsSetting(n);
+        } catch (RemoteException exception){
+            System.err.println("Unable to send the number of participants to the server:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
+    }
+    @Override
     public void endsSelection() {
-        this.stub.endsSelection();
+        try {
+            this.stub.endsSelection();
+        } catch (RemoteException exception){
+            System.err.println("Unable to stop the tile choice:" +
+                    exception.getMessage() + ". Skipping the update...");
+        }
     }
 
 
@@ -83,7 +115,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         this.view.error(e);
     }
     @Override
-    public void askNumberPartecipants() {
+    public void askNumberParticipants() {
         this.view.askNumber();
     }
     @Override
@@ -93,6 +125,11 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void lastTurnNotification(String nickname){
         this.view.lastTurnReached(nickname);
+    }
+
+    @Override
+    public void askColumn() throws RemoteException {
+        this.view.askColumn();
     }
 
     @Override
