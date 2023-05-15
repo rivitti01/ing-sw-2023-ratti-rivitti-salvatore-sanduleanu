@@ -10,8 +10,9 @@ import com.google.gson.JsonParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 
-public class PersonalGoalCard {
+public class PersonalGoalCard implements Serializable {
     final Tile[][] goalsShelf;
     final String cardName;
 

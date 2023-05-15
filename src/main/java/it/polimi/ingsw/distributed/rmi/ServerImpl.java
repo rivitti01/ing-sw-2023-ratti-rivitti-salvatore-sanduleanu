@@ -19,7 +19,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final Game model;
     private GameController controller;
     private final Map<String, Client> connectedClients;
-    private int numPartecipants;
+    private int numParticipants;
     private boolean gameAlreadyStarted;
 
     public ServerImpl() throws RemoteException {
@@ -67,9 +67,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                                 + e.getMessage() + ". Skipping the update...");
                     }
                 }
-                if (connectedClients.size() == this.numPartecipants) {
+                if (connectedClients.size() == this.numParticipants) {
                     this.gameAlreadyStarted = true;
-                    this.controller = new GameController(this.model, this.connectedClients, this.numPartecipants);
+                    this.controller = new GameController(this.model, this.connectedClients, this.numParticipants);
                 }
             } else {
                 try {
@@ -107,7 +107,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void numberOfParticipantsSetting(int n) {
-        this.numPartecipants = n;
+        this.numParticipants = n;
     }
     //************ MODEL LISTENER METHODS
     @Override

@@ -5,10 +5,11 @@ import static it.polimi.ingsw.util.Costants.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.List;
 
 
-public class Shelf {
+public class Shelf implements Serializable {
     private Tile[][] shelf;
     private PropertyChangeSupport sPcs;
 
