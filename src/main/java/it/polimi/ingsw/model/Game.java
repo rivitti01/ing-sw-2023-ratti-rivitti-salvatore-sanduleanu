@@ -144,8 +144,6 @@ public class Game {
     }
 
     ////////////////////////////////////////////////////
-
-
     public void endGame(){
         setEnd(true);
         for(Player p : this.players) {
@@ -165,8 +163,6 @@ public class Game {
                 tempWinner = players.get(i);
         }
     }
-
-
     public void addModelListener(ModelListener l){
         this.listener = l ;
     }

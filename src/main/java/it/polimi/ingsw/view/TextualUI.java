@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
 
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -16,14 +15,13 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 public class TextualUI {
-    private ViewListener listener;
 
+    private ViewListener listener;
 
     public void newTurn(){
         System.out.println("È IL TUO TURNO");
         chooseAction();
     }
-
     public void lastTurn(){
         System.out.println("È IL TUO ULTIMO TURNO");
         chooseAction();
@@ -42,9 +40,6 @@ public class TextualUI {
             }
         }
     }
-
-
-
     public void askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
@@ -113,7 +108,7 @@ public class TextualUI {
             System.err.println("Sorry you cannot play with this much players :(");
             System.err.println("Please enter a number in between 2 and 4:");
         }
-        this.listener.numberPartecipantsSetting(input);
+        this.listener.numberParticipantsSetting(input);
     }
     public void askNickName() {
         boolean validName = false;

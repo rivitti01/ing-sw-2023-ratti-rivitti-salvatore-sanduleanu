@@ -78,8 +78,6 @@ public class GameController  {
                 nextPlayer();
         }
     }
-
-
     public void calculateWinner(){
         this.model.endGame();
         this.model.findWinner();

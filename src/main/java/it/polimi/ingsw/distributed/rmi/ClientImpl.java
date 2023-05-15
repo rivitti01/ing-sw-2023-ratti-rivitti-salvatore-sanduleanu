@@ -78,7 +78,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         }
     }
     @Override
-    public void numberPartecipantsSetting(int n) {
+    public void numberParticipantsSetting(int n) {
         try {
             this.stub.numberOfParticipantsSetting(n);
         } catch (RemoteException exception){
