@@ -107,7 +107,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         this.view.lastTurn();
     }
     @Override
-    public void printGame(GameView gameView) {
+    public void printGame(GameView gameView)  {
         this.view.printGame(gameView);
     }
     @Override

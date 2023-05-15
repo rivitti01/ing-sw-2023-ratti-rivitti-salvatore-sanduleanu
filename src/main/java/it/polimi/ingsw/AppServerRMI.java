@@ -15,12 +15,11 @@ public class AppServerRMI {
 
         try {
             Server server = new ServerImpl();
-            Registry registry = LocateRegistry.getRegistry();
+            Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("server", server);
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             e.printStackTrace();
         }
-
     }
 }
