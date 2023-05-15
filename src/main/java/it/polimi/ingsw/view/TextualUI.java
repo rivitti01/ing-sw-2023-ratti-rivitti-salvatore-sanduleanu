@@ -197,10 +197,6 @@ public class TextualUI {
         System.out.println();
         System.out.println();
     }
-    public void printAvailableTiles(List<int[]> availableTiles) {
-        for (int[] availableTile : availableTiles) System.out.print(availableTile[0] + ";" + availableTile[1] + " ");
-        System.out.println();
-    }
     public void printShelf(Shelf s, String nickname) {
         System.out.println("shelf di: " + nickname);
         for (int i = 0; i < SHELF_ROWS; i++) {

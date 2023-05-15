@@ -47,10 +47,10 @@ public class Game {
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
         board.setBorderTiles(board.getBorderTiles());
-
         listener.printGame();
         listener.newTurn(currentPlayer);
     }
+
 
 
     //Getters and Setters
@@ -108,7 +108,6 @@ public class Game {
     }
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
-        listener.newTurn(this.currentPlayer);
     }
     public void setStart(boolean s){
         boolean old = this.start;

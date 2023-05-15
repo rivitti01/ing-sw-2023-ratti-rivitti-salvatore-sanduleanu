@@ -16,25 +16,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
-    private Game model;
+    private final Game model;
     private GameController controller;
-    private Map<String, Client> connectedClients;
+    private final Map<String, Client> connectedClients;
     private int numPartecipants;
     private boolean gameAlreadyStarted;
 
     public ServerImpl() throws RemoteException {
         super();
         connectedClients = new HashMap<>();
+        this.gameAlreadyStarted = false;
+        this.model = new Game();
+        this.model.addModelListener(this);
     }
     public ServerImpl(int port) throws RemoteException {
         super(port);
         connectedClients = new HashMap<>();
         this.gameAlreadyStarted = false;
+        this.model = new Game();
+        this.model.addModelListener(this);
     }
     public ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         connectedClients = new HashMap<>();
         this.gameAlreadyStarted = false;
+        this.model = new Game();
+        this.model.addModelListener(this);
     }
 
 
@@ -51,21 +58,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     public void clientConnection(Client c, String nickName) {
         if (!this.gameAlreadyStarted) {
             if (nameControl(nickName)) {
-                if (connectedClients.size() == 0) {
+                connectedClients.put(nickName, c);
+                if (connectedClients.size()==1) {
                     try {
                         c.askNumberParticipants();
                     } catch (RemoteException e){
                         System.err.println("Unable to ask the number of participants the client: "
                                 + e.getMessage() + ". Skipping the update...");
                     }
-
-                    connectedClients.put(nickName, c);
-                } else {
-                    connectedClients.put(nickName, c);
                 }
                 if (connectedClients.size() == this.numPartecipants) {
-                    this.model = new Game();
-                    this.model.addModelListener(this);
                     this.gameAlreadyStarted = true;
                     this.controller = new GameController(this.model, this.connectedClients, this.numPartecipants);
                 }
