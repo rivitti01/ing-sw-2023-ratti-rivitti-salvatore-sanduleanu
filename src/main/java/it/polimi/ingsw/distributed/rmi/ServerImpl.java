@@ -69,7 +69,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
                 if (connectedClients.size() == this.numParticipants) {
                     this.gameAlreadyStarted = true;
-                    this.controller = new GameController(this.model, this.connectedClients, this.numParticipants);
+                    this.controller = new GameController(this.model);
+                    this.model.startGame(this.numParticipants, this.connectedClients);
                 }
             } else {
                 try {

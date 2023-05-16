@@ -46,7 +46,6 @@ public class Game {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
-        board.setBorderTiles(board.getBorderTiles());
         listener.printGame();
         listener.newTurn(currentPlayer);
     }
@@ -140,6 +139,9 @@ public class Game {
         listener.printGame();
         if(!this.currentPlayer.getChosenTiles().isEmpty())
             listener.askOrder();
+    }
+    public void newTurn(){
+        listener.newTurn(this.currentPlayer);
     }
 
     ////////////////////////////////////////////////////

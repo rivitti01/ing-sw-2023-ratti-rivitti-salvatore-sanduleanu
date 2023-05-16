@@ -155,9 +155,6 @@ public class TextualUI {
             }
         }
     }
-
-
-
     public void lastTurnReached(String nickname){
         System.out.println(nickname + "ha riempito la shelf\nInizia l'ultimo giro");
     }
@@ -270,13 +267,9 @@ public class TextualUI {
                     System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
         }
     }
-
-
     public void addListener (ViewListener l){
         this.listener = l;
     }
-
-
     public void printGame(GameView gameView){
         printBoard(gameView.getBoard());
         for(String nickname:  gameView.getPlayersShelves().keySet()) {
@@ -287,6 +280,7 @@ public class TextualUI {
         }
         printPersonalGoalShelf(gameView.getPersonal());
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+        System.out.println("E' il turno di: "+gameView.getNickName());
     }
 
 }

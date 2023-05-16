@@ -6,9 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -26,7 +23,8 @@ public class Board implements Serializable {
     public Board(int numberParticipants){
         String name = "Board" + numberParticipants;
         setupBoard(name);
-        this.borderTiles = getAvailableTiles();
+        this.borderTiles = new ArrayList<>();
+        setBorderTiles();
     }
 
     public Tile[][] getBoard(){
@@ -97,8 +95,8 @@ public class Board implements Serializable {
     }
 
     // serve all inizio della scelta del giocatore un riferimento alle Tiles disponibili prima delle scelte del giocatore per far funzionare bene il filtro
-    public void setBorderTiles(List<int[]> borderTiles) {
-        this.borderTiles = borderTiles;
+    public void setBorderTiles() {
+        this.borderTiles = getAvailableTiles();
     }
 
     public List<int[]> getBorderTiles() {

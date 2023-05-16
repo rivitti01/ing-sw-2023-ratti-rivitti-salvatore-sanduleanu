@@ -1,6 +1,5 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 
@@ -14,9 +13,8 @@ public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
 
-    public GameController (Game model, Map<String, Client> players, int numberPlayers){
+    public GameController (Game model){
         this.model = model;
-        this.model.startGame(numberPlayers, players);
     }
 
 
@@ -42,6 +40,8 @@ public class GameController  {
                 this.model.setCurrentPlayer(this.model.getPlayers().get(0));
             else
                 this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+            this.model.getBoard().setBorderTiles();
+            this.model.newTurn();
         }
     }
     public void setChosenColumn(int c){
@@ -53,19 +53,16 @@ public class GameController  {
         }
 
     }
-    public void setBorderTiles(){
-         this.model.getBoard().setBorderTiles(model.getBoard().getAvailableTiles());
-    }
     public void checkCorrectCoordinates(int[] inputCoordinates){
-        for (int[] availableCoordinate : this.model.getAvailableTilesForCurrentPlayer()) {
+        List<int[]> temp = this.model.getAvailableTilesForCurrentPlayer();
+        for (int[] availableCoordinate : temp) {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
                 this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
                 this.model.getCurrentPlayer().addChosenTile(this.model.popTileFromBoard(inputCoordinates));
                 this.model.checkMaxNumberOfTilesChosen();
-            }else{
-                this.model.setErrorType(Warnings.INVALID_TILE);
             }
         }
+        this.model.setErrorType(Warnings.INVALID_TILE);
     }
     public void dropTile(int tilePosition){
         if( tilePosition-1 < 0  ||  tilePosition-1 > model.getCurrentPlayer().getChosenTiles().size() )
