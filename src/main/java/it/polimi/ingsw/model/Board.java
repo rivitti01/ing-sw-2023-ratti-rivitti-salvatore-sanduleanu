@@ -24,7 +24,6 @@ public class Board implements Serializable {
         String name = "Board" + numberParticipants;
         setupBoard(name);
         this.borderTiles = new ArrayList<>();
-        setBorderTiles();
     }
 
     public Tile[][] getBoard(){

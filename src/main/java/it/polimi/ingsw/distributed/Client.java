@@ -15,4 +15,5 @@ public interface Client extends Remote {
     void askOrder() throws RemoteException;
     void lastTurnNotification(String nickname) throws RemoteException;
     void askColumn() throws RemoteException;
+    void askAction() throws RemoteException;
 }

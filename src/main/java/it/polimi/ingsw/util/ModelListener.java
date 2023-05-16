@@ -13,6 +13,7 @@ public interface ModelListener extends java.util.EventListener {
         void askOrder();
         void isLastTurn();
         void askColumn();
+        void askAction();
 
 
 

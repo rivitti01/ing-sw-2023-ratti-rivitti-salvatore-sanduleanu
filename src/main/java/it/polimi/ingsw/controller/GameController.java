@@ -41,6 +41,7 @@ public class GameController  {
             else
                 this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
             this.model.getBoard().setBorderTiles();
+
             this.model.newTurn();
         }
     }
@@ -58,8 +59,10 @@ public class GameController  {
         for (int[] availableCoordinate : temp) {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
                 this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
-                this.model.getCurrentPlayer().addChosenTile(this.model.popTileFromBoard(inputCoordinates));
+                this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().getTile(inputCoordinates[0], inputCoordinates[1]));
+                Tile tmp = this.model.popTileFromBoard(inputCoordinates);
                 this.model.checkMaxNumberOfTilesChosen();
+                return;
             }
         }
         this.model.setErrorType(Warnings.INVALID_TILE);
@@ -82,7 +85,6 @@ public class GameController  {
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
-
-
+    
 
 }

@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -15,16 +17,22 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 public class TextualUI {
-
     private ViewListener listener;
 
-    public void newTurn(){
+
+    public void newTurn() throws RemoteException {
+
         System.out.println("È IL TUO TURNO");
         chooseAction();
     }
+
     public void lastTurn(){
         System.out.println("È IL TUO ULTIMO TURNO");
-        chooseAction();
+        try {
+            chooseAction();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void askOrder() {
         System.out.println("seleziona la tile da inserire prima: ");
@@ -35,11 +43,14 @@ public class TextualUI {
                 tilePosition = Integer.parseInt(scanner.nextLine());
                 listener.tileToDrop(tilePosition);
                 return;
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | RemoteException e) {
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
         }
     }
+
+
+
     public void askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
@@ -55,13 +66,13 @@ public class TextualUI {
                 this.listener.columnSetting(column);
                 return;
                 //}
-            }catch (NumberFormatException e){
+            }catch (NumberFormatException | RemoteException e){
                 System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
             }
         }
 
     }
-    public void chooseAction() {
+    public void chooseAction() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
         while(true) {
             System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
@@ -108,7 +119,11 @@ public class TextualUI {
             System.err.println("Sorry you cannot play with this much players :(");
             System.err.println("Please enter a number in between 2 and 4:");
         }
-        this.listener.numberParticipantsSetting(input);
+        try {
+            this.listener.numberPartecipantsSetting(input);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void askNickName() {
         boolean validName = false;
@@ -124,13 +139,21 @@ public class TextualUI {
                 validName=true;
             }
         }
-        listener.clientConnection(nickName);
+        try {
+            listener.clientConnection(nickName);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void error(Warnings e){
         switch (e){
             case INVALID_TILE -> {
                 System.err.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
-                chooseAction();
+                try {
+                    chooseAction();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
             case INVALID_NICKNAME -> {
                 System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
@@ -142,7 +165,11 @@ public class TextualUI {
             }
             case INVALID_ACTION -> {
                 System.err.println("Scegliere almeno una tile prima di procedere:");
-                chooseAction();
+                try {
+                    chooseAction();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
             case GAME_ALREADY_STARTED -> System.err.println("Ci dispiace c'è già una partita in atto. Non puoi giocare.");
             case MAX_TILES_CHOSEN -> {

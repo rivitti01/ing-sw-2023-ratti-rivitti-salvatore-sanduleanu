@@ -34,6 +34,7 @@ public class Game {
         this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
+        this.board.setBorderTiles();
         for(Map.Entry<String, Client> entry : players.entrySet()){
             this.players.add(new Player(entry.getKey()));
         }
@@ -124,7 +125,9 @@ public class Game {
     }
     public void setChosenColumnByPlayer(int c){
         this.currentPlayer.setChosenColumn(c);
+
         listener.askOrder();
+
     }
     public Warnings getErrorType() {
         return errorType;
@@ -141,6 +144,7 @@ public class Game {
             listener.askOrder();
     }
     public void newTurn(){
+        listener.printGame();
         listener.newTurn(this.currentPlayer);
     }
 
@@ -175,8 +179,10 @@ public class Game {
         }
     }
     public void checkMaxNumberOfTilesChosen() {
-        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size()){
+        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() || getAvailableTilesForCurrentPlayer().isEmpty()){
             this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+        }else{
+            listener.askAction();
         }
     }
 }

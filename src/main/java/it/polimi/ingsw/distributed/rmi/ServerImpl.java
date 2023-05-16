@@ -55,7 +55,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     //********** SERVER METHODS
     @Override
-    public void clientConnection(Client c, String nickName) {
+    public void clientConnection(Client c, String nickName) throws RemoteException {
         if (!this.gameAlreadyStarted) {
             if (nameControl(nickName)) {
                 connectedClients.put(nickName, c);
@@ -90,24 +90,24 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
     }
     @Override
-    public void tileToDrop(int tilePosition) {
+    public void tileToDrop(int tilePosition) throws RemoteException{
         this.controller.dropTile(tilePosition);
     }
     @Override
-    public void checkingCoordinates(int[] coordinates) {
+    public void checkingCoordinates(int[] coordinates) throws RemoteException{
         this.controller.checkCorrectCoordinates(coordinates);
     }
     @Override
-    public void columnSetting(int c) {
+    public void columnSetting(int c) throws RemoteException{
         controller.setChosenColumn(c);
     }
     @Override
-    public void endsSelection() {
+    public void endsSelection() throws RemoteException{
         this.model.selectionControl();
     }
 
     @Override
-    public void numberOfParticipantsSetting(int n) {
+    public void numberOfParticipantsSetting(int n) throws RemoteException {
         this.numParticipants = n;
     }
     //************ MODEL LISTENER METHODS
@@ -159,7 +159,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void askOrder(){
         try {
-            this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askOrder();
+            if(this.model.getCurrentPlayer().getChosenTiles().size() > 1)
+                this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askOrder();
+            else{
+                this.controller.dropTile(1);
+            }
+
         } catch (RemoteException e){
             System.err.println("Unable to ask the current player the order:" +
                     e.getMessage() + ". Skipping the update...");
@@ -183,6 +188,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askColumn();
         } catch (RemoteException e){
             System.err.println("Unable to ask the current player the column:" +
+                    e.getMessage() + ". Skipping the update...");
+        }
+    }
+
+    @Override
+    public void askAction() {
+        try {
+            this.connectedClients.get(this.model.getCurrentPlayer().getNickname()).askAction();
+        } catch (RemoteException e){
+            System.err.println("Unable to ask the current player the action:" +
                     e.getMessage() + ". Skipping the update...");
         }
     }

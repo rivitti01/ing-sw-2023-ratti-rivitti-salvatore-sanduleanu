@@ -3,17 +3,14 @@ package it.polimi.ingsw.distributed.rmi;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.GameView;
-import it.polimi.ingsw.model.Tile;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
-import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.TextualUI;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
@@ -40,67 +37,41 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     // ***************** VIEW LISTENER METHODS
     @Override
-    public void clientConnection(String nickName) {
-        try {
-            this.stub.clientConnection(this, nickName);
-        } catch (RemoteException exception){
-            System.err.println("Unable to connect the player to the game:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void clientConnection(String nickName) throws RemoteException {
+        this.stub.clientConnection(this, nickName);
 
     }
     @Override
-    public void checkingCoordinates(int[] coordinates) {
-        try {
-            this.stub.checkingCoordinates(coordinates);
-        } catch (RemoteException exception){
-            System.err.println("Unable to send the tile coordinates to the server:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void checkingCoordinates(int[] coordinates) throws RemoteException {
+        this.stub.checkingCoordinates(coordinates);
 
     }
     @Override
-    public void tileToDrop(int tilePosition) {
-        try {
-            this.stub.tileToDrop(tilePosition);
-        } catch (RemoteException exception){
-            System.err.println("Unable to send the tile order to the server:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void tileToDrop(int tilePosition) throws RemoteException {
+        this.stub.tileToDrop(tilePosition);
     }
     @Override
-    public void columnSetting(int i) {
-        try {
-            this.stub.columnSetting(i);
-        } catch (RemoteException exception){
-            System.err.println("Unable to send the tile order to the server:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void columnSetting(int i) throws RemoteException {
+        this.stub.columnSetting(i);
     }
     @Override
-    public void numberParticipantsSetting(int n) {
-        try {
-            this.stub.numberOfParticipantsSetting(n);
-        } catch (RemoteException exception){
-            System.err.println("Unable to send the number of participants to the server:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void numberPartecipantsSetting(int n) throws RemoteException {
+        this.stub.numberOfParticipantsSetting(n);
     }
     @Override
-    public void endsSelection() {
-        try {
-            this.stub.endsSelection();
-        } catch (RemoteException exception){
-            System.err.println("Unable to stop the tile choice:" +
-                    exception.getMessage() + ". Skipping the update...");
-        }
+    public void endsSelection() throws RemoteException {
+        this.stub.endsSelection();
     }
 
 
     //*************** CLIENT METHODS
     @Override
     public void newTurn() {
-        this.view.newTurn();
+        try {
+            this.view.newTurn();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
     @Override
     public void lastTurn(){
@@ -125,6 +96,15 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void lastTurnNotification(String nickname){
         this.view.lastTurnReached(nickname);
+    }
+
+    @Override
+    public void askAction() throws RemoteException {
+        try {
+            this.view.chooseAction();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
