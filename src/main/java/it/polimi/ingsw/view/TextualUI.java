@@ -148,7 +148,7 @@ public class TextualUI {
     public void error(Warnings e){
         switch (e){
             case INVALID_TILE -> {
-                System.err.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
+                System.out.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
                 try {
                     chooseAction();
                 } catch (RemoteException ex) {

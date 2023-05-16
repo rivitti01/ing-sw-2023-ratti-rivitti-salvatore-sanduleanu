@@ -28,6 +28,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.gameAlreadyStarted = false;
         this.model = new Game();
         this.model.addModelListener(this);
+        this.controller = new GameController(this.model);
     }
     public ServerImpl(int port) throws RemoteException {
         super(port);
@@ -35,6 +36,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.gameAlreadyStarted = false;
         this.model = new Game();
         this.model.addModelListener(this);
+        this.controller = new GameController(this.model);
     }
     public ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
@@ -42,14 +44,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.gameAlreadyStarted = false;
         this.model = new Game();
         this.model.addModelListener(this);
-    }
-
-
-    public boolean nameControl(String newName){
-        for (String s: connectedClients.keySet()){
-            if (s.equals(newName)) return false;
-        }
-        return true;
+        this.controller = new GameController(this.model);
     }
 
 
@@ -57,7 +52,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void clientConnection(Client c, String nickName) throws RemoteException {
         if (!this.gameAlreadyStarted) {
-            if (nameControl(nickName)) {
+            if (this.controller.setPlayerNickname(nickName)) {
                 connectedClients.put(nickName, c);
                 if (connectedClients.size()==1) {
                     try {
@@ -69,8 +64,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
                 if (connectedClients.size() == this.numParticipants) {
                     this.gameAlreadyStarted = true;
-                    this.controller = new GameController(this.model);
-                    this.model.startGame(this.numParticipants, this.connectedClients);
+                    this.controller.initializeModel();
                 }
             } else {
                 try {
@@ -109,6 +103,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void numberOfParticipantsSetting(int n) throws RemoteException {
         this.numParticipants = n;
+        this.controller.setNumberPlayers(n);
     }
     //************ MODEL LISTENER METHODS
     @Override

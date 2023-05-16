@@ -17,7 +17,7 @@ import static it.polimi.ingsw.util.Costants.*;
 
 public class Game {
     private int numberPartecipants;
-    private List<Player> players= new ArrayList<>();
+    private List<Player> players;
     private CommonGoalCard[] commonGoals;
     private Board board;
     private Bag bag;
@@ -29,15 +29,14 @@ public class Game {
     private ModelListener listener;
     private Warnings errorType = null;
 
-    public void startGame(int numberParticipants, Map<String, Client> players){
+    public void startGame(int numberParticipants, List<Player> players){
         this.numberPartecipants = numberParticipants;
+        this.players = new ArrayList<>();
         this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
         this.board.setBorderTiles();
-        for(Map.Entry<String, Client> entry : players.entrySet()){
-            this.players.add(new Player(entry.getKey()));
-        }
+        this.players = players;
         setFirstPlayer();
         this.currentPlayer = this.players.get(0);
         this.commonGoals = new CommonGoalCard[2];

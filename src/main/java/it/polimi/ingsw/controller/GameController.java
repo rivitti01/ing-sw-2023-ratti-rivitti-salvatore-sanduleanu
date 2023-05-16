@@ -12,12 +12,44 @@ import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
 public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
+    private int numberPlayers;
+    private List<Player> players;
+
+    public void setNumberPlayers(int numberPlayers) {
+        this.numberPlayers = numberPlayers;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public int getNumberPlayers() {
+        return numberPlayers;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    //crea il Model in base a numberPlayers e alla List di players
+    public void initializeModel(){
+        model.startGame(this.numberPlayers, this.players);
+        model.setStart(true);
+    }
+
+    public boolean setPlayerNickname(String s){
+        for (int i = 0; i < this.players.size(); i++) {
+            if (this.players.get(i).getNickname().equals(s)) return false;
+        }
+        this.players.add(new Player(s));
+        return true;
+    }
 
     public GameController (Game model){
         this.model = model;
+        this.players = new ArrayList<>();
+        this.numberPlayers = 0;
     }
-
-
     public void nextPlayer(){
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //controlla se c'è bisogno di riempire la board per il player dopo
