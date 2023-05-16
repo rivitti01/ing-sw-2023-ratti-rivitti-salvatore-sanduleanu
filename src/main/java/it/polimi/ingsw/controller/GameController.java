@@ -55,8 +55,7 @@ public class GameController  {
 
     }
     public void checkCorrectCoordinates(int[] inputCoordinates){
-        List<int[]> temp = this.model.getAvailableTilesForCurrentPlayer();
-        for (int[] availableCoordinate : temp) {
+        for (int[] availableCoordinate : this.model.getAvailableTilesForCurrentPlayer()) {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
                 this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
                 this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().getTile(inputCoordinates[0], inputCoordinates[1]));

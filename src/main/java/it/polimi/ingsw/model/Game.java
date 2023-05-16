@@ -179,7 +179,9 @@ public class Game {
         }
     }
     public void checkMaxNumberOfTilesChosen() {
-        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() || getAvailableTilesForCurrentPlayer().isEmpty()){
+        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
+                getAvailableTilesForCurrentPlayer().isEmpty() ||
+                this.currentPlayer.getChosenTiles().size() == 3){
             this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }else{
             listener.askAction();
