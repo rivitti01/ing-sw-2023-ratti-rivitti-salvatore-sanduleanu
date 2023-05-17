@@ -52,22 +52,21 @@ public class GameController  {
     }
     public void nextPlayer(){
         model.getCurrentPlayer().reset(model.getCommonGoals());
-        //controlla se c'è bisogno di riempire la board per il player dopo
+        //checks if board is empty or tiles are "alone" on board
         if (model.getBoard().checkRefill())
             model.getBoard().fillBoard(model.getBag());
 
-        int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
+        if(this.model.getCurrentPlayer().getShelf().isFull()) {        // checks if shelf of currentPlayer us full
+            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);   // takes END_GAME_POINT
+            this.model.setLastTurn(true);                              // going to the endGame...
+        }
 
-        // controlla se e finito il game
+        int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
+        // checks if game is over
         if (model.isLastTurn() && indexCurrentPlayer == this.model.getPlayers().size() - 1){
             calculateWinner();
-        } else { //altrimenti partita e ancora in gioco
-            if(this.model.getCurrentPlayer().getShelf().isFull()){  //controlla se shelf e full
-                this.model.getCurrentPlayer().addPoints(END_GAME_POINT);  //prende ultimo punto
-                this.model.setLastTurn(true);       //setto gioco in endgame
-            }
+        } else { // going to next Player
 
-            //passaggio al prossimo player
             if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
                 this.model.setCurrentPlayer(this.model.getPlayers().get(0));
             else
@@ -75,11 +74,13 @@ public class GameController  {
             this.model.getBoard().setBorderTiles();
 
             this.model.newTurn();
+
         }
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
-        if(c<0 || c>=SHELF_COLUMN)
+        int emptyCells = this.model.getCurrentPlayer().getShelf().checkColumnEmptiness(c);
+        if(c<0 || c>=SHELF_COLUMN || this.model.getCurrentPlayer().getChosenTiles().size() > emptyCells)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
         else{   //settaggio della colonna
             this.model.setChosenColumnByPlayer(c);
@@ -111,7 +112,7 @@ public class GameController  {
     }
     public void calculateWinner(){
         this.model.endGame();
-        this.model.findWinner();
+        //this.model.findWinner();  reasoning's in the gameModel
     }
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);

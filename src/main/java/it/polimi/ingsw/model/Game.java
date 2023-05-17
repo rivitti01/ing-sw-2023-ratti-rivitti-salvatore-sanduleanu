@@ -153,6 +153,8 @@ public class Game {
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
+
+            this.listener.finalPoints();
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
@@ -160,13 +162,16 @@ public class Game {
         }
 
     }
-    public void findWinner(){
+
+    // we can remove this and do it in the textualUI by finding the String in the map with biggest Integer
+   /* public void findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
             if(players.get(i).getPoints() >= players.get(i-1).getPoints())
                 tempWinner = players.get(i);
         }
     }
+    */
     public void addModelListener(ModelListener l){
         this.listener = l ;
     }

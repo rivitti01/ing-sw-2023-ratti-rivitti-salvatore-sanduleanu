@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
@@ -81,6 +82,12 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     public void printGame(GameView gameView)  {
         this.view.printGame(gameView);
     }
+
+    @Override
+    public void finalPoints(Map<String, Integer> finalPoints) throws RemoteException {
+        this.view.printFinalPoints(finalPoints);
+    }
+
     @Override
     public void error(Warnings e) {
         this.view.error(e);

@@ -13,6 +13,7 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
@@ -105,6 +106,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.numParticipants = n;
         this.controller.setNumberPlayers(n);
     }
+
+
     //************ MODEL LISTENER METHODS
     @Override
     public void printGame() {
@@ -176,7 +179,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
         }
     }
-
     @Override
     public void askColumn() {
         try {
@@ -186,7 +188,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     e.getMessage() + ". Skipping the update...");
         }
     }
-
     @Override
     public void askAction() {
         try {
@@ -194,6 +195,22 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         } catch (RemoteException e){
             System.err.println("Unable to ask the current player the action:" +
                     e.getMessage() + ". Skipping the update...");
+        }
+    }
+    @Override
+    public void finalPoints(){
+        Map<String, Integer> finalPoints = new HashMap<>();
+        List<Player> gamePlayers = this.model.getPlayers();
+        for(String s : this.connectedClients.keySet()) {
+            for (int i = 0; i < gamePlayers.size(); i++) {
+                if (gamePlayers.get(i).getNickname().equals(s)) {
+                    finalPoints.put(s, gamePlayers.get(i).getPoints());
+                    break;
+                }
+            }
+        }
+        for(String s:  connectedClients.keySet()) {
+                connectedClients.get(s);
         }
     }
 }

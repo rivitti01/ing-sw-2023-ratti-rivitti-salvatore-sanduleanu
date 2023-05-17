@@ -34,7 +34,7 @@ public class TextualUI {
     public void askOrder() {
         System.out.println("seleziona la tile da inserire prima: ");
         Scanner scanner = new Scanner(System.in);
-        int tilePosition = -1;
+        int tilePosition;
         while(true) {
             try {
                 tilePosition = Integer.parseInt(scanner.nextLine());
@@ -77,6 +77,7 @@ public class TextualUI {
             switch (s.toUpperCase()) {
                 case "Q" -> {
                     listener.endsSelection();
+                    return;
                 }
                 case "S" -> {
                     System.out.println("seleziona una tessera:");
@@ -89,6 +90,7 @@ public class TextualUI {
                         coordinates[1] = scanner.nextInt();
                         scanner.nextLine();
                         this.listener.checkingCoordinates(coordinates);
+                        return;
                     } catch (InputMismatchException e1) {
                         System.err.println("Inserire un numero");
                         scanner.nextLine();
@@ -180,7 +182,7 @@ public class TextualUI {
         }
     }
     public void lastTurnReached(String nickname){
-        System.out.println(nickname + "ha riempito la shelf\nInizia l'ultimo giro");
+        System.out.println(nickname + " ha riempito la shelf\nInizia l'ultimo giro");
     }
     public void printBoard(Board b) {
         System.out.print("   ");
@@ -247,6 +249,7 @@ public class TextualUI {
         System.out.println();
     }
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+        System.out.println("This is your personal goal card:");
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
@@ -275,7 +278,7 @@ public class TextualUI {
     }
     public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
         if (!chosenTiles.isEmpty()) {
-            System.out.println("tessere scelte da: " + nickname);
+            System.out.println("tessere scelte da " + nickname+":");
             for (int i = 0; i < chosenTiles.size(); i++)
                 if (chosenTiles.get(i).getColor().equals(Color.BLUE))
                     System.out.println(i + 1 + ") " + ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET);
@@ -294,7 +297,8 @@ public class TextualUI {
 
     public void printFinalPoints(Map<String, Integer> chart){
         System.out.println("******************** GAME ENDED ********************");
-        System.out.println("******************** FINAL POINTS ********************");
+        System.out.println();
+        System.out.println("                    FINAL POINTS                   ");
 
         for(String s : chart.keySet()){
             System.out.println("--------------------------------------------------");
