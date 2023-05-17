@@ -186,7 +186,6 @@ public class TextualUI {
     }
     public void printBoard(Board b) {
         System.out.print("   ");
-        System.out.print("   ");
         for (int i = 0; i < b.getSize(); i++)
             System.out.print("  " + i + "  ");
 
@@ -220,30 +219,39 @@ public class TextualUI {
         System.out.println();
         System.out.println();
     }
-    public void printShelf(Shelf s, String nickname) {
-        System.out.println("shelf di: " + nickname);
+    private void printTile(Tile t) {
+        if (t == null || t.getColor() == null)
+            System.out.print("  " + "|");
+        else {
+            if (t.getColor() == Color.WHITE)
+                System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.YELLOW)
+                System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.BLUE)
+                System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.GREEN)
+                System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.PINK)
+                System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.CYAN)
+                System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+        }
+    }
+    public void printShelves(Map<String, Shelf> playerShelves) {
+        for(String s : playerShelves.keySet()) {
+            System.out.print(s + "'s shelf:\t\t\t\t");
+        }
+        System.out.println();
         for (int i = 0; i < SHELF_ROWS; i++) {
-            System.out.println("  ");
-            for (int j = 0; j < SHELF_COLUMN; j++) {
-                if (j == 0)
-                    System.out.print("|");
-                if (s.getTile(i, j) == null)
-                    System.out.print("  " + "|");
-                else {
-                    if (s.getTile(i, j).getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+            for(String s: playerShelves.keySet()){
+                Shelf tmpShelf = playerShelves.get(s);
+                System.out.print("|");
+                for(int j=0; j<SHELF_COLUMN; j++){
+                    printTile(tmpShelf.getTile(i, j));
                 }
+                System.out.print("\t\t");
             }
+            System.out.println();
         }
         System.out.println();
         System.out.println();
@@ -254,31 +262,24 @@ public class TextualUI {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
                 if (j == 0)
-                    System.out.print("|");
+                    System.out.print("    |");
                 if (personalGoalCard.getGoalsShelf()[i][j] == null)
                     System.out.print("  " + "|");
                 else {
-                    if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    printTile(personalGoalCard.getGoalsShelf()[i][j]);
                 }
             }
+
         }
+        char checkmark = '\u2713';
         System.out.println();
+        System.out.println(checkmark + "  | 1 | 2 | 3 | 4 | 5 | 6 |");
+        System.out.println("X  | 1 | 2 | 4 | 6 | 9 | 12 |");
         System.out.println();
     }
     public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
         if (!chosenTiles.isEmpty()) {
-            System.out.println("tessere scelte da " + nickname+":");
+            System.out.println("******************* CHOSEN TILES BY " + nickname + " **************************************");
             for (int i = 0; i < chosenTiles.size(); i++)
                 if (chosenTiles.get(i).getColor().equals(Color.BLUE))
                     System.out.println(i + 1 + ") " + ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET);
@@ -296,7 +297,7 @@ public class TextualUI {
     }
 
     public void printFinalPoints(Map<String, Integer> chart){
-        System.out.println("******************** GAME ENDED ********************");
+        System.out.println("******************** GAME ENDED ***************************************");
         System.out.println();
         System.out.println("                    FINAL POINTS                   ");
 
@@ -312,14 +313,16 @@ public class TextualUI {
         this.listener = l;
     }
     public void printGame(GameView gameView){
-        printBoard(gameView.getBoard());
-        for(String nickname:  gameView.getPlayersShelves().keySet()) {
-            printShelf(gameView.getPlayersShelves().get(nickname), nickname);
-        }
+        System.out.println("******************* COMMON GOAL CARDS **************************************");
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
         }
+        System.out.println("******************* BOARD **************************************");
+        printBoard(gameView.getBoard());
+        System.out.println("******************* SHELVES **************************************");
+        printShelves(gameView.getPlayersShelves());
         printPersonalGoalShelf(gameView.getPersonal());
+
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
         System.out.println("E' il turno di: "+gameView.getNickName());
     }
