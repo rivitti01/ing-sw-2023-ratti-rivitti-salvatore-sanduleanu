@@ -34,7 +34,7 @@ public class TextualUI {
     public void askOrder() {
         System.out.println("seleziona la tile da inserire prima: ");
         Scanner scanner = new Scanner(System.in);
-        int tilePosition = -1;
+        int tilePosition;
         while(true) {
             try {
                 tilePosition = Integer.parseInt(scanner.nextLine());
@@ -77,6 +77,7 @@ public class TextualUI {
             switch (s.toUpperCase()) {
                 case "Q" -> {
                     listener.endsSelection();
+                    return;
                 }
                 case "S" -> {
                     System.out.println("seleziona una tessera:");
@@ -89,6 +90,7 @@ public class TextualUI {
                         coordinates[1] = scanner.nextInt();
                         scanner.nextLine();
                         this.listener.checkingCoordinates(coordinates);
+                        return;
                     } catch (InputMismatchException e1) {
                         System.err.println("Inserire un numero");
                         scanner.nextLine();
@@ -180,7 +182,7 @@ public class TextualUI {
         }
     }
     public void lastTurnReached(String nickname){
-        System.out.println(nickname + "ha riempito la shelf\nInizia l'ultimo giro");
+        System.out.println(nickname + " ha riempito la shelf\nInizia l'ultimo giro");
     }
     public void printBoard(Board b) {
         System.out.print("   ");
@@ -295,7 +297,8 @@ public class TextualUI {
 
     public void printFinalPoints(Map<String, Integer> chart){
         System.out.println("******************** GAME ENDED ********************");
-        System.out.println("******************** FINAL POINTS ********************");
+        System.out.println();
+        System.out.println("                    FINAL POINTS                   ");
 
         for(String s : chart.keySet()){
             System.out.println("--------------------------------------------------");

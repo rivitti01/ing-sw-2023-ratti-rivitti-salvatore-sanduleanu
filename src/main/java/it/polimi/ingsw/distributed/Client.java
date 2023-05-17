@@ -5,9 +5,11 @@ import it.polimi.ingsw.util.Warnings;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 public interface Client extends Remote {
     void printGame(GameView gameView) throws RemoteException;
+    void finalPoints(Map<String, Integer> finalPoints) throws RemoteException;
     void error(Warnings e) throws RemoteException;
     void askNumberParticipants() throws RemoteException;
     void newTurn() throws RemoteException;

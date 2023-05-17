@@ -14,7 +14,7 @@ public interface ModelListener extends java.util.EventListener {
         void isLastTurn();
         void askColumn();
         void askAction();
-
+        void finalPoints();
 
 
 
