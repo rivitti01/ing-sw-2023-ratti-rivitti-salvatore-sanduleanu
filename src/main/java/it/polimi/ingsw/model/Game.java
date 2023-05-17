@@ -1,16 +1,14 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
-import it.polimi.ingsw.util.Warnings;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Random;
 
 import static it.polimi.ingsw.util.Costants.*;
@@ -25,7 +23,7 @@ public class Game {
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
     private boolean start = false;
-    private boolean end=false;
+    private boolean end = false;
     private ModelListener listener;
     private Warnings errorType = null;
 
@@ -109,11 +107,9 @@ public class Game {
         this.currentPlayer = currentPlayer;
     }
     public void setStart(boolean s){
-        boolean old = this.start;
         this.start = s;
     }
     public void setEnd(boolean e){
-        boolean old = this.end;
         this.end = e;
     }
     ////////////////////////////////////////////////////
@@ -148,18 +144,17 @@ public class Game {
     }
 
     ////////////////////////////////////////////////////
-    public void endGame(){
+    public void endGame() {
         setEnd(true);
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
-
-            this.listener.finalPoints();
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
             //punto della fine della partita gia assegnato
         }
+        this.listener.finalPoints();
 
     }
 
@@ -190,5 +185,9 @@ public class Game {
         }else{
             listener.askAction();
         }
+    }
+
+    public boolean isEnd() {
+        return end;
     }
 }

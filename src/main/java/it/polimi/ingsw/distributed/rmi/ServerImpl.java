@@ -210,7 +210,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
         }
         for(String s:  connectedClients.keySet()) {
-                connectedClients.get(s);
+
+            try {
+                connectedClients.get(s).finalPoints(finalPoints);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+
+
         }
     }
 }
