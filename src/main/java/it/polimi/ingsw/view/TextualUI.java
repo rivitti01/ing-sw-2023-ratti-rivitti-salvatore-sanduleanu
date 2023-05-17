@@ -247,6 +247,7 @@ public class TextualUI {
         System.out.println();
     }
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+        System.out.println("This is your personal goal card:");
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
@@ -275,7 +276,7 @@ public class TextualUI {
     }
     public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
         if (!chosenTiles.isEmpty()) {
-            System.out.println("tessere scelte da: " + nickname);
+            System.out.println("tessere scelte da " + nickname+":");
             for (int i = 0; i < chosenTiles.size(); i++)
                 if (chosenTiles.get(i).getColor().equals(Color.BLUE))
                     System.out.println(i + 1 + ") " + ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET);
