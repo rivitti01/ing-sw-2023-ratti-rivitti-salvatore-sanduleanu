@@ -313,7 +313,7 @@ public class TextualUI {
         this.listener = l;
     }
     public void printGame(GameView gameView){
-        System.out.println("******************* COMMON GOAL CARDS **************************************");
+        System.out.println("******************* COMMON GOAL CARDS *************************************");
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
         }
