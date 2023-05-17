@@ -6,10 +6,7 @@ import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static it.polimi.ingsw.util.Costants.*;
 import static it.polimi.ingsw.view.Colors.*;
@@ -294,6 +291,19 @@ public class TextualUI {
                     System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
         }
     }
+
+    public void printFinalPoints(Map<String, Integer> chart){
+        System.out.println("******************** GAME ENDED ********************");
+        System.out.println("******************** FINAL POINTS ********************");
+
+        for(String s : chart.keySet()){
+            System.out.println("--------------------------------------------------");
+            System.out.println(s + ":" + chart.get(s));
+        }
+        System.out.println("--------------------------------------------------");
+
+    }
+
     public void addListener (ViewListener l){
         this.listener = l;
     }

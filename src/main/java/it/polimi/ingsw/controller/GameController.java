@@ -79,7 +79,7 @@ public class GameController  {
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
-        if(c<0 || c>SHELF_COLUMN)
+        if(c<0 || c>=SHELF_COLUMN)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
         else{   //settaggio della colonna
             this.model.setChosenColumnByPlayer(c);
@@ -99,7 +99,7 @@ public class GameController  {
         this.model.setErrorType(Warnings.INVALID_TILE);
     }
     public void dropTile(int tilePosition){
-        if( tilePosition-1 < 0  ||  tilePosition-1 > model.getCurrentPlayer().getChosenTiles().size() )
+        if( tilePosition-1 < 0  ||  tilePosition > model.getCurrentPlayer().getChosenTiles().size() )
             this.model.setErrorType(Warnings.INVALID_ORDER);
         else {
             Tile chosenTile = model.getCurrentPlayer().getChosenTiles().get(tilePosition - 1);
