@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 import static it.polimi.ingsw.util.Costants.END_GAME_POINT;
@@ -14,6 +15,7 @@ public class GameController  {
     private Game model;
     private int numberPlayers;
     private List<Player> players;
+    private boolean endPointGiven = false;
 
     public void setNumberPlayers(int numberPlayers) {
         this.numberPlayers = numberPlayers;
@@ -50,31 +52,32 @@ public class GameController  {
         this.players = new ArrayList<>();
         this.numberPlayers = 0;
     }
-    public void nextPlayer(){
+    public void nextPlayer() throws RemoteException {
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //checks if board is empty or tiles are "alone" on board
         if (model.getBoard().checkRefill())
             model.getBoard().fillBoard(model.getBag());
 
-        if(this.model.getCurrentPlayer().getShelf().isFull()) {        // checks if shelf of currentPlayer us full
-            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);   // takes END_GAME_POINT
-            this.model.setLastTurn(true);                              // going to the endGame...
+        if(!this.endPointGiven && this.model.getCurrentPlayer().getShelf().isFull()) {  // checks if shelf of currentPlayer us full
+            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);                    // takes END_GAME_POINT
+            this.endPointGiven = true;
+            this.model.setLastTurn(true);                                                //last turn for each player...
         }
 
         int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
         // checks if game is over
-        if (model.isLastTurn() && indexCurrentPlayer == this.model.getPlayers().size() - 1){
-            calculateWinner();
-        } else { // going to next Player
-
-            if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
-                this.model.setCurrentPlayer(this.model.getPlayers().get(0));
-            else
-                this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
-            this.model.getBoard().setBorderTiles();
-
-            this.model.newTurn();
-
+        if(!this.model.isEnd()) {       // check if the game has ended
+            if (model.isLastTurn() && indexCurrentPlayer == this.model.getPlayers().size() - 1) {
+                this.model.setEnd(true);
+                calculateWinner();
+            } else { // going to next Player
+                if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
+                    this.model.setCurrentPlayer(this.model.getPlayers().get(0));
+                else
+                    this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+                this.model.getBoard().setBorderTiles();
+                this.model.newTurn();
+            }
         }
     }
     public void setChosenColumn(int c){
@@ -99,18 +102,18 @@ public class GameController  {
         }
         this.model.setErrorType(Warnings.INVALID_TILE);
     }
-    public void dropTile(int tilePosition){
+    public void dropTile(int tilePosition) throws RemoteException {
         if( tilePosition-1 < 0  ||  tilePosition > model.getCurrentPlayer().getChosenTiles().size() )
             this.model.setErrorType(Warnings.INVALID_ORDER);
         else {
             Tile chosenTile = model.getCurrentPlayer().getChosenTiles().get(tilePosition - 1);
             int column = model.getCurrentPlayer().getChosenColumn();
             model.droppedTile(chosenTile, column);
-            if(this.model.getCurrentPlayer().getChosenTiles().isEmpty())
+            if(this.model.getCurrentPlayer().getChosenTiles().isEmpty() && !this.model.isEnd())
                 nextPlayer();
         }
     }
-    public void calculateWinner(){
+    public void calculateWinner() throws RemoteException {
         this.model.endGame();
         //this.model.findWinner();  reasoning's in the gameModel
     }
