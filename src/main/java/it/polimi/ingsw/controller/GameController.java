@@ -12,12 +12,44 @@ import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
 public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
+    private int numberPlayers;
+    private List<Player> players;
+
+    public void setNumberPlayers(int numberPlayers) {
+        this.numberPlayers = numberPlayers;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public int getNumberPlayers() {
+        return numberPlayers;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    //crea il Model in base a numberPlayers e alla List di players
+    public void initializeModel(){
+        model.startGame(this.numberPlayers, this.players);
+        model.setStart(true);
+    }
+
+    public boolean setPlayerNickname(String s){
+        for (int i = 0; i < this.players.size(); i++) {
+            if (this.players.get(i).getNickname().equals(s)) return false;
+        }
+        this.players.add(new Player(s));
+        return true;
+    }
 
     public GameController (Game model){
         this.model = model;
+        this.players = new ArrayList<>();
+        this.numberPlayers = 0;
     }
-
-
     public void nextPlayer(){
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //controlla se c'è bisogno di riempire la board per il player dopo
@@ -47,7 +79,7 @@ public class GameController  {
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
-        if(c<0 || c>SHELF_COLUMN)
+        if(c<0 || c>=SHELF_COLUMN)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
         else{   //settaggio della colonna
             this.model.setChosenColumnByPlayer(c);
@@ -55,8 +87,7 @@ public class GameController  {
 
     }
     public void checkCorrectCoordinates(int[] inputCoordinates){
-        List<int[]> temp = this.model.getAvailableTilesForCurrentPlayer();
-        for (int[] availableCoordinate : temp) {
+        for (int[] availableCoordinate : this.model.getAvailableTilesForCurrentPlayer()) {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
                 this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
                 this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().getTile(inputCoordinates[0], inputCoordinates[1]));
@@ -68,7 +99,7 @@ public class GameController  {
         this.model.setErrorType(Warnings.INVALID_TILE);
     }
     public void dropTile(int tilePosition){
-        if( tilePosition-1 < 0  ||  tilePosition-1 > model.getCurrentPlayer().getChosenTiles().size() )
+        if( tilePosition-1 < 0  ||  tilePosition > model.getCurrentPlayer().getChosenTiles().size() )
             this.model.setErrorType(Warnings.INVALID_ORDER);
         else {
             Tile chosenTile = model.getCurrentPlayer().getChosenTiles().get(tilePosition - 1);
