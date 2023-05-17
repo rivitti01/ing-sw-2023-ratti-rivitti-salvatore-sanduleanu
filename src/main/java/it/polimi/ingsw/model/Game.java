@@ -23,8 +23,8 @@ public class Game {
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
     private boolean start = false;
-    private boolean end = false;
-    private ModelListener listener;
+    private boolean end=false;
+    private List<ModelListener> listener;
     private Warnings errorType = null;
 
     public void startGame(int numberParticipants, List<Player> players){
@@ -44,8 +44,8 @@ public class Game {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
-        listener.printGame();
-        listener.newTurn(currentPlayer);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        listener.forEach(x->x.newTurn(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
 
@@ -71,7 +71,7 @@ public class Game {
     }
     public void setLastTurn(boolean lastTurn) {
         this.lastTurn = lastTurn;
-        listener.isLastTurn();
+        listener.forEach(ModelListener::isLastTurn);//listener.isLastTurn();
     }
     public List<Player> getPlayers() {
         return this.players;
@@ -115,13 +115,13 @@ public class Game {
     ////////////////////////////////////////////////////
     public Tile popTileFromBoard(int[] coordinates){
         Tile poppedTile = this.board.popTile(coordinates[0], coordinates[1]);
-        listener.printGame();
+        listener.forEach(ModelListener::printGame);//listener.printGame();
         return poppedTile;
     }
     public void setChosenColumnByPlayer(int c){
         this.currentPlayer.setChosenColumn(c);
 
-        listener.askOrder();
+        listener.forEach(ModelListener::askOrder);//listener.askOrder();
 
     }
     public Warnings getErrorType() {
@@ -129,18 +129,18 @@ public class Game {
     }
     public void setErrorType(Warnings errorType){
         this.errorType = errorType;
-        listener.error(errorType, this.currentPlayer);
+        listener.forEach(x->x.error(this.errorType, this.currentPlayer));//listener.error(errorType, this.currentPlayer);
     }
     public void droppedTile(Tile tile, int column){
         this.currentPlayer.getChosenTiles().remove(tile);
         this.currentPlayer.getShelf().dropTile(tile, column);
-        listener.printGame();
+        listener.forEach(ModelListener::printGame);//listener.printGame();
         if(!this.currentPlayer.getChosenTiles().isEmpty())
-            listener.askOrder();
+            listener.forEach(ModelListener::askOrder);//listener.askOrder();
     }
     public void newTurn(){
-        listener.printGame();
-        listener.newTurn(this.currentPlayer);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        listener.forEach(x->x.newTurn(this.currentPlayer));//listener.newTurn(this.currentPlayer);
     }
 
     ////////////////////////////////////////////////////
@@ -149,12 +149,14 @@ public class Game {
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
+
+            listener.forEach(ModelListener::finalPoints);//this.listener.finalPoints();
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
             //punto della fine della partita gia assegnato
         }
-        this.listener.finalPoints();
+        this.listener.forEach(ModelListener::finalPoints);//finalPoints();
 
     }
 
@@ -168,22 +170,24 @@ public class Game {
     }
     */
     public void addModelListener(ModelListener l){
-        this.listener = l ;
+        if (listener == null)
+            listener = new ArrayList<>();
+        listener.add(l);
     }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
-            listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+            listener.forEach(x->x.error(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
         } else {
-            listener.askColumn();
+            listener.forEach(ModelListener::askColumn);//listener.askColumn();
         }
     }
     public void checkMaxNumberOfTilesChosen() {
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
                 getAvailableTilesForCurrentPlayer().isEmpty() ||
                 this.currentPlayer.getChosenTiles().size() == 3){
-            this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+            listener.forEach(x->x.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }else{
-            listener.askAction();
+            listener.forEach(ModelListener::askAction);//listener.askAction();
         }
     }
 
