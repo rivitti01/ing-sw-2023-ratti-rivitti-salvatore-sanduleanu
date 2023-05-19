@@ -17,7 +17,7 @@ public class GameController  {
     private List<Player> players;
     private boolean endPointGiven = false;
 
-    public void setNumberPlayers(int numberPlayers) {
+    public void setNumberPlayers(int numberPlayers) {//TODO: controllare che il numero di giocatori sia corretto
         this.numberPlayers = numberPlayers;
     }
 

@@ -65,7 +65,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
                 if (connectedClients.size() == this.numParticipants) {
                     this.gameAlreadyStarted = true;
-                    this.controller.initializeModel();
+                    this.controller.initializeModel();//TODO: spostare initializeModel nel controller. Il controller dopo l'aggiunta di un nuovo player deve controllare che la parita può iniziare. Se questo controllo è fatto da serverImpl non va bene se si vogliono fare partite sia con socket che con rmi
                 }
             } else {
                 try {
