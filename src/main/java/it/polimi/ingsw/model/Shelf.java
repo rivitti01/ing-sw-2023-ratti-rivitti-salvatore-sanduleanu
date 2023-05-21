@@ -11,12 +11,8 @@ import java.util.List;
 
 public class Shelf implements Serializable {
     private Tile[][] shelf;
-    private PropertyChangeSupport sPcs;
-
-
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
-        sPcs = new PropertyChangeSupport(this.shelf);
     }
     public Tile getTile(int row, int col){
 
@@ -129,12 +125,6 @@ public class Shelf implements Serializable {
     }
     public void setTile(int r, int c, Tile t){
         shelf[r][c]=t;
-    }
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        sPcs.addPropertyChangeListener(listener);
-    }
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        sPcs.removePropertyChangeListener(listener);
     }
 }
 

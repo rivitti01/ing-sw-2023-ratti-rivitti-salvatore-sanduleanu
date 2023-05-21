@@ -104,12 +104,42 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     @Override
-    public void clientConnection(Client c, String nickName) throws RemoteException {//Server ->
+    public void clientConnection(Client c) throws RemoteException {
+
+    }
+
+    @Override
+    public void clientNickNameSetting(Client c, String nickName) throws RemoteException {//Server ->
+
+    }
+
+    @Override
+    public void chatTyped(Client client) throws RemoteException {
+
+    }
+
+    @Override
+    public void newMessage(String message, Client sender) throws RemoteException {
+
+    }
+
+    @Override
+    public void chatAvailable() {
+
+    }
+
+    @Override
+    public void printChat() {
 
     }
 
     @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
+
+    }
+
+    @Override
+    public void finalPoints() {
 
     }
 
@@ -150,7 +180,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     @Override
-    public void error(Warnings e, Player currentPlayer) {
+    public void warning(Warnings e, Player currentPlayer) {
 
     }
 
@@ -194,10 +224,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     }
 
-    @Override
-    public void finalPoints() {
 
-    }
 
 
 }

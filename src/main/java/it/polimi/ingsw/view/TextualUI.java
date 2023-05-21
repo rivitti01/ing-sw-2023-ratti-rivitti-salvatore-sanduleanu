@@ -15,14 +15,12 @@ import static it.polimi.ingsw.view.Colors.*;
 
 public class TextualUI {
     private ViewListener listener;
-
-
+    private boolean gameFinished = false;
     public void newTurn() throws RemoteException {
 
         System.out.println("È IL TUO TURNO");
         chooseAction();
     }
-
     public void lastTurn(){
         System.out.println("È IL TUO ULTIMO TURNO");
         try {
@@ -45,9 +43,6 @@ public class TextualUI {
             }
         }
     }
-
-
-
     public void askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
@@ -101,7 +96,7 @@ public class TextualUI {
             }
         }
     }
-    public void askNumber() {
+    public void askNumber() throws RemoteException {
         Scanner s = new Scanner(System.in);
         System.out.println("Type in the number of players that will take part in this game:");
         int input;
@@ -119,13 +114,9 @@ public class TextualUI {
                 s.nextLine(); // Consuma il valore non intero inserito
             }
         }
-        try {
-            this.listener.numberPartecipantsSetting(input);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        this.listener.numberPartecipantsSetting(input);
     }
-    public void askNickName() {
+    public void askNickName() throws RemoteException {
         boolean validName = false;
         String nickName = null;
         while (!validName) {
@@ -139,13 +130,9 @@ public class TextualUI {
                 validName=true;
             }
         }
-        try {
-            listener.clientConnection(nickName);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        listener.clientNickNameSetting(nickName);
     }
-    public void error(Warnings e){
+    public void warning(Warnings e) throws RemoteException {
         switch (e){
             case INVALID_TILE -> {
                 System.out.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
@@ -171,7 +158,7 @@ public class TextualUI {
                     throw new RuntimeException(ex);
                 }
             }
-            case GAME_ALREADY_STARTED -> System.err.println("Ci dispiace c'è già una partita in atto. Non puoi giocare.");
+            case GAME_ALREADY_STARTED -> System.err.println("A game has already started, you cannot play. Sorry :(");
             case MAX_TILES_CHOSEN -> {
                 System.err.println("Hai raggiunto il numero massimo di tessere prendibili.");
                 askColumn();
@@ -179,6 +166,9 @@ public class TextualUI {
             case INVALID_ORDER -> {
                 System.err.println("AOO metti una posizione sensata.");
                 askOrder();
+            }
+            case WAIT -> {
+                System.out.println("Loading. Wait...");
             }
         }
     }
@@ -296,7 +286,6 @@ public class TextualUI {
                     System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
         }
     }
-
     public void printFinalPoints(Map<String, Integer> chart){
         System.out.println("******************** GAME ENDED ***************************************");
         System.out.println();
@@ -307,9 +296,8 @@ public class TextualUI {
             System.out.println(s + ":" + chart.get(s));
         }
         System.out.println("--------------------------------------------------");
-
+        this.gameFinished = true;
     }
-
     public void addListener (ViewListener l){
         this.listener = l;
     }
@@ -327,6 +315,48 @@ public class TextualUI {
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
         System.out.println("E' il turno di: "+gameView.getNickName());
     }
+    private final Runnable chatManager = () ->
+    {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        // Used to set custom name to the current thread
+        boolean isChatting = false;
+        while (!gameFinished) {
+            input = scanner.nextLine();
+            if ("chat".equalsIgnoreCase(input) && !isChatting) {
+                isChatting = true;
+                System.out.println("Chatting...");
+                try {
+                    this.listener.chatTyped();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if ("chat".equalsIgnoreCase(input) && isChatting) {
+                System.out.println("Chatting stopped.");
+                isChatting = false;
 
+            }
+        }
+    };
+    public void chatAvailable(){
+        Thread chatThread = new Thread(chatManager);
+        chatThread.start();
+        System.out.println("Chat is available. Type 'chat' to start chatting.");
+    }
+    public void printChat(ChatView chatView) throws RemoteException {
+        System.out.println("******************* CHAT **************************************");
+        Map<String, String> chatMap = chatView.getChat();
+        String message;
+        Scanner scanner = new Scanner(System.in);
+        for (String s : chatMap.keySet()) {
+            System.out.println(s + ": " + chatMap.get(s));
+        }
+        System.out.println("Type 'chat' to get back to the game.");
+        System.out.print("Type here: ");
+        message = scanner.next();
+        if (!"chat".equalsIgnoreCase(message)){
+            listener.newMessage(message);
+        }
+    }
 }
 

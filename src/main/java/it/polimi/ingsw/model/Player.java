@@ -21,6 +21,7 @@ public class Player {
     private int chosenColumn;
     private PersonalGoalCard personalGoalCard;
     private int points;
+    private boolean isChatting;
 
     public Player(String nickname){
         this.nickname = nickname;
@@ -28,6 +29,7 @@ public class Player {
         chosenCoordinates = new ArrayList<>();
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
+        this.isChatting = false;
         points = 0;
         chosenColumn = -1;
     }
@@ -45,6 +47,15 @@ public class Player {
     public void addPoints(CommonGoalCard card){
         this.points += card.getPoint();
     }
+
+    public void setChatting(boolean chatting) {
+        isChatting = chatting;
+    }
+
+    public boolean isChatting() {
+        return isChatting;
+    }
+
     public int checkPersonalPoints(){
         int count = 0;
         for (int i=0; i<SHELF_ROWS; i++){

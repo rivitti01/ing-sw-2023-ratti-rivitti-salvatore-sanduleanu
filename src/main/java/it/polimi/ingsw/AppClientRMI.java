@@ -10,12 +10,6 @@ import it.polimi.ingsw.distributed.rmi.ClientImpl;
 
 public class AppClientRMI {
     public static void main( String[] args ) throws RemoteException, NotBoundException {
-        /*Registry registry = LocateRegistry.getRegistry();
-        Server server = (Server) registry.lookup("server");
-
-        ClientImpl client = new ClientImpl(server);
-        client.run();
-        */
         try {
             // Obtain a reference to the remote object
             Registry registry = LocateRegistry.getRegistry();

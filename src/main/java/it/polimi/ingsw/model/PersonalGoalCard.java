@@ -36,7 +36,7 @@ public class PersonalGoalCard implements Serializable {
             System.err.println("File not found!");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("File read error!");
+            System.err.println("File read warning!");
             e.printStackTrace();
         }
     }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.distributed.socket;
 
 import it.polimi.ingsw.distributed.Client;
+import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
@@ -64,7 +65,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
     @Override
-    public void error(Warnings e) throws RemoteException { //CLIENT
+    public void warning(Warnings e) throws RemoteException { //CLIENT
 
     }
 
@@ -111,7 +112,22 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
     @Override
-    public void clientConnection(String nickName) throws RemoteException {
+    public void printChat(ChatView chatView) throws RemoteException {
+
+    }
+
+    @Override
+    public void chatAvailable() throws RemoteException {
+
+    }
+
+    @Override
+    public void askNickname() throws RemoteException {
+
+    }
+
+    @Override
+    public void clientNickNameSetting(String nickName) throws RemoteException {
         try {
             out.writeObject(nickName);
             out.flush();
@@ -172,6 +188,16 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     @Override
     public void endsSelection() throws RemoteException {
+
+    }
+
+    @Override
+    public void newMessage(String message) throws RemoteException {
+
+    }
+
+    @Override
+    public void chatTyped() throws RemoteException {
 
     }
 }

@@ -2,6 +2,7 @@ package it.polimi.ingsw.distributed.rmi;
 
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
+import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
@@ -38,30 +39,40 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     // ***************** VIEW LISTENER METHODS
     @Override
-    public void clientConnection(String nickName) throws RemoteException {
-        this.stub.clientConnection(this, nickName);
+    public void clientNickNameSetting(String nickName) throws RemoteException{
+        this.stub.clientNickNameSetting(this, nickName);
 
     }
     @Override
-    public void checkingCoordinates(int[] coordinates) throws RemoteException {
+    public void checkingCoordinates(int[] coordinates) throws RemoteException{
         this.stub.checkingCoordinates(coordinates);
 
     }
     @Override
-    public void tileToDrop(int tilePosition) throws RemoteException {
+    public void tileToDrop(int tilePosition) throws RemoteException{
         this.stub.tileToDrop(tilePosition);
     }
     @Override
-    public void columnSetting(int i) throws RemoteException {
+    public void columnSetting(int i)   throws   RemoteException{
         this.stub.columnSetting(i);
     }
     @Override
-    public void numberPartecipantsSetting(int n) throws RemoteException {
+    public void numberPartecipantsSetting(int n) throws RemoteException{
         this.stub.numberOfParticipantsSetting(n);
     }
     @Override
-    public void endsSelection() throws RemoteException {
+    public void endsSelection() throws  RemoteException{
         this.stub.endsSelection();
+    }
+
+    @Override
+    public void newMessage(String message) throws RemoteException {
+        this.stub.newMessage(message, this);
+    }
+
+    @Override
+    public void chatTyped() throws RemoteException {
+        this.stub.chatTyped(this);
     }
 
 
@@ -89,11 +100,11 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
 
     @Override
-    public void error(Warnings e) {
-        this.view.error(e);
+    public void warning(Warnings e) throws RemoteException {
+        this.view.warning(e);
     }
     @Override
-    public void askNumberParticipants() {
+    public void askNumberParticipants() throws RemoteException {
         this.view.askNumber();
     }
     @Override
@@ -115,12 +126,31 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
 
     @Override
+    public void printChat(ChatView chatView) throws RemoteException {
+        this.view.printChat(chatView);
+    }
+
+    @Override
+    public void chatAvailable() throws RemoteException {
+        this.view.chatAvailable();
+    }
+
+    @Override
+    public void askNickname() throws RemoteException {
+        this.view.askNickName();
+    }
+
+    @Override
     public void askColumn() throws RemoteException {
         this.view.askColumn();
     }
 
     @Override
-    public void run() {
-        this.view.askNickName();
+    public void run()  {
+        try {
+            this.stub.clientConnection(this);
+        } catch (RemoteException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

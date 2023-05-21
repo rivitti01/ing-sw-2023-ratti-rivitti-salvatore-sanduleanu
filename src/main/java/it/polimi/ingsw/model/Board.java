@@ -51,7 +51,7 @@ public class Board implements Serializable {
             System.err.println("File BoardFactor.json not found, or invalid number of participant ");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("File read error: BoardFactor.json!!");
+            System.err.println("File read warning: BoardFactor.json!!");
             e.printStackTrace();
         }
         size = (int) Math.sqrt(newBoard.size());

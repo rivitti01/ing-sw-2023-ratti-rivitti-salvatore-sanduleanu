@@ -20,6 +20,7 @@ public class Game {
     private Board board;
     private Bag bag;
     private Player currentPlayer;
+    private Chat chat;
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
     private boolean start = false;
@@ -28,6 +29,7 @@ public class Game {
     private Warnings errorType = null;
 
     public void startGame(int numberParticipants, List<Player> players){
+        this.chat = new Chat();
         this.numberPartecipants = numberParticipants;
         this.players = new ArrayList<>();
         this.bag = new Bag();
@@ -45,10 +47,14 @@ public class Game {
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
         listener.forEach(ModelListener::printGame);//listener.printGame();
+        listener.forEach(ModelListener::chatAvailable);//listener.chatAvailale();
         listener.forEach(x->x.newTurn(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
 
+    public Chat getChat() {
+        return chat;
+    }
 
     //Getters and Setters
     public void setFirstPlayer(){
@@ -129,7 +135,7 @@ public class Game {
     }
     public void setErrorType(Warnings errorType){
         this.errorType = errorType;
-        listener.forEach(x->x.error(this.errorType, this.currentPlayer));//listener.error(errorType, this.currentPlayer);
+        listener.forEach(x->x.warning(this.errorType, this.currentPlayer));//listener.warning(errorType, this.currentPlayer);
     }
     public void droppedTile(Tile tile, int column){
         this.currentPlayer.getChosenTiles().remove(tile);
@@ -176,7 +182,7 @@ public class Game {
     }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
-            listener.forEach(x->x.error(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.error(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+            listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
         } else {
             listener.forEach(ModelListener::askColumn);//listener.askColumn();
         }
@@ -185,7 +191,7 @@ public class Game {
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
                 getAvailableTilesForCurrentPlayer().isEmpty() ||
                 this.currentPlayer.getChosenTiles().size() == 3){
-            listener.forEach(x->x.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.error(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+            listener.forEach(x->x.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }else{
             listener.forEach(ModelListener::askAction);//listener.askAction();
         }
@@ -196,5 +202,18 @@ public class Game {
     }
     public boolean isStart() {
         return start;
+    }
+
+    public void newMessage(String nickname, String message)  {
+        this.chat.newMessage(nickname, message);
+    }
+
+    public void playerIsChatting(boolean isChatting) {
+        if (isChatting) {
+            listener.forEach(ModelListener::printChat);
+        } else {
+            listener.forEach(ModelListener::printGame);
+        }
+
     }
 }

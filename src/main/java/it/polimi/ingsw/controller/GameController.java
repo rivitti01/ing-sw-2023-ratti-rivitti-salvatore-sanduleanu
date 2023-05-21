@@ -32,6 +32,10 @@ public class GameController  {
     public List<Player> getPlayers() {
         return players;
     }
+    public void checkGameInitialization(){
+        if (this.players.size() == this.numberPlayers)
+            initializeModel();
+    }
 
     //crea il Model in base a numberPlayers e alla List di players
     public void initializeModel(){
@@ -40,8 +44,8 @@ public class GameController  {
     }
 
     public boolean setPlayerNickname(String s){
-        for (int i = 0; i < this.players.size(); i++) {
-            if (this.players.get(i).getNickname().equals(s)) return false;
+        for (Player player : this.players) {
+            if (player.getNickname().equals(s)) return false;
         }
         this.players.add(new Player(s));
         return true;
@@ -120,6 +124,23 @@ public class GameController  {
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
-    
 
+    public void playerTypedChat(String nickname){
+        for (Player player : this.players) {
+            if (player.getNickname().equals(nickname)) {
+                if (player.isChatting()) {
+                    player.setChatting(false);
+                    this.model.playerIsChatting(player.isChatting());
+                } else {
+                    player.setChatting(true);
+                    this.model.playerIsChatting(player.isChatting());
+                }
+            }
+        }
+    }
+
+    public void newMessage(String s, String message) {
+        this.model.getChat().newMessage(s, message);
+        this.model.playerIsChatting(true);
+    }
 }
