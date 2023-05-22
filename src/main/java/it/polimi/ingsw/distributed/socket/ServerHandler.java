@@ -135,12 +135,19 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if (currentPlayer.getNickname().equals(nickname)){
             try {
                 if (e.equals(Warnings.CONTINUE_TO_CHOOSE) || e.equals(Warnings.INVALID_ACTION)){
+                    out.writeObject(e);
+                    out.flush();
                     waitCoordinates();
                 }
                 if (e.equals(Warnings.MAX_TILES_CHOSEN)){
+                    out.writeObject(e);
+                    out.flush();
+                    waitColumn();
                     //continueGame = false;
                 }
                 if (e.equals(Warnings.INVALID_COLUMN)){
+                    out.writeObject(e);
+                    out.flush();
                     waitColumn();
                 }
                 out.writeObject(e);
