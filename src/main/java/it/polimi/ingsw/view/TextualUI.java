@@ -170,6 +170,24 @@ public class TextualUI {
             case WAIT -> {
                 System.out.println("Loading. Wait...");
             }
+            case OK_JOINER -> {
+                System.out.println("name set correctly");
+            }
+            case YOUR_TURN -> {
+                newTurn();
+            }
+            case CORRECT_CORD -> {
+
+            }
+            case CONTINUE_TO_CHOOSE -> {
+                chooseAction();
+            }
+            case ASK_COLUMN -> {
+                askColumn();
+            }
+            case ASK_ORDER -> {
+                askOrder();
+            }
         }
     }
     public void lastTurnReached(String nickname){
@@ -339,8 +357,8 @@ public class TextualUI {
         }
     };
     public void chatAvailable(){
-        Thread chatThread = new Thread(chatManager);
-        chatThread.start();
+        //Thread chatThread = new Thread(chatManager);
+        //chatThread.start();
         System.out.println("Chat is available. Type 'chat' to start chatting.");
     }
     public void printChat(ChatView chatView) throws RemoteException {

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 
+import it.polimi.ingsw.distributed.rmi.ServerImpl;
+import it.polimi.ingsw.distributed.socket.ServerHandler;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
 
@@ -182,18 +184,36 @@ public class Game {
     }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
-            listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+            for (ModelListener l : listener) {
+                if(l instanceof ServerHandler && ((ServerHandler) l).getNickname().equals(this.currentPlayer.getNickname())){
+                    l.warning(Warnings.INVALID_ACTION, this.currentPlayer);
+                    break;
+                }
+            }
+            for (ModelListener l : listener) {
+                if(l instanceof ServerImpl){
+                    listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));
+                }
+            }
+            //listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
         } else {
             listener.forEach(ModelListener::askColumn);//listener.askColumn();
         }
     }
     public void checkMaxNumberOfTilesChosen() {
+
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
                 getAvailableTilesForCurrentPlayer().isEmpty() ||
                 this.currentPlayer.getChosenTiles().size() == 3){
             listener.forEach(x->x.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }else{
             listener.forEach(ModelListener::askAction);//listener.askAction();
+            for (ModelListener l : listener) {
+                if(l instanceof ServerHandler && ((ServerHandler) l).getNickname().equals(this.currentPlayer.getNickname())){
+                    l.warning(Warnings.CONTINUE_TO_CHOOSE, this.currentPlayer);
+                    break;
+                }
+            }
         }
     }
 

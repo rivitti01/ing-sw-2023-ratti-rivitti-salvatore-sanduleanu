@@ -33,30 +33,136 @@ public class ClientSocketImpl implements Client, ViewListener {
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         view.askNickName();
-        System.out.println("Waiting start game from server");
-        while(true) {
+        System.out.println("I'm waiting for the server");
+        /*while(true) {
             waitModelView();
+        }*/
+        while (true){
+            Object object = in.readObject();
+            analyzeMessage(object);
         }
 
 
     }
-    private void waitModelView() throws IOException, ClassNotFoundException {
-        Object response = in.readObject();
-        Object response2 = in.readObject();
-        if (response instanceof GameView){
-            GameView gameView = (GameView) response;
-            view.printGame(gameView);
+    private void analyzeMessage(Object object) throws RemoteException {
+        switch (object.getClass().getSimpleName()) {
+            case "GameView" -> {
+                GameView gameView = (GameView) object;
+                view.printGame(gameView);
+                }
+            case "Warnings"-> {
+                Warnings warnings = (Warnings) object;
+                view.warning(warnings);
+            }
         }
-        if (response2 instanceof String && response2.equals("yourTurn")){
-            view.newTurn();
+
+
+    }
+    @Override
+    public void printChat(ChatView chatView) throws RemoteException {
+
+    }
+
+    @Override
+    public void chatAvailable() throws RemoteException {
+
+    }
+
+    @Override
+    public void askNickname() throws RemoteException {
+
+    }
+
+    @Override
+    public void clientNickNameSetting(String nickName) throws RemoteException {
+        try {
+            out.writeObject(nickName);
+            out.flush();
+            Warnings response = (Warnings) in.readObject();
+
+            if (response != null && response.equals(Warnings.INVALID_NICKNAME)) {
+                //view.askNickName();
+                view.warning(response);
+            }
+            else if(response != null && response.equals(Warnings.OK_CREATOR)){
+                nickname = nickName;
+                view.askNumber();
+            }
+            else if( response != null && response.equals(Warnings.OK_JOINER)){
+                nickname = nickName;
+                //view.askNumber(); deve aspettare che la partita sia completa
+            }
+
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Cannot create client connection",e);
         }
+    }
+
+
+    @Override
+    public void checkingCoordinates(int[] coordinates) throws RemoteException {
+        try {
+            out.writeObject(coordinates);
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void tileToDrop(int tilePosition) throws RemoteException {
+
+    }
+
+    @Override
+    public void columnSetting(int i) throws RemoteException {
+        try {
+            out.writeObject(i);
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void numberPartecipantsSetting(int n) throws RemoteException {
+        try {
+            out.writeObject(n);
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void endsSelection() throws RemoteException {
+        try {
+            out.writeObject(Warnings.END_SELECTION);
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public void newMessage(String message) throws RemoteException {
+
+    }
+
+    @Override
+    public void chatTyped() throws RemoteException {
+
     }
 
 
     @Override
     public void printGame(GameView gameView) throws RemoteException { //CLIENT
         view.printGame(gameView);
-
     }
 
     @Override
@@ -76,14 +182,6 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     @Override
     public void newTurn() throws RemoteException { //CLIENT
-        try {
-            String response = (String) in.readObject();
-            if(response.equals("yourTurn")){
-                view.newTurn();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -111,93 +209,4 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     }
 
-    @Override
-    public void printChat(ChatView chatView) throws RemoteException {
-
-    }
-
-    @Override
-    public void chatAvailable() throws RemoteException {
-
-    }
-
-    @Override
-    public void askNickname() throws RemoteException {
-
-    }
-
-    @Override
-    public void clientNickNameSetting(String nickName) throws RemoteException {
-        try {
-            out.writeObject(nickName);
-            out.flush();
-            String response = (String) in.readObject();
-
-            if (response.equals("ko")) {
-                view.askNickName();
-            }
-            else if(response.equals("okCreator")){
-                nickname = nickName;
-                view.askNumber();
-            }
-            else if(response.equals("ok")){
-                nickname = nickName;
-                //view.askNumber(); deve aspettare che la partita sia completa
-            }
-
-
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Cannot create client connection",e);
-        }
-
-
-    }
-
-    @Override
-    public void checkingCoordinates(int[] coordinates) throws RemoteException {
-        try {
-            out.writeObject(coordinates);
-            out.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
-
-    @Override
-    public void tileToDrop(int tilePosition) throws RemoteException {
-
-    }
-
-    @Override
-    public void columnSetting(int i) throws RemoteException {
-
-    }
-
-    @Override
-    public void numberPartecipantsSetting(int n) throws RemoteException {
-        try {
-            out.writeObject(n);
-            out.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Override
-    public void endsSelection() throws RemoteException {
-
-    }
-
-    @Override
-    public void newMessage(String message) throws RemoteException {
-
-    }
-
-    @Override
-    public void chatTyped() throws RemoteException {
-
-    }
 }
