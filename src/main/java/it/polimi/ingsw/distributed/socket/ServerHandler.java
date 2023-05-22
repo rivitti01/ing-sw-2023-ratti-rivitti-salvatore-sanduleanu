@@ -188,6 +188,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 if(model.getCurrentPlayer().getChosenTiles().size() > 1){
                     out.writeObject(Warnings.ASK_ORDER);
                     out.flush();
+                    waitOrder();
                 } else{
                     this.controller.dropTile(1);
                 }
@@ -255,6 +256,17 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     private void playing() throws IOException, ClassNotFoundException {
         waitCoordinates();
+    }
+    private void waitOrder(){
+        try {
+            Object response = in.readObject();
+            if (response instanceof Integer){
+                int order = (int) response;
+                controller.dropTile(order);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

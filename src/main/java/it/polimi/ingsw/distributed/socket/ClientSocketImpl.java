@@ -37,10 +37,11 @@ public class ClientSocketImpl implements Client, ViewListener {
         /*while(true) {
             waitModelView();
         }*/
-        while (true){
-            Object object = in.readObject();
-            analyzeMessage(object);
+        while (true) {
+            analyzeMessage(in.readObject());
         }
+
+
 
 
     }
