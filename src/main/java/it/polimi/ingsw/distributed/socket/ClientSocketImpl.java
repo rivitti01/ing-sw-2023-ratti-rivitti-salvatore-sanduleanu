@@ -118,7 +118,13 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
-
+        try{
+            out.writeObject(tilePosition);
+            out.reset();
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
