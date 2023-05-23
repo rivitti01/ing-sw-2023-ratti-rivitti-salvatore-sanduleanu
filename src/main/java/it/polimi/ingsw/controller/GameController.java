@@ -86,11 +86,15 @@ public class GameController  {
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
-        int emptyCells = this.model.getCurrentPlayer().getShelf().checkColumnEmptiness(c);
-        if(c<0 || c>=SHELF_COLUMN || this.model.getCurrentPlayer().getChosenTiles().size() > emptyCells)
+
+        if(c<0 || c>=SHELF_COLUMN)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
         else{   //settaggio della colonna
-            this.model.setChosenColumnByPlayer(c);
+            int emptyCells = this.model.getCurrentPlayer().getShelf().checkColumnEmptiness(c);
+            if(this.model.getCurrentPlayer().getChosenTiles().size() > emptyCells){
+                this.model.setErrorType(Warnings.INVALID_COLUMN);
+            }else
+                this.model.setChosenColumnByPlayer(c);
         }
 
     }
