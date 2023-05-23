@@ -3,7 +3,7 @@ package it.polimi.ingsw.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.polimi.ingsw.Costants.DECK_SIZE;
+import static it.polimi.ingsw.util.Costants.DECK_SIZE;
 import static java.util.Collections.shuffle;
 
 public class DeckCommon {

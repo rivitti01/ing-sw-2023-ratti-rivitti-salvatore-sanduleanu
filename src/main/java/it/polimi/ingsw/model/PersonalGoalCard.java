@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model;
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 
 import com.google.gson.JsonArray;
@@ -10,8 +10,9 @@ import com.google.gson.JsonParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 
-public class PersonalGoalCard {
+public class PersonalGoalCard implements Serializable {
     final Tile[][] goalsShelf;
     final String cardName;
 
@@ -35,7 +36,7 @@ public class PersonalGoalCard {
             System.err.println("File not found!");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("File read error!");
+            System.err.println("File read warning!");
             e.printStackTrace();
         }
     }

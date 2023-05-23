@@ -1,38 +1,43 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.distributed.rmi.ServerImpl;
+import it.polimi.ingsw.distributed.socket.ServerHandler;
+import it.polimi.ingsw.util.Warnings;
+import it.polimi.ingsw.util.ModelListener;
 
-import javax.swing.event.ChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+
+
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.Random;
 
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
-public class Game implements PropertyChangeListener {
+public class Game {
     private int numberPartecipants;
     private List<Player> players;
     private CommonGoalCard[] commonGoals;
     private Board board;
     private Bag bag;
     private Player currentPlayer;
+    private Chat chat;
     //per capire se si è completata una shelf o meno (l'ho messo come attributo perchè veniva usato in startGame()
     private boolean lastTurn;
     private boolean start = false;
     private boolean end=false;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private List<ModelListener> listener;
+    private Warnings errorType = null;
 
-
-
-    public void setGame(int numberParticipants, List<Player> players){
+    public void startGame(int numberParticipants, List<Player> players){
+        this.chat = new Chat();
         this.numberPartecipants = numberParticipants;
+        this.players = new ArrayList<>();
         this.bag = new Bag();
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
+        this.board.setBorderTiles();
         this.players = players;
         setFirstPlayer();
         this.currentPlayer = this.players.get(0);
@@ -43,13 +48,15 @@ public class Game implements PropertyChangeListener {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
-        board.addPropertyChangeListener(this);
-        for (Player p: this.players) {
-            p.addPropertyChangeListener(this);
-        }
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        listener.forEach(ModelListener::chatAvailable);//listener.chatAvailale();
+        listener.forEach(x->x.newTurn(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
 
+    public Chat getChat() {
+        return chat;
+    }
 
     //Getters and Setters
     public void setFirstPlayer(){
@@ -65,39 +72,30 @@ public class Game implements PropertyChangeListener {
         }
         players = tempList;
         players.get(0).setSeat(true);
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "seat", null, this.players.get(0)));
-
+        setCurrentPlayer(players.get(0));
     }
-
     public boolean isLastTurn() {
         return this.lastTurn;
     }
-
     public void setLastTurn(boolean lastTurn) {
         this.lastTurn = lastTurn;
+        listener.forEach(ModelListener::isLastTurn);//listener.isLastTurn();
     }
-
-
     public List<Player> getPlayers() {
-        return players;
+        return this.players;
     }
-
     public Board getBoard() {
         return board;
     }
-
     public Bag getBag() {
         return bag;
     }
-
     public CommonGoalCard[] getCommonGoals() {
         return commonGoals;
     }
-
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
-
     public List<int[]> getAvailableTilesForCurrentPlayer(){
         int[]  chosenCoordinates1;
         int[]  chosenCoordinates2;
@@ -113,63 +111,110 @@ public class Game implements PropertyChangeListener {
         }
         return this.board.filterAvailableTiles(chosenCoordinates1, chosenCoordinates2, this.board.getBorderTiles());
     }
-
     public void setCurrentPlayer(Player currentPlayer) {
-        Player oldPlayer = this.currentPlayer;
         this.currentPlayer = currentPlayer;
-        if (!lastTurn) {
-            propertyChangeSupport.firePropertyChange("nextPlayer", oldPlayer, this.currentPlayer);
-        } else {
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "Last Turn", oldPlayer, this.currentPlayer));
-        }
     }
-
     public void setStart(boolean s){
-        boolean old = this.start;
         this.start = s;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "start", old, this.start));
     }
-
     public void setEnd(boolean e){
-        boolean old = this.end;
         this.end = e;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "end", old, this.end));
+    }
+    ////////////////////////////////////////////////////
+    public Tile popTileFromBoard(int[] coordinates){
+        Tile poppedTile = this.board.popTile(coordinates[0], coordinates[1]);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        return poppedTile;
+    }
+    public void setChosenColumnByPlayer(int c){
+        this.currentPlayer.setChosenColumn(c);
+        listener.forEach(ModelListener::askOrder);//listener.askOrder();
+    }
+    public Warnings getErrorType() {
+        return errorType;
+    }
+    public void setErrorType(Warnings errorType){
+        this.errorType = errorType;
+        listener.forEach(x->x.warning(this.errorType, this.currentPlayer));//listener.warning(errorType, this.currentPlayer);
+    }
+    public void droppedTile(Tile tile, int column){
+        this.currentPlayer.getChosenTiles().remove(tile);
+        this.currentPlayer.getShelf().dropTile(tile, column);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        if(!this.currentPlayer.getChosenTiles().isEmpty())
+            listener.forEach(ModelListener::askOrder);//listener.askOrder();
+    }
+    public void newTurn(){
+        listener.forEach(ModelListener::printGame);//listener.printGame();
+        listener.forEach(x->x.newTurn(this.currentPlayer));//listener.newTurn(this.currentPlayer);
     }
 
-    public void endGame(){
+    ////////////////////////////////////////////////////
+    public void endGame() {
         setEnd(true);
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
-            propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "playerName", null, p.getNickname()));
-            propertyChangeSupport.firePropertyChange((new PropertyChangeEvent(this, "playerPoints", null, p.getPoints())));
+
+            listener.forEach(ModelListener::finalPoints);//this.listener.finalPoints();
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
             //punto della fine della partita gia assegnato
         }
+        this.listener.forEach(ModelListener::finalPoints);//finalPoints();
 
     }
 
-    public void findWinner(){
+    // we can remove this and do it in the textualUI by finding the String in the map with biggest Integer
+   /* public void findWinner(){
         Player tempWinner = players.get(0);
         for(int i=1; i<players.size(); i++){
             if(players.get(i).getPoints() >= players.get(i-1).getPoints())
                 tempWinner = players.get(i);
         }
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "winner", null, tempWinner));
+    }
+    */
+    public void addModelListener(ModelListener l){
+        if (listener == null)
+            listener = new ArrayList<>();
+        listener.add(l);
+    }
+    public void selectionControl() {
+        if (this.currentPlayer.getChosenTiles().size()==0) {
+            listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+        } else {
+            listener.forEach(ModelListener::askColumn);//listener.askColumn();
+        }
+    }
+    public void checkMaxNumberOfTilesChosen() {
+
+        if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
+                getAvailableTilesForCurrentPlayer().isEmpty() ||
+                this.currentPlayer.getChosenTiles().size() == 3){
+            listener.forEach(x->x.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
+        }else{
+            listener.forEach(ModelListener::askAction);//listener.askAction();
+        }
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.addPropertyChangeListener(listener);
+    public boolean isEnd() {
+        return end;
+    }
+    public boolean isStart() {
+        return start;
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.removePropertyChangeListener(listener);
+    public void newMessage(String nickname, String message)  {
+        this.chat.newMessage(nickname, message);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, evt.getPropertyName(),evt.getOldValue(),evt.getNewValue()));
+    public void playerIsChatting(boolean isChatting) {
+        if (isChatting) {
+            listener.forEach(ModelListener::printChat);
+        } else {
+            listener.forEach(ModelListener::printGame);
+        }
+
     }
 }

@@ -12,23 +12,18 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Objects;
 import java.util.Stack;
-
-import static it.polimi.ingsw.Costants.SHELF_COLUMN;
-import static it.polimi.ingsw.Costants.SHELF_ROWS;
 
 public class CommonGoalCard {
     private CardStrategy cardStrategy;
     private Stack<Integer> scores;
     private String description;
-    private PropertyChangeSupport propertyChangeSupport;
+
 
     public CommonGoalCard(int numberParticipants, DeckCommon deckCommon){
         setCardStrategy(deckCommon);
         fillStack(numberParticipants);
         description = cardStrategy.toString();
-        propertyChangeSupport = new PropertyChangeSupport(this);
     }
     public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
         this.cardStrategy = cardStrategy;
@@ -80,7 +75,6 @@ public class CommonGoalCard {
 
     public int getPoint(){
         int point = scores.pop();
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "commonPoint", 0, point));
         return point;
     }
 
@@ -101,7 +95,7 @@ public class CommonGoalCard {
             System.err.println("File not found!");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("File read error!");
+            System.err.println("File read warning!");
             e.printStackTrace();
         }
     }
@@ -114,12 +108,5 @@ public class CommonGoalCard {
         return description;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
 
 }

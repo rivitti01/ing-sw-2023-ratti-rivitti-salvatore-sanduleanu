@@ -6,27 +6,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Board {
+public class Board implements Serializable {
     private Tile[][] board;
     private int size;
     private List<int[]> borderTiles;
-    private PropertyChangeSupport propertyChangeSupport;
+
 
     public Board(int numberParticipants){
         String name = "Board" + numberParticipants;
         setupBoard(name);
-        this.borderTiles = getAvailableTiles();
-        propertyChangeSupport = new PropertyChangeSupport(this.board);
+        this.borderTiles = new ArrayList<>();
     }
 
     public Tile[][] getBoard(){
@@ -54,7 +51,7 @@ public class Board {
             System.err.println("File BoardFactor.json not found, or invalid number of participant ");
             e.printStackTrace();
         } catch (Exception e){
-            System.err.println("File read error: BoardFactor.json!!");
+            System.err.println("File read warning: BoardFactor.json!!");
             e.printStackTrace();
         }
         size = (int) Math.sqrt(newBoard.size());
@@ -97,8 +94,8 @@ public class Board {
     }
 
     // serve all inizio della scelta del giocatore un riferimento alle Tiles disponibili prima delle scelte del giocatore per far funzionare bene il filtro
-    public void setBorderTiles(List<int[]> borderTiles) {
-        this.borderTiles = borderTiles;
+    public void setBorderTiles() {
+        this.borderTiles = getAvailableTiles();
     }
 
     public List<int[]> getBorderTiles() {
@@ -206,7 +203,6 @@ public class Board {
         Tile[][] bCopy = copyBoard();
         Tile temp = getTile(x, y);
         board[x][y] = new Tile(null); //prima era board[x][y] = null;
-        propertyChangeSupport.firePropertyChange(new PropertyChangeEvent(this, "board", bCopy, this));
         return temp;
     }
 
@@ -226,13 +222,5 @@ public class Board {
             }
         }
 
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

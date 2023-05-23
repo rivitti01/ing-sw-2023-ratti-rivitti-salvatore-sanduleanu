@@ -1,5 +1,5 @@
 package it.polimi.ingsw.model.Algorythms;
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 import it.polimi.ingsw.model.Shelf;
 import it.polimi.ingsw.model.Tile;
 

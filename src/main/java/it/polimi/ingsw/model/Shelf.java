@@ -1,32 +1,18 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.view.TextualUI;
-import it.polimi.ingsw.view.TextualUI.*;
-
-import static com.sun.java.accessibility.util.SwingEventMonitor.addChangeListener;
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
-
-
-public class Shelf {
+public class Shelf implements Serializable {
     private Tile[][] shelf;
-    private PropertyChangeSupport sPcs;
-
-
     public Shelf(){
         shelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
-        sPcs = new PropertyChangeSupport(this.shelf);
     }
     public Tile getTile(int row, int col){
 
@@ -122,17 +108,12 @@ public class Shelf {
 
         return count;
     }
-    public void dropTiles(List<Tile> chosenTiles, int column){
-        Shelf sCopy = this.copyShelf();
+    public void dropTile(Tile tile, int column){
         int j=0;
         while(j+1<SHELF_ROWS && this.getTile(j+1, column)==null) {
             j++;
         }
-        for (Tile chosenTile : chosenTiles) {
-            putTile(j, column, chosenTile);
-            j--;
-        }
-        sPcs.firePropertyChange(new PropertyChangeEvent(this, "shelf", sCopy, this));
+        putTile(j, column, tile);
     }
     public boolean isFull(){
         for (int i = 0; i < SHELF_ROWS; i++){
@@ -144,12 +125,6 @@ public class Shelf {
     }
     public void setTile(int r, int c, Tile t){
         shelf[r][c]=t;
-    }
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        sPcs.addPropertyChangeListener(listener);
-    }
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        sPcs.removePropertyChangeListener(listener);
     }
 }
 

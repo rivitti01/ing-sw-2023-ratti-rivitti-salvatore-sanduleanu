@@ -1,246 +1,199 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.controller.GameController;
+
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.Warnings;
+import it.polimi.ingsw.util.ViewListener;
 
+import java.rmi.RemoteException;
+import java.util.*;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
-
-import static it.polimi.ingsw.Costants.*;
+import static it.polimi.ingsw.util.Costants.*;
 import static it.polimi.ingsw.view.Colors.*;
 
 
 
-public class TextualUI  implements  Runnable, PropertyChangeListener {
-    private GameController controller;
-    private GameView modelView;
+public class TextualUI {
+    private ViewListener listener;
+    private boolean gameFinished = false;
+    public void newTurn() throws RemoteException {
 
-
-
-    public TextualUI(GameController gc, GameView modelView){
-        this.controller = gc;
-        this.modelView = modelView;
-        this.modelView.addPropertyChangeListener(this);
+        System.out.println("È IL TUO TURNO");
+        chooseAction();
     }
-
-    @Override
-    public void run() {
-        //noinspection InfiniteLoopStatement
-
-        System.out.println("--- WELCOME TO A NEW GAME OF 'MY_SHELFIE' :) ---");
-        /* Player chooses */
-        //Damiani nel suo codice non ha dipendenze dal controller in textualUI (con Observable<Choice> indica che Controller è un suo listener il quale cambia in base alle notifiche)
-        int n = askNumber();
-        controller.setPlayerNumber(n);
-        for (int i = 0; i < n; i++) {
-            askNickName(i);
+    public void lastTurn(){
+        System.out.println("È IL TUO ULTIMO TURNO");
+        try {
+            chooseAction();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
-        System.out.println("The game has started!");
-        //dopo la scelta del numero giocatori e i nomi dei Players inizializza il GameModel
-        this.controller.initializeModel();
-        /*this.modelView.getCurrentPlayer().addPropertyChangeListener(this);
-        for(int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            this.modelView.getCommonGoals()[i].addPropertyChangeListener(this);
-        }
-        while(!modelView.isLastTurn()){
-            System.out.println("È il turno di " + this.modelView.getCurrentPlayerNickname() + ".");
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1 ) askOrder();
-            controller.dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }
-        while(!this.modelView.getCurrentPlayerSeat()){
-            System.out.println("È L'ULTIMO TURNO PER: " + this.modelView.getCurrentPlayerNickname());
-            printShelf(modelView.getCurrentPlayerShelf());
-            int tilesNum = askCoordinates();
-            int column = askColumn();
-            if (tilesNum > 1) askOrder();
-            modelView.getCurrentPlayerShelf().dropTiles(modelView.getCurrentPlayerChosenTiles(),column);
-        }
-        System.out.println("LA PARTITA È FINITA");
-        System.out.println("------------------\n\nPUNTEGGI FINALI\n\n------------------");*/
     }
-
-    public void newTurn(GameView modelview){
-        System.out.println("È il turno di " + modelview.getCurrentPlayerNickname() + ".");
-        System.out.println("\nQuesta è la tua Carta Obiettivo Personale");
-        printPersonalGoalShelf(modelview.getCurrentPlayerPersonalCard());
-        System.out.println("\nQuesti sono gli Obiettivi Comuni:");
-        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            System.out.println(i+1 + ") " + modelview.getCommonGoals()[i].getDescription() + "\n");
-        }
-        printShelf(modelview.getCurrentPlayerShelf());
-        printBoard(modelview.getBoard());
-        int tilesNum = askCoordinates();
-        int column = askColumn();
-        if (tilesNum > 1 ) askOrder();
-        controller.dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
-    }
-
-    public void lastTurn(GameView modelview){
-        System.out.println("È L'ULTIMO TURNO PER: " + modelview.getCurrentPlayerNickname());
-        printShelf(modelView.getCurrentPlayerShelf());
-        int tilesNum = askCoordinates();
-        int column = askColumn();
-        if (tilesNum > 1) askOrder();
-        modelview.getCurrentPlayerShelf().dropTiles(modelview.getCurrentPlayerChosenTiles(),column);
-    }
-    private void askOrder() {
-        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:");
-        List<Tile> tmp = new ArrayList<>();
+    public void askOrder() {
+        System.out.println("seleziona la tile da inserire prima: ");
         Scanner scanner = new Scanner(System.in);
-        do{
-            for (int i = 0; i < modelView.getCurrentPlayerChosenTiles().size(); i++) {
-                System.out.println("[" + i + "]" + " " + modelView.getCurrentPlayerChosenTiles().get(i).getColor());
-            }
+        int tilePosition;
+        while(true) {
             try {
-                int pos = Integer.parseInt(scanner.nextLine());
-                if (pos < 0 || pos >= modelView.getCurrentPlayerChosenTiles().size())
-                    System.out.println("posizione non valida!\nRiprovare");
-                else tmp.add(modelView.getCurrentPlayerChosenTiles().remove(pos));
-            }catch(NumberFormatException e){
+                tilePosition = Integer.parseInt(scanner.nextLine());
+                listener.tileToDrop(tilePosition);
+                return;
+            } catch (NumberFormatException | RemoteException e) {
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
-        }while (modelView.getCurrentPlayerChosenTiles().size()!=0);
-        controller.setChosenTiles(tmp);
+        }
     }
-
-    private int askColumn() {
+    public void askColumn() {
         Scanner scanner = new Scanner(System.in);
         int column;
         System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
         while (true) {
             try {
                 column = Integer.parseInt(scanner.nextLine());
-                if (column < 0 || column >= SHELF_COLUMN)
-                    System.out.println("posizione invalida! riprovare\n");
-                else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
-                    System.out.println("troppe tessere! Riprovare\n");
-                else {
-                    return column;
-                }
-            }catch (NumberFormatException e){
+                //if (column < 0 || column >= SHELF_COLUMN)
+                //System.out.println("posizione invalida! riprovare\n");
+                //else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
+                //System.out.println("troppe tessere! Riprovare\n");     TODO: farlo fare al controller
+                // else {
+                this.listener.columnSetting(column);
+                return;
+                //}
+            }catch (NumberFormatException | RemoteException e){
                 System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
             }
         }
 
     }
-
-    public int askCoordinates(){
-        //ritorna il numero di tiles scelte. utile cosi che viene scelta una sola tiles non avviene la chiamata a askOrder
-        //inizializzo le border tiles e le scelte che fa il player sono in base alle tiles disponibili all inizio del turno
-        int cont = 0;
-
-        this.controller.setBorderTiles();
-        List<int[]> borderTiles = this.modelView.getBoard().getBorderTiles();
-
+    public void chooseAction() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
-
-        for (int[] cord : modelView.getCurrentPlayerChosenCoordinates()){
-            System.out.println(modelView.getCurrentPlayerNickname()+" "+cord[0] + " " + cord[1]);
-        }
-        int maxEmptySpace = modelView.getMaxColumnSpace();
-        for(int i=0; i<maxEmptySpace; i++) {
-            if(!this.modelView.getAvailableTilesForCurrentPlayer().isEmpty()) {
-                boolean chosen = false;
-                while (!chosen) {
-                    System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
-
-                    String s = scanner.nextLine();
-
-                    switch (s.toUpperCase()) {
-                        case "Q" -> {
-                            if (i == 0) {
-                                System.err.println("Selezionare almeno una tessera!");
-                            } else
-                                return i;
-                        }
-                        case "S" -> {
-                            System.out.println("seleziona tessera tra le seguenti disponibili");
-                            printAvailableTiles(this.modelView.getAvailableTilesForCurrentPlayer());
-                            //while(true)... scelta x scelta y this.controller."addChosenCoordinates" i++ nel for che seleziona la tessere dopo...
-                            while (!chosen) {
-                                try {
-                                    int[] coordinates = new int[2];
-                                    System.out.print("x: ");
-                                    coordinates[0] = scanner.nextInt();
-                                    scanner.nextLine();
-                                    System.out.print("y: ");
-                                    coordinates[1] = scanner.nextInt();
-                                    scanner.nextLine();
-                                    if (this.controller.checkCorrectCoordinates(coordinates, borderTiles)) {
-                                        this.controller.addChosenCoordinate(coordinates);
-                                        this.controller.addChosenTile(coordinates);
-                                        chosen = true;
-                                    } else {
-                                        System.err.println("Coordinate non valide. Riprova\n");
-                                    }
-                                } catch (InputMismatchException e1) {
-                                    System.err.println("Inserire un numero");
-                                    scanner.nextLine();
-                                    System.out.println();
-                                }
-                            }
-                        }
-                        default -> System.err.println("Non conosco questo comando.\nRiprova");
+        while(true) {
+            System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
+            String s = scanner.nextLine();
+            switch (s.toUpperCase()) {
+                case "Q" -> {
+                    listener.endsSelection();
+                    return;
+                }
+                case "S" -> {
+                    System.out.println("seleziona una tessera:");
+                    try {
+                        int[] coordinates = new int[2];
+                        System.out.print("x: ");
+                        coordinates[0] = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.print("y: ");
+                        coordinates[1] = scanner.nextInt();
+                        scanner.nextLine();
+                        this.listener.checkingCoordinates(coordinates);
+                        return;
+                    } catch (InputMismatchException e1) {
+                        System.err.println("Inserire un numero");
+                        scanner.nextLine();
+                        System.out.println();
                     }
                 }
-            }else{
-                System.out.println("Non ci sono più tessere disponibili\n");
-                return i;
+                default -> System.err.println("Non conosco questo comando.\nRiprova");
             }
-            cont = i;
         }
-        System.err.println("Non ci sono piu tessere disponibili oppure sono gia state scelte NUM_MAX");
-        return cont;
     }
-    public int askNumber() {
+    public void askNumber() throws RemoteException {
         Scanner s = new Scanner(System.in);
+        System.out.println("Type in the number of players that will take part in this game:");
+        int input;
         while (true) {
-            System.out.println("Type in the number of players that will take part in this game:");
-            int input;
-            while (true) {
-                if (s.hasNextInt()) {
-                    input = s.nextInt();
+            if (s.hasNextInt()) {
+                input = s.nextInt();
+                if (input < 2 || input > 4){
+                    System.err.println("Sorry you cannot play with this much players :(");
+                    System.err.println("Please enter a number in between 2 and 4:");
+                }else {
                     break;
-                } else {
-                    System.err.println("Enter a valid value");
-                    s.nextLine(); // Consuma il valore non intero inserito
                 }
-            }
-            if (input < 2 || input > 4){
-                System.err.println("Sorry you cannot play with this much players :(");
-                System.err.println("Please enter a number in between 2 and 4:");
             } else {
-                return input;
+                System.err.println("Enter a valid value");
+                s.nextLine(); // Consuma il valore non intero inserito
             }
         }
+        this.listener.numberPartecipantsSetting(input);
     }
-
-    private void askNickName(int index) {
+    public void askNickName() throws RemoteException {
         boolean validName = false;
+        String nickName = null;
         while (!validName) {
             Scanner s = new Scanner (System.in);
-            System.out.println("Player " + index + ", choose your nickname for the game:");
-            String nickName = s.next();
+            System.out.println("Choose your nickname for the game:");
+            nickName = s.next();
             if (nickName.length() == 0){
                 System.err.println("Sorry there was something wrong with your nickname :(");
                 System.err.println("Please try again:");
             } else {
-                validName = controller.setPlayerNickname(nickName);
+                validName=true;
+            }
+        }
+        listener.clientNickNameSetting(nickName);
+    }
+    public void warning(Warnings e) throws RemoteException {
+        switch (e){
+            case INVALID_TILE -> {
+                System.out.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
+                try {
+                    chooseAction();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            case INVALID_NICKNAME -> {
+                System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
+                askNickName();
+            }
+            case INVALID_COLUMN -> {
+                System.err.println("Errore nella scelta della colonna, scegline un'altra:");
+                askColumn();
+            }
+            case INVALID_ACTION -> {
+                System.err.println("Scegliere almeno una tile prima di procedere:");
+                try {
+                    chooseAction();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            case GAME_ALREADY_STARTED -> System.err.println("A game has already started, you cannot play. Sorry :(");
+            case MAX_TILES_CHOSEN -> {
+                System.err.println("Hai raggiunto il numero massimo di tessere prendibili.");
+                askColumn();
+            }
+            case INVALID_ORDER -> {
+                System.err.println("AOO metti una posizione sensata.");
+                askOrder();
+            }
+            case WAIT -> {
+                System.out.println("Loading. Wait...");
+            }
+            case OK_JOINER -> {
+                System.out.println("name set correctly");
+            }
+            case YOUR_TURN -> {
+                newTurn();
+            }
+            case CORRECT_CORD -> {
+
+            }
+            case CONTINUE_TO_CHOOSE -> {
+                chooseAction();
+            }
+            case ASK_COLUMN -> {
+                askColumn();
+            }
+            case ASK_ORDER -> {
+                askOrder();
             }
         }
     }
-
-
-    void printBoard(Board b) {
-        System.out.print("   ");
+    public void lastTurnReached(String nickname){
+        System.out.println(nickname + " ha riempito la shelf\nInizia l'ultimo giro");
+    }
+    public void printBoard(Board b) {
         System.out.print("   ");
         for (int i = 0; i < b.getSize(); i++)
             System.out.print("  " + i + "  ");
@@ -275,92 +228,153 @@ public class TextualUI  implements  Runnable, PropertyChangeListener {
         System.out.println();
         System.out.println();
     }
-
-    void printAvailableTiles(List<int[]> availableTiles) {
-        for (int[] availableTile : availableTiles) System.out.print(availableTile[0] + ";" + availableTile[1] + " ");
-        System.out.println();
+    private void printTile(Tile t) {
+        if (t == null || t.getColor() == null)
+            System.out.print("  " + "|");
+        else {
+            if (t.getColor() == Color.WHITE)
+                System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.YELLOW)
+                System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.BLUE)
+                System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.GREEN)
+                System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.PINK)
+                System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
+            else if (t.getColor() == Color.CYAN)
+                System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+        }
     }
-
-    void printShelf(Shelf s) {
-        System.out.println("Ecco la tua attuale shelf...");
+    public void printShelves(Map<String, Shelf> playerShelves) {
+        for(String s : playerShelves.keySet()) {
+            System.out.print(s + "'s shelf:\t\t\t\t");
+        }
+        System.out.println();
         for (int i = 0; i < SHELF_ROWS; i++) {
-            System.out.println("  ");
-            for (int j = 0; j < SHELF_COLUMN; j++) {
-                if (j == 0)
-                    System.out.print("|");
-                if (s.getTile(i, j) == null)
-                    System.out.print("  " + "|");
-                else {
-                    if (s.getTile(i, j).getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (s.getTile(i, j).getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+            for(String s: playerShelves.keySet()){
+                Shelf tmpShelf = playerShelves.get(s);
+                System.out.print("|");
+                for(int j=0; j<SHELF_COLUMN; j++){
+                    printTile(tmpShelf.getTile(i, j));
                 }
+                System.out.print("\t\t");
             }
+            System.out.println();
         }
         System.out.println();
         System.out.println();
     }
-
-    void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+    public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
+        System.out.println("This is your personal goal card:");
         for (int i = 0; i < SHELF_ROWS; i++) {
             System.out.println("  ");
             for (int j = 0; j < SHELF_COLUMN; j++) {
                 if (j == 0)
-                    System.out.print("|");
+                    System.out.print("    |");
                 if (personalGoalCard.getGoalsShelf()[i][j] == null)
                     System.out.print("  " + "|");
                 else {
-                    if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.WHITE)
-                        System.out.print(ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.YELLOW)
-                        System.out.print(ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.BLUE)
-                        System.out.print(ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.GREEN)
-                        System.out.print(ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.PINK)
-                        System.out.print(ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET + "|");
-                    else if (personalGoalCard.getGoalsShelf()[i][j].getColor() == Color.CYAN)
-                        System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
+                    printTile(personalGoalCard.getGoalsShelf()[i][j]);
                 }
             }
+
         }
+        char checkmark = '\u2713';
         System.out.println();
+        System.out.println(checkmark + "  | 1 | 2 | 3 | 4 | 5 | 6 |");
+        System.out.println("X  | 1 | 2 | 4 | 6 | 9 | 12 |");
         System.out.println();
     }
+    public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
+        if (!chosenTiles.isEmpty()) {
+            System.out.println("******************* CHOSEN TILES BY " + nickname + " **************************************");
+            for (int i = 0; i < chosenTiles.size(); i++)
+                if (chosenTiles.get(i).getColor().equals(Color.BLUE))
+                    System.out.println(i + 1 + ") " + ANSI_BLUE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.WHITE))
+                    System.out.println(i + 1 + ") " + ANSI_WHITE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.YELLOW))
+                    System.out.println(i + 1 + ") " + ANSI_YELLOW_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.PINK))
+                    System.out.println(i + 1 + ") " + ANSI_PURPLE_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.GREEN))
+                    System.out.println(i + 1 + ") " + ANSI_GREEN_BACKGROUND + "  " + ANSI_RESET);
+                else if (chosenTiles.get(i).getColor().equals(Color.CYAN))
+                    System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
+        }
+    }
+    public void printFinalPoints(Map<String, Integer> chart){
+        System.out.println("******************** GAME ENDED ***************************************");
+        System.out.println();
+        System.out.println("                    FINAL POINTS                   ");
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource() instanceof GameView){
-            switch (evt.getPropertyName()){
-                case "board" -> printBoard((Board) evt.getNewValue());
-                case "shelf" -> printShelf((Shelf)evt.getNewValue());
-                case "seat"  ->System.out.println("The first player is: " + ((Player) evt.getNewValue()).getNickname());
-                case "commonPoint" -> System.out.print("************ "+ evt.getNewValue() + " punti ");
-                case "playerTakesCommonPoint" -> System.out.println("presi da " + evt.getNewValue() + " ************");
-                case "playerTakesEndPoint" -> System.out.println("************ " + evt.getNewValue() + " prende il punto Fine-Partita [1] ************");
-                case "playerName" -> System.out.print("------------------\n" + evt.getNewValue() + "  :  ");
-                case "playerPoints" -> System.out.println(evt.getNewValue() + "\n------------------");
-                case "nextPlayer", "start" -> newTurn((GameView) evt.getSource());
-                case "Last Turn" -> lastTurn((GameView) evt.getSource());
-                case "winner" -> System.out.println("THE WINNER IS: " + evt.getNewValue());
-                case "end" -> System.out.println("LA PARTITA È FINITA\n------------------\n\nPUNTEGGI FINALI\n\n------------------");
-                default -> System.err.println("Ignoring event from " + evt.getPropertyName());
+        for(String s : chart.keySet()){
+            System.out.println("--------------------------------------------------");
+            System.out.println(s + ":" + chart.get(s));
+        }
+        System.out.println("--------------------------------------------------");
+        this.gameFinished = true;
+    }
+    public void addListener (ViewListener l){
+        this.listener = l;
+    }
+    public void printGame(GameView gameView){
+        System.out.println("******************* COMMON GOAL CARDS *************************************");
+        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
+            System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
+        }
+        System.out.println("******************* BOARD **************************************");
+        printBoard(gameView.getBoard());
+        System.out.println("******************* SHELVES **************************************");
+        printShelves(gameView.getPlayersShelves());
+        printPersonalGoalShelf(gameView.getPersonal());
+
+        printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+        System.out.println("E' il turno di: "+gameView.getNickName());
+    }
+    private final Runnable chatManager = () ->
+    {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        // Used to set custom name to the current thread
+        boolean isChatting = false;
+        while (!gameFinished) {
+            input = scanner.nextLine();
+            if ("chat".equalsIgnoreCase(input) && !isChatting) {
+                isChatting = true;
+                System.out.println("Chatting...");
+                try {
+                    this.listener.chatTyped();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if ("chat".equalsIgnoreCase(input) && isChatting) {
+                System.out.println("Chatting stopped.");
+                isChatting = false;
+
             }
-        } else {
-            System.err.println("Ignoring event from "+ evt.getSource().toString());
         }
-
+    };
+    public void chatAvailable(){
+        //Thread chatThread = new Thread(chatManager);
+        //chatThread.start();
+        System.out.println("Chat is available. Type 'chat' to start chatting.");
     }
-
-
+    public void printChat(ChatView chatView) throws RemoteException {
+        System.out.println("******************* CHAT **************************************");
+        Map<String, String> chatMap = chatView.getChat();
+        String message;
+        Scanner scanner = new Scanner(System.in);
+        for (String s : chatMap.keySet()) {
+            System.out.println(s + ": " + chatMap.get(s));
+        }
+        System.out.println("Type 'chat' to get back to the game.");
+        System.out.print("Type here: ");
+        message = scanner.next();
+        if (!"chat".equalsIgnoreCase(message)){
+            listener.newMessage(message);
+        }
+    }
 }
+
