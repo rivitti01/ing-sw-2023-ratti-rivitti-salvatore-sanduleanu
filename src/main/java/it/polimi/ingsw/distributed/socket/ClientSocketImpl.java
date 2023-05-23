@@ -38,7 +38,10 @@ public class ClientSocketImpl implements Client, ViewListener {
             waitModelView();
         }*/
         while (true) {
-            analyzeMessage(in.readObject());
+            Object object = new Object();
+            object = in.readObject();
+            analyzeMessage(object);
+
         }
 
 
@@ -78,6 +81,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void clientNickNameSetting(String nickName) throws RemoteException {
         try {
             out.writeObject(nickName);
+            out.reset();
             out.flush();
             Warnings response = (Warnings) in.readObject();
 
@@ -105,6 +109,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void checkingCoordinates(int[] coordinates) throws RemoteException {
         try {
             out.writeObject(coordinates);
+            out.reset();
             out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -120,6 +125,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void columnSetting(int i) throws RemoteException {
         try {
             out.writeObject(i);
+            out.reset();
             out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -131,6 +137,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void numberPartecipantsSetting(int n) throws RemoteException {
         try {
             out.writeObject(n);
+            out.reset();
             out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -142,6 +149,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void endsSelection() throws RemoteException {
         try {
             out.writeObject(Warnings.END_SELECTION);
+            out.reset();
             out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);

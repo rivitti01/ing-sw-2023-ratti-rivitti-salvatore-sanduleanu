@@ -87,10 +87,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 this.nickname = nickname;
                 if (creator){
                     out.writeObject(Warnings.OK_CREATOR);
+                    out.reset();
                     out.flush();
                     waitAndSetNumberPlayers();
                 }else {
                     out.writeObject(Warnings.OK_JOINER);
+                    out.reset();
                     out.flush();
                 }
                 if (controller.getNumberPlayers()>1 && controller.getNumberPlayers()<5 && controller.getNumberPlayers()==controller.getPlayers().size() && !model.isStart()){//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
@@ -98,6 +100,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 }
             } else {
                 out.writeObject(Warnings.INVALID_NICKNAME);
+                out.reset();
                 out.flush();
                 waitAndSetNickname();
             }
@@ -159,6 +162,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 GameView gameView = new GameView(model, p);
                 try {
                     out.writeObject(gameView);
+                    out.reset();
                     out.flush();
                     break;
                 } catch (IOException e) {
@@ -173,6 +177,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if (currentPlayer.getNickname().equals(nickname)){
             try {
                 out.writeObject(e);
+                out.reset();
                 out.flush();
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -185,6 +190,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if(currentPlayer.getNickname().equals(nickname)){
             try {
                 out.writeObject(Warnings.YOUR_TURN);
+                out.reset();
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -192,6 +198,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }else {
             try {
                 out.writeObject(Warnings.NOT_YOUR_TURN);
+                out.reset();
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -206,6 +213,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             try {
                 if(model.getCurrentPlayer().getChosenTiles().size() > 1){
                     out.writeObject(Warnings.ASK_ORDER);
+                    out.reset();
                     out.flush();
                     currentState = state.ORDER;
                 } else{
@@ -228,6 +236,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if (model.getCurrentPlayer().getNickname().equals(nickname)) {
             try {
                 out.writeObject(Warnings.ASK_COLUMN);
+                out.reset();
                 out.flush();
                 currentState = state.COLUMN;
             } catch (IOException e) {
@@ -243,6 +252,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             try {
                 currentState = state.COLUMN;
                 out.writeObject(Warnings.CONTINUE_TO_CHOOSE);
+                out.reset();
                 out.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
