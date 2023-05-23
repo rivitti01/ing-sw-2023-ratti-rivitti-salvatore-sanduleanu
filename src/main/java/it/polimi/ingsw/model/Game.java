@@ -128,9 +128,7 @@ public class Game {
     }
     public void setChosenColumnByPlayer(int c){
         this.currentPlayer.setChosenColumn(c);
-
         listener.forEach(ModelListener::askOrder);//listener.askOrder();
-
     }
     public Warnings getErrorType() {
         return errorType;
@@ -184,18 +182,7 @@ public class Game {
     }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
-            for (ModelListener l : listener) {
-                if(l instanceof ServerHandler && ((ServerHandler) l).getNickname().equals(this.currentPlayer.getNickname())){
-                    l.warning(Warnings.INVALID_ACTION, this.currentPlayer);
-                    break;
-                }
-            }
-            for (ModelListener l : listener) {
-                if(l instanceof ServerImpl){
-                    listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));
-                }
-            }
-            //listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
+            listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());
         } else {
             listener.forEach(ModelListener::askColumn);//listener.askColumn();
         }
@@ -208,12 +195,6 @@ public class Game {
             listener.forEach(x->x.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
         }else{
             listener.forEach(ModelListener::askAction);//listener.askAction();
-            for (ModelListener l : listener) {
-                if(l instanceof ServerHandler && ((ServerHandler) l).getNickname().equals(this.currentPlayer.getNickname())){
-                    l.warning(Warnings.CONTINUE_TO_CHOOSE, this.currentPlayer);
-                    break;
-                }
-            }
         }
     }
 

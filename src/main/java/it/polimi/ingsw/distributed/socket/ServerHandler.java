@@ -25,12 +25,17 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private ObjectOutputStream out;
     private boolean creator;
     private boolean wait;
+    private state currentState;
+    public enum state{
+        COLUMN, ORDER
+    }
     public ServerHandler(Socket socket, Game model, GameController controller,boolean creator){
         this.socket = socket;
         this.model = model;
         this.controller = controller;
         this.model.addModelListener(this);
         this.creator = creator;
+        currentState = state.COLUMN;
     }
     @Override
     public void run() {
@@ -39,8 +44,37 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
             waitAndSetNickname();
+            while (true) {
+                analyzeMessage(in.readObject());
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+
+
+    }
+    private void analyzeMessage(Object response) throws IOException {
+        switch (response.getClass().getSimpleName()){
+            case "int[]" -> {
+                int[] coordinates = (int[]) response;
+                controller.checkCorrectCoordinates(coordinates);
+            }
+            case "Warnings" -> {
+                Warnings warning = (Warnings) response;
+                if (warning.equals(Warnings.END_SELECTION)){
+                    model.selectionControl();
+                }
+
+            }
+            case "Integer" -> {
+                if(currentState == state.COLUMN) {
+                    int column = (int) response;
+                    controller.setChosenColumn(column);
+                }else if(currentState == state.ORDER) {
+                    int order = (int) response;
+                    controller.dropTile(order);;
+                }
+            }
         }
 
 
@@ -74,6 +108,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         int numberPlayers = (int) in.readObject();
         numberOfParticipantsSetting(numberPlayers);
     }
+    public String getNickname(){
+        return nickname;
+    }
+
 
     //ModelListener ->
     @Override
@@ -134,25 +172,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void warning(Warnings e, Player currentPlayer) {
         if (currentPlayer.getNickname().equals(nickname)){
             try {
-                if (e.equals(Warnings.CONTINUE_TO_CHOOSE) || e.equals(Warnings.INVALID_ACTION)){
-                    out.writeObject(e);
-                    out.flush();
-                    waitCoordinates();
-                }
-                if (e.equals(Warnings.MAX_TILES_CHOSEN)){
-                    out.writeObject(e);
-                    out.flush();
-                    waitColumn();
-                    //continueGame = false;
-                }
-                if (e.equals(Warnings.INVALID_COLUMN)){
-                    out.writeObject(e);
-                    out.flush();
-                    waitColumn();
-                }
                 out.writeObject(e);
                 out.flush();
-            } catch (IOException | ClassNotFoundException e1) {
+            } catch (IOException e1) {
                 e1.printStackTrace();
             }
         }
@@ -164,11 +186,8 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             try {
                 out.writeObject(Warnings.YOUR_TURN);
                 out.flush();
-                waitCoordinates();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
             }
         }else {
             try {
@@ -183,12 +202,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void askOrder() {
-        if (model.getCurrentPlayer().equals(nickname)){
+        if (model.getCurrentPlayer().getNickname().equals(nickname)){
             try {
                 if(model.getCurrentPlayer().getChosenTiles().size() > 1){
                     out.writeObject(Warnings.ASK_ORDER);
                     out.flush();
-                    waitOrder();
+                    currentState = state.ORDER;
                 } else{
                     this.controller.dropTile(1);
                 }
@@ -206,11 +225,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void askColumn() {
-        if (model.getCurrentPlayer().equals(nickname)) {
+        if (model.getCurrentPlayer().getNickname().equals(nickname)) {
             try {
                 out.writeObject(Warnings.ASK_COLUMN);
                 out.flush();
-                waitColumn();
+                currentState = state.COLUMN;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -220,60 +239,16 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void askAction() {
-        /*try {
-            out.writeObject(Warnings.OK);
-            out.flush();
-            waitCoordinates();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }*/
-
-    }
-    public String getNickname(){
-        return nickname;
-    }
-    private void waitColumn(){
-        try {
-            Object response = in.readObject();
-            if (response instanceof Integer){
-                int column = (int) response;
-                controller.setChosenColumn(column);
+        if (model.getCurrentPlayer().getNickname().equals(nickname)){
+            try {
+                currentState = state.COLUMN;
+                out.writeObject(Warnings.CONTINUE_TO_CHOOSE);
+                out.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
-    private void waitCoordinates() throws IOException, ClassNotFoundException {
-        Object response = in.readObject();
-        if(response instanceof int[]){
-            int[] coordinates = (int[]) response;
-            controller.checkCorrectCoordinates(coordinates);
-        }
-        if(response instanceof Warnings && response.equals(Warnings.END_SELECTION)){
-            model.selectionControl();
-        }
-
-    }
-    private void playing() throws IOException, ClassNotFoundException {
-        waitCoordinates();
-    }
-    private void waitOrder(){
-        try {
-            Object response = in.readObject();
-            if (response instanceof Integer){
-                int order = (int) response;
-                controller.dropTile(order);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-
-
-
-
     @Override
     public void clientConnection(Client c) throws RemoteException {
 
