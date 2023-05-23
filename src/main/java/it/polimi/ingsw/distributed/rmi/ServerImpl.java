@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
 
-
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
@@ -67,8 +66,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     }
 
 
-
-
     //********** SERVER METHODS
     @Override
     public void clientConnection(Client c) throws RemoteException {
@@ -76,7 +73,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         try {
             c.warning(Warnings.WAIT);
         } catch (RemoteException e){
-            System.err.println("Unable to advice the client about the game being already full:" +
+            System.err.println("Unable to advice the client about the loading:" +
                     e.getMessage() + ". Skipping the update...");
         }
         if(!this.gameAlreadyStarted) {
@@ -108,6 +105,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
             if (canPlay){
                 c.askNickname();
+                try {
+                    c.warning(Warnings.WAIT);
+                } catch (RemoteException e){
+                    System.err.println("Unable to advice the client about the loading:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
+                this.controller.checkGameInitialization();
             }
         } else {
             try {
@@ -122,7 +126,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
         if (this.controller.setPlayerNickname(nickName)) {
             connectedClients.put(c, nickName);
-            this.controller.checkGameInitialization();
         } else {
             try {
                 c.warning(Warnings.INVALID_NICKNAME);
