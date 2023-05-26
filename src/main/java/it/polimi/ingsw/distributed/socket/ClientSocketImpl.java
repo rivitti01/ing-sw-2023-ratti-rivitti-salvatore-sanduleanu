@@ -35,7 +35,9 @@ public class ClientSocketImpl implements Client, ViewListener {
         view.askNickName();
         System.out.println("I'm waiting for the server");
         while (true) {
-            analyzeMessage(in.readObject());
+            Object object = new Object();
+            object = in.readObject();
+            analyzeMessage(object);
         }
     }
     private void analyzeMessage(Object object) throws RemoteException {
