@@ -44,6 +44,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
             waitAndSetNickname();
+            if(creator) {
+                waitAndSetNumberPlayers();
+            }
             while (true) {
                 analyzeMessage(in.readObject());
             }
@@ -81,15 +84,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     private void waitAndSetNickname() throws IOException, ClassNotFoundException {
         String nickname = (String) in.readObject();
-        System.out.println(socket.getPort()+": Nickname = "+nickname);
         if (nickname !=null){
             if(controller.setPlayerNickname(nickname)){
+                System.out.println(socket.getPort()+": Nickname = "+nickname);
                 this.nickname = nickname;
                 if (creator){
                     out.writeObject(Warnings.OK_CREATOR);
                     out.reset();
                     out.flush();
-                    waitAndSetNumberPlayers();
                 }else {
                     out.writeObject(Warnings.OK_JOINER);
                     out.reset();
@@ -152,7 +154,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             }
         }
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
-
     }
 
     @Override
@@ -187,11 +188,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if(currentPlayer.getNickname().equals(nickname)){
+        if(model.getCurrentPlayer().getNickname().equals(nickname)){
             try {
                 out.writeObject(Warnings.YOUR_TURN);
                 out.reset();
                 out.flush();
+                currentState = state.COLUMN;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -200,10 +202,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 out.writeObject(Warnings.NOT_YOUR_TURN);
                 out.reset();
                 out.flush();
+                currentState = state.COLUMN;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
 
     }
 

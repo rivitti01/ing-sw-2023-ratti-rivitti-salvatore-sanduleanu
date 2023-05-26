@@ -34,19 +34,9 @@ public class ClientSocketImpl implements Client, ViewListener {
         in = new ObjectInputStream(socket.getInputStream());
         view.askNickName();
         System.out.println("I'm waiting for the server");
-        /*while(true) {
-            waitModelView();
-        }*/
         while (true) {
-            Object object = new Object();
-            object = in.readObject();
-            analyzeMessage(object);
-
+            analyzeMessage(in.readObject());
         }
-
-
-
-
     }
     private void analyzeMessage(Object object) throws RemoteException {
         switch (object.getClass().getSimpleName()) {
@@ -59,8 +49,6 @@ public class ClientSocketImpl implements Client, ViewListener {
                 view.warning(warnings);
             }
         }
-
-
     }
     @Override
     public void printChat(ChatView chatView) throws RemoteException {
@@ -86,7 +74,6 @@ public class ClientSocketImpl implements Client, ViewListener {
             Warnings response = (Warnings) in.readObject();
 
             if (response != null && response.equals(Warnings.INVALID_NICKNAME)) {
-                //view.askNickName();
                 view.warning(response);
             }
             else if(response != null && response.equals(Warnings.OK_CREATOR)){
@@ -95,7 +82,6 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             else if( response != null && response.equals(Warnings.OK_JOINER)){
                 nickname = nickName;
-                //view.askNumber(); deve aspettare che la partita sia completa
             }
 
 
@@ -177,7 +163,6 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     @Override
     public void printGame(GameView gameView) throws RemoteException { //CLIENT
-        view.printGame(gameView);
     }
 
     @Override
