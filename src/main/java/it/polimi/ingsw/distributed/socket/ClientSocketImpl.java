@@ -78,6 +78,11 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
     @Override
+    public void newChatMessage(String message, String sender) throws RemoteException {
+
+    }
+
+    @Override
     public void clientNickNameSetting(String nickName) throws RemoteException {
         try {
             out.writeObject(nickName);

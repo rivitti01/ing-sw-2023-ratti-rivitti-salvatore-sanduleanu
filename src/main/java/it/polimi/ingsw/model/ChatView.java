@@ -1,16 +1,17 @@
 package it.polimi.ingsw.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 public class ChatView implements Serializable {
-    private Map<String, String> chat;
+    private List<ChatMessage> chat;
     
     public ChatView(Game model) {
-        this.chat = model.getChat().getChatMap();
+        this.chat = model.getChat().getChat();
     }
     
-    public Map<String, String> getChat() {
+    public List<ChatMessage> getChat() {
         return this.chat;
     }
 

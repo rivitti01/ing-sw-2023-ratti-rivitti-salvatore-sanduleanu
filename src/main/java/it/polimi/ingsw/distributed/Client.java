@@ -22,4 +22,5 @@ public interface Client extends Remote {
     void printChat(ChatView chatView) throws RemoteException;
     void chatAvailable() throws RemoteException;
     void askNickname() throws RemoteException;
+    void newChatMessage(String message, String sender) throws RemoteException;
 }

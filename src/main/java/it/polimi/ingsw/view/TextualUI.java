@@ -39,6 +39,12 @@ public class TextualUI {
                 listener.tileToDrop(tilePosition);
                 return;
             } catch (NumberFormatException | RemoteException e) {
+                String input = scanner.nextLine();
+                if ("/chat".equals(input.substring(0, 5))) {
+                    listener.
+                }
+
+                }
                 System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
             }
         }

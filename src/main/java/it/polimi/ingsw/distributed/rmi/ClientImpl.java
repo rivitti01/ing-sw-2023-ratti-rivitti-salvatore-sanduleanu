@@ -141,6 +141,11 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
 
     @Override
+    public void newChatMessage(String message, String sender) throws RemoteException {
+
+    }
+
+    @Override
     public void askColumn() throws RemoteException {
         this.view.askColumn();
     }
