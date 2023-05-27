@@ -194,6 +194,9 @@ public class TextualUI {
             case ASK_ORDER -> {
                 askOrder();
             }
+            case OK_CREATOR -> {
+                askNumber();
+            }
         }
     }
     public void lastTurnReached(String nickname){

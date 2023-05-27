@@ -24,10 +24,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean creator;
-    private boolean wait;
-    private state currentState;
+    private boolean myTurn;
+    private state state;
     public enum state{
-        COLUMN, ORDER
+        COORDS,COLUMN, ORDER
     }
     public ServerHandler(Socket socket, Game model, GameController controller,boolean creator){
         this.socket = socket;
@@ -35,7 +35,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         this.controller = controller;
         this.model.addModelListener(this);
         this.creator = creator;
-        currentState = state.COLUMN;
+        this.state = state.COORDS;
     }
     @Override
     public void run() {
@@ -44,6 +44,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
             waitAndSetNickname();
+            if(creator) {
+                waitAndSetNumberPlayers();
+            }
             while (true) {
                 analyzeMessage(in.readObject());
             }
@@ -56,8 +59,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private void analyzeMessage(Object response) throws IOException {
         switch (response.getClass().getSimpleName()){
             case "int[]" -> {
-                int[] coordinates = (int[]) response;
-                controller.checkCorrectCoordinates(coordinates);
+                if (state == state.COORDS) {
+                    int[] coordinates = (int[]) response;
+                    controller.checkCorrectCoordinates(coordinates);
+                }
             }
             case "Warnings" -> {
                 Warnings warning = (Warnings) response;
@@ -67,12 +72,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
             }
             case "Integer" -> {
-                if(currentState == state.COLUMN) {
+                if(state == state.COLUMN) {
                     int column = (int) response;
                     controller.setChosenColumn(column);
-                }else if(currentState == state.ORDER) {
+                }else {
                     int order = (int) response;
-                    controller.dropTile(order);;
+                    controller.dropTile(order);
                 }
             }
         }
@@ -81,15 +86,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     private void waitAndSetNickname() throws IOException, ClassNotFoundException {
         String nickname = (String) in.readObject();
-        System.out.println(socket.getPort()+": Nickname = "+nickname);
         if (nickname !=null){
             if(controller.setPlayerNickname(nickname)){
+                System.out.println(socket.getPort()+": Nickname = "+nickname);
                 this.nickname = nickname;
                 if (creator){
                     out.writeObject(Warnings.OK_CREATOR);
                     out.reset();
                     out.flush();
-                    waitAndSetNumberPlayers();
                 }else {
                     out.writeObject(Warnings.OK_JOINER);
                     out.reset();
@@ -152,7 +156,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             }
         }
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
-
     }
 
     @Override
@@ -174,8 +177,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void warning(Warnings e, Player currentPlayer) {
-        if (currentPlayer.getNickname().equals(nickname)){
+        if (myTurn){
             try {
+                if (e.equals(Warnings.MAX_TILES_CHOSEN)){
+                    state = state.COLUMN;
+                }
                 out.writeObject(e);
                 out.reset();
                 out.flush();
@@ -187,11 +193,17 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if(currentPlayer.getNickname().equals(nickname)){
+        if (currentPlayer.getNickname().equals(nickname)){
+            myTurn = true;
+        }else {
+            myTurn = false;
+        }
+        if(myTurn){
             try {
                 out.writeObject(Warnings.YOUR_TURN);
                 out.reset();
                 out.flush();
+                state = state.COORDS;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -200,19 +212,21 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 out.writeObject(Warnings.NOT_YOUR_TURN);
                 out.reset();
                 out.flush();
+                state = state.COORDS;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+
     }
 
     @Override
     public void askOrder() {
-        if (model.getCurrentPlayer().getNickname().equals(nickname)){
+        if (myTurn){
             try {
                 if(model.getCurrentPlayer().getChosenTiles().size() > 1){
-                    currentState = state.ORDER;
+                    state = state.ORDER;
                     out.writeObject(Warnings.ASK_ORDER);
                     out.reset();
                     out.flush();
@@ -233,12 +247,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void askColumn() {
-        if (model.getCurrentPlayer().getNickname().equals(nickname)) {
+        if (myTurn) {
             try {
+                state = state.COLUMN;
                 out.writeObject(Warnings.ASK_COLUMN);
                 out.reset();
                 out.flush();
-                currentState = state.COLUMN;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -248,9 +262,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void askAction() {
-        if (model.getCurrentPlayer().getNickname().equals(nickname)){
+        if (myTurn){
             try {
-                currentState = state.COLUMN;
+                state = state.COORDS;
                 out.writeObject(Warnings.CONTINUE_TO_CHOOSE);
                 out.reset();
                 out.flush();
