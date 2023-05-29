@@ -18,6 +18,7 @@ import java.util.Map;
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
     private TextualUI view = new TextualUI();
     private Server stub;
+    private String nickname = null;
 
 
     public ClientImpl(Server s) throws RemoteException {
@@ -64,27 +65,30 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     public void endsSelection() throws  RemoteException{
         this.stub.endsSelection();
     }
-
     @Override
     public void newMessage(String message) throws RemoteException {
-        this.stub.newMessage(message, this);
-    }
-
-    @Override
-    public void chatTyped() throws RemoteException {
-        this.stub.chatTyped(this);
+        this.stub.newMessage(this, message);
     }
 
 
-    //*************** CLIENT METHODS
+    //******************************************************** CLIENT METHODS
     @Override
-    public void newTurn() {
+    public void newTurn(String currentNickname) {
         try {
-            this.view.newTurn();
+            if(currentNickname.equals(this.nickname)) {
+                this.view.newTurn();
+            } else
+                waitingTurn();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public void waitingTurn() throws RemoteException{
+        this.view.waitingTurn();
+    }
+
+
     @Override
     public void lastTurn(){
         this.view.lastTurn();
@@ -130,14 +134,15 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         this.view.printChat(chatView);
     }
 
-    @Override
-    public void chatAvailable() throws RemoteException {
-        this.view.chatAvailable();
-    }
 
     @Override
     public void askNickname() throws RemoteException {
         this.view.askNickName();
+    }
+
+    @Override
+    public void ping() throws RemoteException {
+
     }
 
     @Override
@@ -152,5 +157,13 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         } catch (RemoteException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+    @Override
+    public void setNickname(String nickname) throws RemoteException {
+        this.nickname = nickname;
     }
 }

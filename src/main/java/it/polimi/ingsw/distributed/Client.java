@@ -13,13 +13,21 @@ public interface Client extends Remote {
     void finalPoints(Map<String, Integer> finalPoints) throws RemoteException;
     void warning(Warnings e) throws RemoteException;
     void askNumberParticipants() throws RemoteException;
-    void newTurn() throws RemoteException;
+    void newTurn(String currentNickname) throws RemoteException;
+
+    void waitingTurn() throws RemoteException;
+
     void lastTurn() throws RemoteException;
     void askOrder() throws RemoteException;
     void lastTurnNotification(String nickname) throws RemoteException;
     void askColumn() throws RemoteException;
     void askAction() throws RemoteException;
     void printChat(ChatView chatView) throws RemoteException;
-    void chatAvailable() throws RemoteException;
     void askNickname() throws RemoteException;
+
+
+
+    void ping() throws RemoteException;
+
+    void setNickname(String nickname) throws RemoteException;
 }

@@ -15,9 +15,12 @@ import static it.polimi.ingsw.view.Colors.*;
 
 public class TextualUI {
     private ViewListener listener;
-    private boolean gameFinished = false;
-    public void newTurn() throws RemoteException {
 
+
+
+    private final Scanner scanner = new Scanner(System.in);
+
+    public void newTurn() throws RemoteException {
         System.out.println("È IL TUO TURNO");
         chooseAction();
     }
@@ -29,45 +32,63 @@ public class TextualUI {
             throw new RuntimeException(e);
         }
     }
+
+
+    public void chat(){
+        System.out.println("scrivi qualcosa a qualcuno!");
+        String message = scanner.nextLine();
+        try {
+            this.listener.newMessage(message);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void askOrder() {
-        System.out.println("seleziona la tile da inserire prima: ");
-        Scanner scanner = new Scanner(System.in);
         int tilePosition;
         while(true) {
+            System.out.println("seleziona la tile da inserire prima: ");
             try {
-                tilePosition = Integer.parseInt(scanner.nextLine());
+                tilePosition = scanner.nextInt();
                 listener.tileToDrop(tilePosition);
                 return;
-            } catch (NumberFormatException | RemoteException e) {
-                System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
+            } catch (InputMismatchException | RemoteException e) {
+                String invalidInput = scanner.next();
+                scanner.nextLine();
+                if(invalidInput.equals("chat")) {
+                   chat();
+                } else {
+                    System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
+                }
             }
         }
     }
     public void askColumn() {
-        Scanner scanner = new Scanner(System.in);
         int column;
-        System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
         while (true) {
+            System.out.print("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e\nColonna: ");
             try {
-                column = Integer.parseInt(scanner.nextLine());
-                //if (column < 0 || column >= SHELF_COLUMN)
-                //System.out.println("posizione invalida! riprovare\n");
-                //else if (modelView.getCurrentPlayerShelf().checkColumnEmptiness(column) < modelView.getCurrentPlayerChosenCoordinates().size())
-                //System.out.println("troppe tessere! Riprovare\n");     TODO: farlo fare al controller
-                // else {
+                column = scanner.nextInt();
+                scanner.nextLine();
                 this.listener.columnSetting(column);
                 return;
-                //}
-            }catch (NumberFormatException | RemoteException e){
-                System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
+            }catch (InputMismatchException | RemoteException e){
+                String invalidInput = scanner.next();
+                if(invalidInput.equals("chat")) {
+                    chat();
+                } else {
+                    System.out.println("ERRORE! non hai inserito un numero.\nRiprova");
+                }
             }
         }
 
     }
     public void chooseAction() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
         while(true) {
-            System.out.println("[S] : seleziona una tessera disponibile\n[Q] : passa alla selezione della colonna");
+            System.out.println("""
+                    [S] : seleziona una tessera disponibile
+                    [Q] : passa alla selezione della colonna
+                    [chat] scrivi qualcosa nella chat""");
+
             String s = scanner.nextLine();
             switch (s.toUpperCase()) {
                 case "Q" -> {
@@ -87,22 +108,29 @@ public class TextualUI {
                         this.listener.checkingCoordinates(coordinates);
                         return;
                     } catch (InputMismatchException e1) {
-                        System.err.println("Inserire un numero");
-                        scanner.nextLine();
-                        System.out.println();
+                        String invalidInput = scanner.next();
+                        if (invalidInput.equals("chat")) {
+                            chat();
+
+                        } else {
+                            System.err.println("Inserire un numero");
+                            System.out.println();
+                        }
+                        return;
                     }
                 }
+                case "CHAT" -> chat();
                 default -> System.err.println("Non conosco questo comando.\nRiprova");
             }
+
         }
     }
     public void askNumber() throws RemoteException {
-        Scanner s = new Scanner(System.in);
         System.out.println("Type in the number of players that will take part in this game:");
         int input;
         while (true) {
-            if (s.hasNextInt()) {
-                input = s.nextInt();
+            if (scanner.hasNextInt()) {
+                input = scanner.nextInt();
                 if (input < 2 || input > 4){
                     System.err.println("Sorry you cannot play with this much players :(");
                     System.err.println("Please enter a number in between 2 and 4:");
@@ -111,7 +139,7 @@ public class TextualUI {
                 }
             } else {
                 System.err.println("Enter a valid value");
-                s.nextLine(); // Consuma il valore non intero inserito
+                scanner.nextLine(); // Consuma il valore non intero inserito
             }
         }
         this.listener.numberPartecipantsSetting(input);
@@ -120,9 +148,9 @@ public class TextualUI {
         boolean validName = false;
         String nickName = null;
         while (!validName) {
-            Scanner s = new Scanner (System.in);
             System.out.println("Choose your nickname for the game:");
-            nickName = s.next();
+            nickName = scanner.next();
+            scanner.nextLine();
             if (nickName.length() == 0){
                 System.err.println("Sorry there was something wrong with your nickname :(");
                 System.err.println("Please try again:");
@@ -167,27 +195,15 @@ public class TextualUI {
                 System.err.println("AOO metti una posizione sensata.");
                 askOrder();
             }
-            case WAIT -> {
-                System.out.println("Loading. Wait...");
-            }
-            case OK_JOINER -> {
-                System.out.println("name set correctly");
-            }
-            case YOUR_TURN -> {
-                newTurn();
-            }
+            case WAIT -> System.out.println("Loading. Wait...");
+            case OK_JOINER -> System.out.println("name set correctly");
+            case YOUR_TURN -> newTurn();
             case CORRECT_CORD -> {
 
             }
-            case CONTINUE_TO_CHOOSE -> {
-                chooseAction();
-            }
-            case ASK_COLUMN -> {
-                askColumn();
-            }
-            case ASK_ORDER -> {
-                askOrder();
-            }
+            case CONTINUE_TO_CHOOSE -> chooseAction();
+            case ASK_COLUMN -> askColumn();
+            case ASK_ORDER -> askOrder();
         }
     }
     public void lastTurnReached(String nickname){
@@ -280,7 +296,7 @@ public class TextualUI {
             }
 
         }
-        char checkmark = '\u2713';
+        char checkmark = '✓';
         System.out.println();
         System.out.println(checkmark + "  | 1 | 2 | 3 | 4 | 5 | 6 |");
         System.out.println("X  | 1 | 2 | 4 | 6 | 9 | 12 |");
@@ -314,12 +330,16 @@ public class TextualUI {
             System.out.println(s + ":" + chart.get(s));
         }
         System.out.println("--------------------------------------------------");
-        this.gameFinished = true;
     }
     public void addListener (ViewListener l){
         this.listener = l;
     }
     public void printGame(GameView gameView){
+        try {
+            this.printChat(gameView.getChat());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("******************* COMMON GOAL CARDS *************************************");
         for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
             System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
@@ -333,48 +353,39 @@ public class TextualUI {
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
         System.out.println("E' il turno di: "+gameView.getNickName());
     }
-    private final Runnable chatManager = () ->
-    {
-        Scanner scanner = new Scanner(System.in);
-        String input;
-        // Used to set custom name to the current thread
-        boolean isChatting = false;
-        while (!gameFinished) {
-            input = scanner.nextLine();
-            if ("chat".equalsIgnoreCase(input) && !isChatting) {
-                isChatting = true;
-                System.out.println("Chatting...");
-                try {
-                    this.listener.chatTyped();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            } else if ("chat".equalsIgnoreCase(input) && isChatting) {
-                System.out.println("Chatting stopped.");
-                isChatting = false;
 
-            }
-        }
-    };
-    public void chatAvailable(){
-        //Thread chatThread = new Thread(chatManager);
-        //chatThread.start();
-        System.out.println("Chat is available. Type 'chat' to start chatting.");
-    }
     public void printChat(ChatView chatView) throws RemoteException {
         System.out.println("******************* CHAT **************************************");
-        Map<String, String> chatMap = chatView.getChat();
-        String message;
-        Scanner scanner = new Scanner(System.in);
-        for (String s : chatMap.keySet()) {
-            System.out.println(s + ": " + chatMap.get(s));
-        }
-        System.out.println("Type 'chat' to get back to the game.");
-        System.out.print("Type here: ");
-        message = scanner.next();
-        if (!"chat".equalsIgnoreCase(message)){
-            listener.newMessage(message);
+        List<String> chat = chatView.getChat();
+        for(String message : chat)
+            System.out.println(message);
+    }
+
+
+
+    public void waitingTurn() {
+        String input;
+        try {
+            while (true) {
+                if (scanner.hasNext()) {
+                    input = scanner.nextLine();
+                    if (input.equals("chat")) {
+                        chat();
+                    } else {
+                        System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
+                    }
+                } else {
+                    // Break the loop when it's not the player's turn anymore
+                    break;
+                }
+            }
+        }catch (NoSuchElementException e) {
         }
     }
+
+
+
+
+
 }
 

@@ -129,22 +129,10 @@ public class GameController  {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
 
-    public void playerTypedChat(String nickname){
-        for (Player player : this.players) {
-            if (player.getNickname().equals(nickname)) {
-                if (player.isChatting()) {
-                    player.setChatting(false);
-                    this.model.playerIsChatting(player.isChatting());
-                } else {
-                    player.setChatting(true);
-                    this.model.playerIsChatting(player.isChatting());
-                }
-            }
-        }
+    public void addChatMessage(String nickname, String message){
+        this.model.newMessage(nickname, message);
+
+
     }
 
-    public void newMessage(String s, String message) {
-        this.model.getChat().newMessage(s, message);
-        this.model.playerIsChatting(true);
-    }
 }

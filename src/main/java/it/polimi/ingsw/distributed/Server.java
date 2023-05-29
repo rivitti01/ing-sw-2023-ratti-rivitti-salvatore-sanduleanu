@@ -11,8 +11,9 @@ public interface Server extends Remote {
     void columnSetting(int i) throws RemoteException;
     void endsSelection() throws RemoteException;
     void numberOfParticipantsSetting(int n) throws RemoteException;
-    void chatTyped(Client client) throws RemoteException;
-    void newMessage(String message, Client sender) throws RemoteException;
+    void newMessage(Client client, String message) throws RemoteException;
 
 
+
+    void pong() throws RemoteException;
 }

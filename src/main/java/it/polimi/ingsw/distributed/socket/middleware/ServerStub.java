@@ -88,12 +88,12 @@ public class ServerStub implements Server {
     }
 
     @Override
-    public void chatTyped(Client client) throws RemoteException {
+    public void newMessage(Client client, String message) {
 
     }
 
     @Override
-    public void newMessage(String message, Client sender) throws RemoteException {
+    public void pong() throws RemoteException {
 
     }
 

@@ -1,21 +1,23 @@
 package it.polimi.ingsw.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Chat extends Thread implements Serializable {
-    private Map<String, String> chat;
+    private List<String> chat;
 
     public Chat() {
-        this.chat = new HashMap<>();
+        this.chat = new ArrayList<>();
     }
 
     public void newMessage(String nickname, String message) {
-        this.chat.put(nickname, message);
+        this.chat.add(nickname + ": " + message);
     }
 
-    public Map<String, String> getChatMap() {
+    public List<String> getChat() {
         return this.chat;
     }
 }

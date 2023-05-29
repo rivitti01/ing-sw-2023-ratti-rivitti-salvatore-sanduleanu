@@ -49,7 +49,6 @@ public class Game {
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
         listener.forEach(ModelListener::printGame);//listener.printGame();
-        listener.forEach(ModelListener::chatAvailable);//listener.chatAvailale();
         listener.forEach(x->x.newTurn(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
@@ -166,15 +165,7 @@ public class Game {
 
     }
 
-    // we can remove this and do it in the textualUI by finding the String in the map with biggest Integer
-   /* public void findWinner(){
-        Player tempWinner = players.get(0);
-        for(int i=1; i<players.size(); i++){
-            if(players.get(i).getPoints() >= players.get(i-1).getPoints())
-                tempWinner = players.get(i);
-        }
-    }
-    */
+
     public void addModelListener(ModelListener l){
         if (listener == null)
             listener = new ArrayList<>();
@@ -207,14 +198,7 @@ public class Game {
 
     public void newMessage(String nickname, String message)  {
         this.chat.newMessage(nickname, message);
+        listener.forEach(ModelListener::printGame);
     }
 
-    public void playerIsChatting(boolean isChatting) {
-        if (isChatting) {
-            listener.forEach(ModelListener::printChat);
-        } else {
-            listener.forEach(ModelListener::printGame);
-        }
-
-    }
 }

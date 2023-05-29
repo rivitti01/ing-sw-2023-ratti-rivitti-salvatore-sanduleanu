@@ -14,7 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.Objects;
 
 public class ServerHandler implements Server,Runnable, ModelListener {
     private String nickname;
@@ -156,6 +155,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     @Override
+    public void newMessage(Client client, String message) {
+
+    }
+
+    @Override
     public void printGame() {
         for (Player p : model.getPlayers()){
             if (p.getNickname().equals(nickname)){
@@ -269,20 +273,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     }
 
+
+
     @Override
-    public void chatTyped(Client client) throws RemoteException {
+    public void pong() throws RemoteException {
 
     }
 
-    @Override
-    public void newMessage(String message, Client sender) throws RemoteException {
 
-    }
-
-    @Override
-    public void chatAvailable() {
-
-    }
 
     @Override
     public void printChat() {

@@ -9,7 +9,8 @@ public interface ViewListener {
     void columnSetting(int i) throws RemoteException;
     void numberPartecipantsSetting(int n) throws RemoteException;
     void endsSelection() throws RemoteException;
+
     void newMessage(String message) throws RemoteException;
-    void chatTyped()  throws RemoteException;
+
 
 }
