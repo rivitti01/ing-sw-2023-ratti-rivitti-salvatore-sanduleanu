@@ -55,7 +55,7 @@ public class TextualUI {
                 String invalidInput = scanner.next();
                 scanner.nextLine();
                 if(invalidInput.equals("chat")) {
-                   chat();
+                    chat();
                 } else {
                     System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
                 }

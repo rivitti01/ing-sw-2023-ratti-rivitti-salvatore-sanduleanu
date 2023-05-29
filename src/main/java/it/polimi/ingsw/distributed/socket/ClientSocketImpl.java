@@ -53,7 +53,7 @@ public class ClientSocketImpl implements Client, ViewListener {
             case "GameView" -> {
                 GameView gameView = (GameView) object;
                 view.printGame(gameView);
-                }
+            }
             case "Warnings"-> {
                 Warnings warnings = (Warnings) object;
                 view.warning(warnings);

@@ -295,8 +295,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 this.controller.dropTile(1);
             }
         } catch (RemoteException e){
-                System.err.println("Unable to ask the current player the order:" +
-                        e.getMessage() + ". Skipping the update...");
+            System.err.println("Unable to ask the current player the order:" +
+                    e.getMessage() + ". Skipping the update...");
         }
     }
     @Override
