@@ -26,7 +26,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private boolean wait;
     private state currentState;
     public enum state{
-        COLUMN, ORDER
+        COORD, COLUMN, ORDER
     }
     public ServerHandler(Socket socket, Game model, GameController controller,boolean creator){
         this.socket = socket;
@@ -34,7 +34,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         this.controller = controller;
         this.model.addModelListener(this);
         this.creator = creator;
-        currentState = state.COLUMN;
+        currentState = state.COORD;
     }
     @Override
     public void run() {
@@ -43,6 +43,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
             waitAndSetNickname();
+            if (creator){
+                waitAndSetNumberPlayers();
+            }
             while (true) {
                 analyzeMessage(in.readObject());
             }
@@ -55,8 +58,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private void analyzeMessage(Object response) throws IOException {
         switch (response.getClass().getSimpleName()){
             case "int[]" -> {
-                int[] coordinates = (int[]) response;
-                controller.checkCorrectCoordinates(coordinates);
+                if (currentState == state.COORD) {
+                    int[] coordinates = (int[]) response;
+                    controller.checkCorrectCoordinates(coordinates);
+                }
             }
             case "Warnings" -> {
                 Warnings warning = (Warnings) response;
@@ -88,7 +93,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     out.writeObject(Warnings.OK_CREATOR);
                     out.reset();
                     out.flush();
-                    waitAndSetNumberPlayers();
                 }else {
                     out.writeObject(Warnings.OK_JOINER);
                     out.reset();
@@ -112,33 +116,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     public String getNickname(){
         return nickname;
-    }
-
-
-    //ModelListener ->
-    @Override
-    public void tileToDrop(int tilePosition) throws RemoteException {
-
-    }
-
-    @Override
-    public void finalPoints() {
-
-    }
-
-    @Override
-    public void checkingCoordinates(int[] coordinates) throws RemoteException {
-
-    }
-
-    @Override
-    public void columnSetting(int i) throws RemoteException {
-
-    }
-
-    @Override
-    public void endsSelection() throws RemoteException {
-
     }
 
     @Override
@@ -178,7 +155,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void warning(Warnings e, Player currentPlayer) {
-        if (currentPlayer.getNickname().equals(nickname)){
+        if (model.getCurrentPlayer().getNickname().equals(nickname)){
+            if (e.equals(Warnings.MAX_TILES_CHOSEN)){
+                currentState = state.COLUMN;
+            }
             try {
                 out.writeObject(e);
                 out.reset();
@@ -191,19 +171,23 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if(currentPlayer.getNickname().equals(nickname)){
+        if(model.getCurrentPlayer().getNickname().equals(nickname)){// == currentPlayer.getNickname().equals(nickname)
             try {
+                System.out.println("Client "+socket.getPort()+" YOUR TURN "+ "Thread nick : "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.YOUR_TURN);
                 out.reset();
                 out.flush();
+                currentState = state.COORD;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }else {
             try {
+                System.out.println("Client "+socket.getPort()+" NOT YOUR TURN "+ "Thread nick: "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.NOT_YOUR_TURN);
                 out.reset();
                 out.flush();
+                currentState = state.COORD;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -216,10 +200,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
             try {
                 if(model.getCurrentPlayer().getChosenTiles().size() > 1){
-                    currentState = state.ORDER;
                     out.writeObject(Warnings.ASK_ORDER);
                     out.reset();
                     out.flush();
+                    currentState = state.ORDER;
                 } else{
                     this.controller.dropTile(1);
                 }
@@ -254,7 +238,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void askAction() {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
             try {
-                currentState = state.COLUMN;
                 out.writeObject(Warnings.CONTINUE_TO_CHOOSE);
                 out.reset();
                 out.flush();
@@ -284,6 +267,30 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void printChat() {
+
+    }
+    @Override
+    public void tileToDrop(int tilePosition) throws RemoteException {
+
+    }
+
+    @Override
+    public void finalPoints() {
+
+    }
+
+    @Override
+    public void checkingCoordinates(int[] coordinates) throws RemoteException {
+
+    }
+
+    @Override
+    public void columnSetting(int i) throws RemoteException {
+
+    }
+
+    @Override
+    public void endsSelection() throws RemoteException {
 
     }
 

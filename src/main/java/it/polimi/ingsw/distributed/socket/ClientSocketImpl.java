@@ -44,9 +44,6 @@ public class ClientSocketImpl implements Client, ViewListener {
 
         }
 
-
-
-
     }
     private void analyzeMessage(Object object) throws RemoteException {
         switch (object.getClass().getSimpleName()) {

@@ -193,7 +193,7 @@ public class TextualUI implements UI {
                 askColumn();
             }
             case INVALID_ORDER -> {
-                System.err.println("AOO metti una posizione sensata.");
+                System.err.println("Questa tile non può essere scelta per essere droppata. Sceglierne una valida:");
                 askOrder();
             }
             case WAIT -> System.out.println("Loading. Wait...");
