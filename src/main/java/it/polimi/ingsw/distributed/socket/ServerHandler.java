@@ -199,14 +199,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void askOrder() {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
             try {
-                if(model.getCurrentPlayer().getChosenTiles().size() > 1){
-                    out.writeObject(Warnings.ASK_ORDER);
-                    out.reset();
-                    out.flush();
-                    currentState = state.ORDER;
-                } else{
-                    this.controller.dropTile(1);
-                }
+                out.writeObject(Warnings.ASK_ORDER);
+                out.reset();
+                out.flush();
+                currentState = state.ORDER;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
