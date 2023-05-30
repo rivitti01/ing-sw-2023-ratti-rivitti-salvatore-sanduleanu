@@ -14,6 +14,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ServerHandler implements Server,Runnable, ModelListener {
     private String nickname;
@@ -212,7 +215,16 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void isLastTurn() {
-
+        try {
+            out.writeObject(Warnings.LAST_TURN_NOTIFICATION);
+            out.reset();
+            out.flush();
+            out.writeObject(model.getCurrentPlayer().getNickname());
+            out.reset();
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -271,7 +283,21 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     @Override
-    public void finalPoints() {
+    public void finalPoints() throws RuntimeException {
+        Map<String, Integer> finalPoints = new HashMap<>();
+        for(Player p: this.model.getPlayers()) {
+            finalPoints.put(p.getNickname(), p.getPoints());
+        }
+        try {
+            out.writeObject(finalPoints);
+            out.reset();
+            out.flush();
+        } catch (RemoteException e) {
+            System.err.println("Unable to advice the client about the final points:" +
+                    e.getMessage() + ". Skipping the update...");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

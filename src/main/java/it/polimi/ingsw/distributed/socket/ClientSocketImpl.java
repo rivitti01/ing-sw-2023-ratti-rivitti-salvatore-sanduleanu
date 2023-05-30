@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientSocketImpl implements Client, ViewListener {
@@ -22,6 +23,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     private String nickname;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+    boolean lastTurn = false;
 
     public ClientSocketImpl(String ip, int port){
         this.ip = ip;
@@ -34,14 +36,10 @@ public class ClientSocketImpl implements Client, ViewListener {
         in = new ObjectInputStream(socket.getInputStream());
         view.askNickName();
         System.out.println("I'm waiting for the server");
-        /*while(true) {
-            waitModelView();
-        }*/
         while (true) {
             Object object = new Object();
             object = in.readObject();
             analyzeMessage(object);
-
         }
 
     }
@@ -53,8 +51,25 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             case "Warnings"-> {
                 Warnings warnings = (Warnings) object;
-                view.warning(warnings);
+                if (warnings.equals(Warnings.LAST_TURN_NOTIFICATION)){
+                    lastTurn = true;
+                }else {
+                    view.warning(warnings);
+                }
             }
+            case "String" -> {
+                if (lastTurn){
+                    String string = (String) object;
+                    view.lastTurnReached(string);
+                }
+            }
+            case "HashMap" -> {
+                if(lastTurn) {
+                    Map<String, Integer> map = (Map<String, Integer>) object;
+                    view.printFinalPoints(map);
+                }
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + object.getClass().getSimpleName());
         }
 
 
