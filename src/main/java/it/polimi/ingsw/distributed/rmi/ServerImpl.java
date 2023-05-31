@@ -27,13 +27,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final ReentrantLock connectionLock;
 
 
-    public ServerImpl() throws RemoteException {
+    public ServerImpl(Game model, GameController controller) throws RemoteException {
         super();
         connectedClients = new LinkedHashMap<>();
         this.gameAlreadyStarted = false;
-        this.model = new Game();
+        this.model = model;
         this.model.addModelListener(this);
-        this.controller = new GameController(this.model);
+        this.controller = controller;
         this.numParticipants = 0;
         this.connectionLock = new ReentrantLock();
     }
@@ -144,28 +144,40 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
-        this.controller.dropTile(tilePosition);
+        this.controller.dropTile(tilePosition); //TODO: ottimizzare chiamate al controller con i thread (vedi sotto)
+        /*new Thread(() -> {
+            try {
+                this.controller.dropTile(tilePosition);
+            } catch (RemoteException e) {
+                System.err.println("Unable to advise the client about the invalidation of the chosen nick name:" +
+                        e.getMessage() + ". Skipping the update...");
+            }
+        }).start();*/
     }
 
     @Override
     public void checkingCoordinates(int[] coordinates) throws RemoteException {
         this.controller.checkCorrectCoordinates(coordinates);
+        //new Thread(() -> this.controller.checkCorrectCoordinates(coordinates)).start();
     }
 
     @Override
     public void columnSetting(int c) throws RemoteException {
         controller.setChosenColumn(c);
+        //new Thread(() -> this.controller.setChosenColumn(c)).start();
     }
 
     @Override
     public void endsSelection() throws RemoteException {
         this.model.selectionControl();
+        //new Thread(() -> this.model.selectionControl()).start();
     }
 
     @Override
     public synchronized void numberOfParticipantsSetting(int n) throws RemoteException {
         this.numParticipants = n;
         this.controller.setNumberPlayers(n);
+        //new Thread(() -> this.controller.setNumberPlayers(n)).start();
     }
 
     @Override
@@ -198,6 +210,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
         }
     }
+    private boolean isMyPlayer(){
+        for (Client c : connectedClients.keySet()) {
+            if(model.getCurrentPlayer().getNickname().equals(connectedClients.get(c)))
+                return true;
+        }
+        return false;
+    }
 
 
     //************ MODEL LISTENER METHODS
@@ -219,18 +238,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void warning(Warnings e, Player currentPlayer) {
-        try {
-            Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
-        } catch (RemoteException exception) {
-            System.err.println("Unable to advise the client about a game warning:" +
-                    exception.getMessage() + ". Skipping the update...");
+        if (isMyPlayer()) {
+            try {
+                Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
+            } catch (RemoteException exception) {
+                System.err.println("Unable to advise the client about a game warning:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
         }
     }
 
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if (!this.model.isLastTurn()) {
+        if(isMyPlayer()) {
+            if (!this.model.isLastTurn()) {
             /*
             List<Callable<Void>> tasks = new ArrayList<>();
 
@@ -257,20 +279,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 Thread.currentThread().interrupt();
                 newTurn(this.model.getCurrentPlayer());
             } */
-            if(!this.model.isLastTurn()) {
-                try {
-                    Objects.requireNonNull(getKeyByValue(currentPlayer)).newTurn(currentPlayer.getNickname());
-                } catch (RemoteException exception) {
-                    System.err.println("Unable to start a new turn:" +
-                            exception.getMessage() + ". Skipping the update...");
-                }
-            }
-            else {
-                try {
-                    Objects.requireNonNull(getKeyByValue(currentPlayer)).lastTurn();
-                } catch (RemoteException exception) {
-                    System.err.println("Unable to start the last turn:" +
-                            exception.getMessage() + ". Skipping the update...");
+                if (!this.model.isLastTurn()) {
+                    try {
+                        Objects.requireNonNull(getKeyByValue(currentPlayer)).newTurn(currentPlayer.getNickname());
+                    } catch (RemoteException exception) {
+                        System.err.println("Unable to start a new turn:" +
+                                exception.getMessage() + ". Skipping the update...");
+                    }
+                } else {
+                    try {
+                        Objects.requireNonNull(getKeyByValue(currentPlayer)).lastTurn();
+                    } catch (RemoteException exception) {
+                        System.err.println("Unable to start the last turn:" +
+                                exception.getMessage() + ". Skipping the update...");
+                    }
                 }
             }
         }
@@ -287,16 +309,18 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void askOrder(){
-        Player currentPlayer = this.model.getCurrentPlayer();
-        try {
-            if(currentPlayer.getChosenTiles().size() > 1)
-                Objects.requireNonNull(getKeyByValue(currentPlayer)).askOrder();
-            else{
-                this.controller.dropTile(1);
+        if (isMyPlayer()) {
+            Player currentPlayer = this.model.getCurrentPlayer();
+            try {
+                if (currentPlayer.getChosenTiles().size() > 1)
+                    Objects.requireNonNull(getKeyByValue(currentPlayer)).askOrder();
+                else {
+                    this.controller.dropTile(1);
+                }
+            } catch (RemoteException e) {
+                System.err.println("Unable to ask the current player the order:" +
+                        e.getMessage() + ". Skipping the update...");
             }
-        } catch (RemoteException e){
-            System.err.println("Unable to ask the current player the order:" +
-                    e.getMessage() + ". Skipping the update...");
         }
     }
     @Override
@@ -312,34 +336,40 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     }
     @Override
     public void askColumn() {
-        try {
-            Player currentPlayer = this.model.getCurrentPlayer();
-            Objects.requireNonNull(getKeyByValue(currentPlayer)).askColumn();
-        } catch (RemoteException e){
-            System.err.println("Unable to ask the current player the column:" +
-                    e.getMessage() + ". Skipping the update...");
+        if (isMyPlayer()) {
+            try {
+                Player currentPlayer = this.model.getCurrentPlayer();
+                Objects.requireNonNull(getKeyByValue(currentPlayer)).askColumn();
+            } catch (RemoteException e) {
+                System.err.println("Unable to ask the current player the column:" +
+                        e.getMessage() + ". Skipping the update...");
+            }
         }
     }
     @Override
     public void askAction() {
-        try {
-            Player currentPlayer = this.model.getCurrentPlayer();
-            Objects.requireNonNull(getKeyByValue(currentPlayer)).askAction();
-        } catch (RemoteException e){
-            System.err.println("Unable to ask the current player the action:" +
-                    e.getMessage() + ". Skipping the update...");
+        if (isMyPlayer()) {
+            try {
+                Player currentPlayer = this.model.getCurrentPlayer();
+                Objects.requireNonNull(getKeyByValue(currentPlayer)).askAction();
+            } catch (RemoteException e) {
+                System.err.println("Unable to ask the current player the action:" +
+                        e.getMessage() + ". Skipping the update...");
+            }
         }
     }
     @Override
     public void finalPoints(){
         Map<String, Integer> finalPoints = new HashMap<>();
         for(Player p: this.model.getPlayers()) {
-            finalPoints.put(p.getNickname(), p.getPoints());
-            try {
-                Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
-            } catch (RemoteException e) {
-                System.err.println("Unable to advice the client about the final points:" +
-                        e.getMessage() + ". Skipping the update...");
+            if (connectedClients.containsValue(p.getNickname())){
+                finalPoints.put(p.getNickname(), p.getPoints());
+                try {
+                    Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
+                } catch (RemoteException e) {
+                    System.err.println("Unable to advice the client about the final points:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         }
     }
