@@ -17,6 +17,8 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 public class ServerHandler implements Server,Runnable, ModelListener {
     private String nickname;
@@ -26,18 +28,20 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean creator;
-    private boolean wait;
     private state currentState;
+    private final Object lock;
+    private Condition condition;
     public enum state{
         COORD, COLUMN, ORDER
     }
-    public ServerHandler(Socket socket, Game model, GameController controller,boolean creator){
+    public ServerHandler(Socket socket, Game model, GameController controller,boolean creator, Object lock){
         this.socket = socket;
         this.model = model;
         this.controller = controller;
         this.model.addModelListener(this);
         this.creator = creator;
         currentState = state.COORD;
+        this.lock = lock;
     }
     @Override
     public void run() {
@@ -45,18 +49,15 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-            waitAndSetNickname();
-            if (creator){
-                waitAndSetNumberPlayers();
-            }
+
+            setUp();
+
             while (true) {
                 analyzeMessage(in.readObject());
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException  e) {
             throw new RuntimeException(e);
         }
-
-
     }
     private void analyzeMessage(Object response) throws IOException {
         switch (response.getClass().getSimpleName()){
@@ -79,12 +80,37 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     controller.setChosenColumn(column);
                 }else if(currentState == state.ORDER) {
                     int order = (int) response;
-                    controller.dropTile(order);;
+                    controller.dropTile(order);
+                }
+            }
+        }
+    }
+
+    private void setUp() throws IOException, ClassNotFoundException {
+        if (creator){
+            out.writeObject(Warnings.SET_NUMBER_PLAYERS);
+            out.reset();
+            out.flush();
+            synchronized (this.lock) {
+                waitAndSetNumberPlayers();
+                this.lock.notifyAll();
+            }
+        }else {
+            out.writeObject(Warnings.WAIT);
+            out.reset();
+            out.flush();
+            if (controller.getNumberPlayers() == 0){
+                System.out.println(Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
+                synchronized (this.lock) {
+                    System.out.println(Thread.currentThread().getName() + " is not waiting anymore");
                 }
             }
         }
 
-
+        out.writeObject(Warnings.ASK_NICKNAME);
+        out.reset();
+        out.flush();
+        waitAndSetNickname();
     }
     private void waitAndSetNickname() throws IOException, ClassNotFoundException {
         String nickname = (String) in.readObject();
@@ -92,15 +118,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         if (nickname !=null){
             if(controller.setPlayerNickname(nickname)){
                 this.nickname = nickname;
-                if (creator){
-                    out.writeObject(Warnings.OK_CREATOR);
-                    out.reset();
-                    out.flush();
-                }else {
-                    out.writeObject(Warnings.OK_JOINER);
-                    out.reset();
-                    out.flush();
-                }
+                out.writeObject(Warnings.OK_JOINER);
+                out.reset();
+                out.flush();
                 if (controller.getNumberPlayers()>1 && controller.getNumberPlayers()<5 && controller.getNumberPlayers()==controller.getPlayers().size() && !model.isStart()){//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
                     controller.initializeModel();
                 }
@@ -129,9 +149,17 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             if (controller.getNumberPlayers()==controller.getPlayers().size() && !model.isStart()){
                 controller.initializeModel();
             }
+        }else {
+            try {
+                out.writeObject(Warnings.INVALID_NUMBER_PLAYERS);
+                out.reset();
+                out.flush();
+                waitAndSetNumberPlayers();
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
-
     }
 
     @Override

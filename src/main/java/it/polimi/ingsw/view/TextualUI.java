@@ -205,6 +205,8 @@ public class TextualUI implements UI {
             case CONTINUE_TO_CHOOSE -> chooseAction();
             case ASK_COLUMN -> askColumn();
             case ASK_ORDER -> askOrder();
+            case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
+            case ASK_NICKNAME -> askNickName();
         }
     }
     public void lastTurnReached(String nickname){

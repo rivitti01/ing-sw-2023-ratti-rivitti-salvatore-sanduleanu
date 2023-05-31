@@ -34,8 +34,7 @@ public class ClientSocketImpl implements Client, ViewListener {
         socket = new Socket(ip,port);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
-        view.askNickName();
-        System.out.println("I'm waiting for the server");
+
         while (true) {
             Object object = new Object();
             object = in.readObject();
