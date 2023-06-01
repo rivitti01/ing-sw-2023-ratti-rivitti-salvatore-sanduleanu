@@ -371,8 +371,11 @@ public class TextualUI {
                     input = scanner.nextLine();
                     if (input.equals("chat")) {
                         chat();
+                    }else if(input.equals("exit")){
+                        return;
+
                     } else {
-                        System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
+                        System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.\n[exit] to finish your waiting turn");
                     }
                 } else {
                     // Break the loop when it's not the player's turn anymore

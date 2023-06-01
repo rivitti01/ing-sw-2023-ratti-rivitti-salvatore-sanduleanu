@@ -145,7 +145,7 @@ public class Game {
     }
     public void newTurn(){
         listener.forEach(ModelListener::printGame);//listener.printGame();
-        listener.forEach(x->x.newTurn(this.currentPlayer));//listener.newTurn(this.currentPlayer);
+        //listener.forEach(x->x.newTurn(this.currentPlayer));//listener.newTurn(this.currentPlayer);
     }
 
     ////////////////////////////////////////////////////
