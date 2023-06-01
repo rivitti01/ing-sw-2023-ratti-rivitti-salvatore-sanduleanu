@@ -27,13 +27,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final ReentrantLock connectionLock;
 
 
-    public ServerImpl() throws RemoteException {
+    public ServerImpl(Game model, GameController controller) throws RemoteException {
         super();
         connectedClients = new LinkedHashMap<>();
         this.gameAlreadyStarted = false;
-        this.model = new Game();
+        this.model = model;
         this.model.addModelListener(this);
-        this.controller = new GameController(this.model);
+        this.controller = controller;
         this.numParticipants = 0;
         this.connectionLock = new ReentrantLock();
     }

@@ -35,8 +35,8 @@ public class ServerOne {
         });
         Thread socket = new Thread(() -> {
             try {
-                serverSocket.start();
                 System.out.println("ServerSocket is running");
+                serverSocket.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
