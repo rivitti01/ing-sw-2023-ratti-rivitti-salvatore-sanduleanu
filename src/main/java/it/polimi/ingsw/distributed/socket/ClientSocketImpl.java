@@ -50,6 +50,10 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             case "Warnings"-> {
                 Warnings warnings = (Warnings) object;
+                if (warnings.equals(Warnings.NOT_YOUR_TURN)){
+                    view.chat();
+                    break;
+                }
                 if (warnings.equals(Warnings.LAST_TURN_NOTIFICATION)){
                     lastTurn = true;
                 }else {
@@ -183,7 +187,13 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     @Override
     public void newMessage(String message) throws RemoteException {
-
+        try {
+            out.writeObject(message);
+            out.reset();
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

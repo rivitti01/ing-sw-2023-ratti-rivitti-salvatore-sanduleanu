@@ -16,12 +16,14 @@ public class ServerOne {
     private Game model;
     private GameController controller;
     private Registry registry;
+    private First first;
 
     public ServerOne() throws RemoteException {
+        first = new First();
         model = new Game();
         controller = new GameController(model);
-        serverSocket = new ServerSocketImpl(2000,model,controller);
-        serverRMI = new ServerImpl(model,controller);
+        serverSocket = new ServerSocketImpl(2000,model,controller,first);
+        serverRMI = new ServerImpl(model,controller,first);
     }
     public void start() throws IOException {
         Thread rmi = new Thread(() -> {

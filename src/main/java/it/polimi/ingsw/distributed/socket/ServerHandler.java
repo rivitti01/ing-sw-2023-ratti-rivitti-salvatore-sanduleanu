@@ -83,6 +83,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     controller.dropTile(order);
                 }
             }
+            case "String" ->{
+                controller.addChatMessage(nickname,(String) response);
+            }
         }
     }
 
@@ -164,6 +167,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void newMessage(Client client, String message) {
+
 
     }
 
