@@ -6,7 +6,9 @@ import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
+import it.polimi.ingsw.view.FXGraphicalUI;
 import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.UI;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
-    private TextualUI view = new TextualUI();
+    private UI view = new TextualUI();
     private Server stub;
     private String nickname = null;
 
@@ -25,16 +27,19 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         super();
         this.stub = s;
         this.view.addListener(this);
+        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
     }
     public ClientImpl(Server s, int port) throws RemoteException {
         super(port);
         this.stub = s;
         this.view.addListener(this);
+        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
     }
     public ClientImpl(Server s, int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         this.stub = s;
         this.view.addListener(this);
+        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
     }
 
 

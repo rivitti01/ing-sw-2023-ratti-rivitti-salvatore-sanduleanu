@@ -7,20 +7,26 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerSocketImpl {
     private Game model;
     private GameController controller;
     private ServerSocket serverSocket;
     private Map<Integer,ServerHandler> clients;
-    private int port;
+    private final int port;
+    private final Object lock;
+    private Boolean isOperationComplete;
 
-    public ServerSocketImpl(int port){
+    public ServerSocketImpl(int port, Game model, GameController controller) {
         this.port = port;
-        this.model = new Game();
-        this.controller = new GameController(this.model);
-
+        this.model = model;
+        this.controller = controller;
+        this.lock = new Object();
     }
     public void start() throws IOException {
         clients = new HashMap<>();
@@ -33,9 +39,9 @@ public class ServerSocketImpl {
             Socket socket = serverSocket.accept();
             ServerHandler serverHandler;
             if (clients.size() == 0){
-                serverHandler = new ServerHandler(socket,model,controller,true);
+                serverHandler = new ServerHandler(socket,model,controller,true,lock);
             }else {
-                serverHandler = new ServerHandler(socket, model, controller, false);
+                serverHandler = new ServerHandler(socket, model, controller, false, lock);
             }
             clients.put(clients.size(), serverHandler);
             Thread thread = new Thread(serverHandler);

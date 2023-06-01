@@ -13,7 +13,7 @@ import static it.polimi.ingsw.view.Colors.*;
 
 
 
-public class TextualUI {
+public class TextualUI implements UI {
     private ViewListener listener;
 
 
@@ -45,7 +45,7 @@ public class TextualUI {
     }
     public void askOrder() {
         int tilePosition;
-        while(true) {
+        while (true) {
             System.out.println("seleziona la tile da inserire prima: ");
             try {
                 tilePosition = scanner.nextInt();
@@ -54,7 +54,7 @@ public class TextualUI {
             } catch (InputMismatchException | RemoteException e) {
                 String invalidInput = scanner.next();
                 scanner.nextLine();
-                if(invalidInput.equals("chat")) {
+                if (invalidInput.equals("chat")) {
                     chat();
                 } else {
                     System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
@@ -62,6 +62,7 @@ public class TextualUI {
             }
         }
     }
+
     public void askColumn() {
         int column;
         while (true) {
@@ -192,7 +193,7 @@ public class TextualUI {
                 askColumn();
             }
             case INVALID_ORDER -> {
-                System.err.println("AOO metti una posizione sensata.");
+                System.err.println("Questa tile non può essere scelta per essere droppata. Sceglierne una valida:");
                 askOrder();
             }
             case WAIT -> System.out.println("Loading. Wait...");
@@ -204,6 +205,8 @@ public class TextualUI {
             case CONTINUE_TO_CHOOSE -> chooseAction();
             case ASK_COLUMN -> askColumn();
             case ASK_ORDER -> askOrder();
+            case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
+            case ASK_NICKNAME -> askNickName();
         }
     }
     public void lastTurnReached(String nickname){

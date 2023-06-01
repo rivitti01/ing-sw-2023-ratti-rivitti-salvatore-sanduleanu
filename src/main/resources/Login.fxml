@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="rootPane" maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <GridPane fx:id="startPane">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="320.7999954223633" minWidth="10.0" prefWidth="320.7999954223633" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="150.79999389648438" minHeight="10.0" prefHeight="150.79999389648438" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="106.19997253417972" minHeight="10.0" prefHeight="106.19997253417972" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="125.20000305175779" minHeight="10.0" prefHeight="16.799963378906227" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="125.60003662109375" minHeight="10.0" prefHeight="125.60003662109375" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" prefHeight="111.0" prefWidth="300.0" text="Welcome to My Shelfie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Bell MT" size="29.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#play" prefHeight="25.0" prefWidth="194.0" text="Play" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#exit" prefHeight="25.0" prefWidth="194.0" text="Exit" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+            <GridPane fx:id="numberPane" prefHeight="402.0" prefWidth="610.0" visible="false">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="20.0" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="20.0" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="400.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="20.0" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="20.0" prefWidth="20.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="106.19998779296876" minHeight="10.0" prefHeight="69.60000610351562" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="188.5999725341797" minHeight="10.0" prefHeight="177.4000213623047" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="95.19998474121093" minHeight="10.0" prefHeight="22.199978637695324" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="110.40001220703124" minHeight="10.0" prefHeight="101.59996337890624" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button fx:id="enterButton" mnemonicParsing="false" onAction="#sendNumber" prefHeight="35.0" prefWidth="117.0" text="Enter" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <font>
+                        <Font name="Bell MT" size="19.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" prefHeight="34.0" prefWidth="380.0" text="How many players do you want to include?" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <ChoiceBox fx:id="numberBox" prefHeight="26.0" prefWidth="185.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="35.0" prefWidth="165.0" text="Exit My Shelfie" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Bell MT" size="18.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+            <GridPane fx:id="nicknamePane" visible="false">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="1.0" prefWidth="2.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="255.79999999999995" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="1.0" prefWidth="2.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="20.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="85.60001220703126" minHeight="10.0" prefHeight="50.60001220703125" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="121.60002441406252" minHeight="10.0" prefHeight="71.8" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="193.6" minHeight="10.0" prefHeight="106.39999694824216" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="171.39998474121091" minHeight="7.2000274658203125" prefHeight="57.60000000000002" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="138.00001220703126" minHeight="10.0" prefHeight="116.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button fx:id="joinButton" mnemonicParsing="false" onAction="#joinGame" prefHeight="38.0" prefWidth="150.0" text="Join the game" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <font>
+                        <Font name="Bell MT" size="19.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" prefHeight="34.0" prefWidth="230.0" text="Enter your Nickname" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="Bell MT" size="21.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="nicknameField" prefHeight="42.0" prefWidth="234.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Button mnemonicParsing="false" onAction="#exit" prefHeight="38.0" prefWidth="150.0" text="Exit My Shelfie" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Bell MT" size="19.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+            <GridPane fx:id="waitingPane" visible="false">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.5999755859375" minWidth="0.0" prefWidth="0.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="588.0" minWidth="10.0" prefWidth="588.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.60003662109375" minWidth="0.0" prefWidth="0.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="127.8000244140625" minHeight="10.0" prefHeight="113.40000610351562" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="200.3999816894531" minHeight="10.0" prefHeight="48.59999389648438" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="252.00000610351566" minHeight="10.0" prefHeight="237.60001220703128" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" prefHeight="134.0" prefWidth="627.0" text="Waiting for players, game will start soon..." textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="Bell MT" size="26.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#exit" text="Exit My Shelfie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Bell MT" size="19.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
