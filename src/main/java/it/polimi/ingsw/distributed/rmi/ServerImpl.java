@@ -231,7 +231,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void newTurn(Player currentPlayer) {
         if (!this.model.isLastTurn()) {
-            /*
+
             List<Callable<Void>> tasks = new ArrayList<>();
 
             // Create tasks for each client
@@ -248,40 +248,33 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
             ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
             try {
-                executor.invokeAny(tasks);
-            } catch (InterruptedException | ExecutionException e) {
+                executor.invokeAll(tasks);
+            } catch (InterruptedException e) {
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             } finally {
                 executor.shutdownNow();
                 Thread.currentThread().interrupt();
                 newTurn(this.model.getCurrentPlayer());
-            } */
-            if(!this.model.isLastTurn()) {
+            }
+            /*if(!this.model.isLastTurn()) {
                 try {
                     Objects.requireNonNull(getKeyByValue(currentPlayer)).newTurn(currentPlayer.getNickname());
                 } catch (RemoteException exception) {
                     System.err.println("Unable to start a new turn:" +
                             exception.getMessage() + ". Skipping the update...");
                 }
-            }
-            else {
-                try {
-                    Objects.requireNonNull(getKeyByValue(currentPlayer)).lastTurn();
-                } catch (RemoteException exception) {
-                    System.err.println("Unable to start the last turn:" +
-                            exception.getMessage() + ". Skipping the update...");
-                }
+            }*/
+        } else {
+            try {
+                Objects.requireNonNull(getKeyByValue(currentPlayer)).lastTurn();
+            } catch (RemoteException exception) {
+                System.err.println("Unable to start the last turn:" +
+                        exception.getMessage() + ". Skipping the update...");
             }
         }
+
     }
-
-
-
-
-
-
-
 
 
 
