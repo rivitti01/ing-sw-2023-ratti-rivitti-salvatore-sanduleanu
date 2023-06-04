@@ -52,7 +52,7 @@ public interface UI {
 
     public abstract void printChat(ChatView chatView) throws RemoteException;
 
-    public abstract void lastTurn();
+    public abstract void lastTurn(boolean currentPlayer);
 
     public abstract void waitingTurn() throws RemoteException;
 

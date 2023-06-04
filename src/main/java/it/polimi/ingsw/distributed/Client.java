@@ -15,7 +15,7 @@ public interface Client extends Remote {
     void askNumberParticipants() throws RemoteException;
     void newTurn(boolean playing) throws RemoteException;
 
-    void lastTurn() throws RemoteException;
+    void lastTurn(boolean currentPlayer) throws RemoteException;
     void askOrder() throws RemoteException;
     void lastTurnNotification(String nickname) throws RemoteException;
     void askColumn() throws RemoteException;

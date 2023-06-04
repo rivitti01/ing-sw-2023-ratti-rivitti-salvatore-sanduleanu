@@ -36,10 +36,16 @@ public class TextualUI implements UI {
         this.currentState = CurrentState.CHOOSING_ORDER;
     }
 
-    public void lastTurn(){
-        System.out.println("È IL TUO ULTIMO TURNO");
+    public void lastTurn(boolean playing){
         try {
-            chooseAction();
+            if(playing) {
+                this.currentState = CurrentState.CHOOSING_ACTION;
+                System.out.println("È IL TUO *** ULTIMO *** TURNO");
+                chooseAction();
+            }else {
+                waitingTurn();
+                this.currentState = CurrentState.WAITING_TURN;
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

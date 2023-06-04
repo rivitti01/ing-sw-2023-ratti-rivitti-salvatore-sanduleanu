@@ -225,7 +225,7 @@ public class ClientSocketImpl implements Client, ViewListener {
 
 
     @Override
-    public void lastTurn() throws RemoteException { //CLIENT
+    public void lastTurn(boolean currentPlayer) throws RemoteException { //CLIENT
 
     }
 

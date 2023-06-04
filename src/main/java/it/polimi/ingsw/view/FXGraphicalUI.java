@@ -115,7 +115,7 @@ public class FXGraphicalUI extends Application implements UI{
     }
 
     @Override
-    public void lastTurn() {
+    public void lastTurn(boolean playing) {
 
     }
     @Override

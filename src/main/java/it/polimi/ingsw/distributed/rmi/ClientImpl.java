@@ -78,9 +78,9 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     //*********************************      CLIENT METHODS      *********************************************************
     @Override
-    public void newTurn(boolean currentPlayer) {
+    public void newTurn(boolean playing) {
         try {
-            this.view.newTurn(currentPlayer);
+            this.view.newTurn(playing);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -89,8 +89,8 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
 
     @Override
-    public void lastTurn(){
-        this.view.lastTurn();
+    public void lastTurn(boolean playing){
+        this.view.lastTurn(playing);
     }
     @Override
     public void printGame(GameView gameView)  {
