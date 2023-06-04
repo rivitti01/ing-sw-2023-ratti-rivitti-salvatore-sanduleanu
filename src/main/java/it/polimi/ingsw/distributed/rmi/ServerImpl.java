@@ -212,11 +212,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void warning(Warnings e, Player currentPlayer) {
-        try {
-            Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
-        } catch (RemoteException exception) {
-            System.err.println("Unable to advise the client about a game warning:" +
-                    exception.getMessage() + ". Skipping the update...");
+        if (isMine()) {
+            try {
+                Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
+            } catch (RemoteException exception) {
+                System.err.println("Unable to advise the client about a game warning:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
         }
 
     }
@@ -301,7 +303,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         for(Player p: this.model.getPlayers()) {
             finalPoints.put(p.getNickname(), p.getPoints());
             try {
-                Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
+                Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);//TODO: crasherà qui perchè non tutti i player p sono di rmi
             } catch (RemoteException e) {
                 System.err.println("Unable to advice the client about the final points:" +
                         e.getMessage() + ". Skipping the update...");

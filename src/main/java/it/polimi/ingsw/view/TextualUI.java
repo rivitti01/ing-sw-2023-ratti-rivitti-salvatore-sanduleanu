@@ -166,6 +166,27 @@ public class TextualUI implements UI {
                 System.err.println("messaggio invalido! scrivere un messaggio da mandare a tutti\n" +
                         "oppure scrivere |@nickname| |messaggio da inviare|");
             }
+            case IVALID_RECEIVER -> {
+                System.err.println("Are you sure this nickname exist? Maybe you misspelled it :(");
+            }
+            case YOUR_TURN -> {
+                chooseAction();
+            }//newTurn();
+            case NOT_YOUR_TURN -> {
+                waitingTurn();
+            }
+            case CORRECT_CORD -> {}
+            case CONTINUE_TO_CHOOSE -> {
+                chooseAction();
+            }//chooseAction();
+            case ASK_COLUMN -> {
+                askColumn();
+            }//askColumn();
+            case ASK_ORDER -> {
+                askOrder();
+            }//askOrder();
+            case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
+            case ASK_NICKNAME -> askNickName();
 
         }
     }
@@ -344,7 +365,7 @@ public class TextualUI implements UI {
         openScanner();
     }
 
-    private void openScanner(){
+    public void openScanner(){
         Thread inputThread = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
             CurrentState oldState = null;

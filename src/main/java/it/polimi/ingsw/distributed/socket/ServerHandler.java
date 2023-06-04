@@ -309,11 +309,20 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void gameStarted(Player currentPlayer) {
-
+        newTurn(currentPlayer);
     }
 
     @Override
     public void warning(Warnings errorType, String nickname) {
+        if (nickname.equals(this.nickname)){
+            try {
+                out.writeObject(errorType);
+                out.reset();
+                out.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 

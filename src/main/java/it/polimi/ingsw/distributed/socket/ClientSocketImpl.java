@@ -24,6 +24,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     boolean lastTurn = false;
+    boolean gameStarted = false;
 
     public ClientSocketImpl(String ip, int port){
         this.ip = ip;
@@ -50,15 +51,25 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             case "Warnings"-> {
                 Warnings warnings = (Warnings) object;
-                if (warnings.equals(Warnings.NOT_YOUR_TURN)){
-                    view.chat();
-                    break;
+                switch (warnings){
+                    case YOUR_TURN -> {
+                        if (!gameStarted) {
+                            view.gameStarted(true);
+                            gameStarted = true;
+                            return;
+                        }
+                    }
+                    case NOT_YOUR_TURN -> {
+                        if (!gameStarted){
+                            view.gameStarted(false);
+                            gameStarted = true;
+                            return;
+                        }
+                    }
+                    case LAST_TURN_NOTIFICATION -> lastTurn = true;
                 }
-                if (warnings.equals(Warnings.LAST_TURN_NOTIFICATION)){
-                    lastTurn = true;
-                }else {
-                    view.warning(warnings);
-                }
+
+                view.warning(warnings);
             }
             case "String" -> {
                 if (lastTurn){

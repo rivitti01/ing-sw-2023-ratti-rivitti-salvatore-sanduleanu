@@ -140,7 +140,14 @@ public class GameController  {
             if (spaceIndex != -1) {
                 receiver = message.substring(1, spaceIndex);
                 content = message.substring(spaceIndex + 1);
-                this.model.newMessage(sender, receiver, content);
+                for (Player player : this.model.getPlayers()) {
+                    if (player.getNickname().equals(receiver)) {
+                        this.model.newMessage(sender, receiver, content);
+                        return;
+                    }
+                }
+                //this.model.newMessage(sender, receiver, content);
+                this.model.setErrorType(Warnings.IVALID_RECEIVER, sender);
             } else {
                this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE, sender);
             }

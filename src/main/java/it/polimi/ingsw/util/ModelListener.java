@@ -12,10 +12,6 @@ public interface ModelListener extends java.util.EventListener {
         void askColumn();
         void askAction();
         void finalPoints();
-
-
-
-    void gameStarted(Player currentPlayer);
-
+        void gameStarted(Player currentPlayer);
         void warning(Warnings errorType, String nickname);
 }
