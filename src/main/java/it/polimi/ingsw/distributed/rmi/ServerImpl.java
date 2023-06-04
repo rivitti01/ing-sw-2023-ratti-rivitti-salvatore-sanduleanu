@@ -212,14 +212,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void warning(Warnings e, Player currentPlayer) {
-        if (isMine()) {
-            try {
-                Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
-            } catch (RemoteException exception) {
-                System.err.println("Unable to advise the client about a game warning:" +
-                        exception.getMessage() + ". Skipping the update...");
-            }
+        try {
+            Objects.requireNonNull(getKeyByValue(currentPlayer)).warning(e);
+        } catch (RemoteException exception) {
+            System.err.println("Unable to advise the client about a game warning:" +
+                    exception.getMessage() + ". Skipping the update...");
         }
+
     }
 
 
@@ -247,16 +246,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
         }
     }
-
-
-
-
-
-
-
-
-
-
     @Override
     public void askOrder() {
         if (isMine()) {
@@ -347,5 +336,18 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
     }
 
+    }
+
+    @Override
+    public void warning(Warnings errorType, String nickname) {
+        for(Client client : connectedClients.keySet()){
+            if(connectedClients.get(client).equals(nickname)) {
+                try {
+                    client.warning(errorType);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }

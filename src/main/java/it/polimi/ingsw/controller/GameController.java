@@ -135,18 +135,21 @@ public class GameController  {
         String content = "";
 
         if (message.startsWith("@")) {
-            int spaceIndex = message.indexOf(" ");
+            int spaceIndex = -1;
+            spaceIndex = message.indexOf(" ");
             if (spaceIndex != -1) {
                 receiver = message.substring(1, spaceIndex);
                 content = message.substring(spaceIndex + 1);
+                this.model.newMessage(sender, receiver, content);
             } else {
-               this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE);
+               this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE, sender);
             }
         } else {
             receiver = "all";
             content = message;
+            this.model.newMessage(sender, receiver, content);
         }
-        this.model.newMessage(sender, receiver, content);
+
     }
 
 }

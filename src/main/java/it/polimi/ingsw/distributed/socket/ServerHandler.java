@@ -313,6 +313,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     @Override
+    public void warning(Warnings errorType, String nickname) {
+
+    }
+
+    @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
 
     }

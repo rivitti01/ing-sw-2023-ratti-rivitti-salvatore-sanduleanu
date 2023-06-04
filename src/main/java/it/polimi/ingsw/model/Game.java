@@ -136,6 +136,10 @@ public class Game {
         this.errorType = errorType;
         listener.forEach(x->x.warning(this.errorType, this.currentPlayer));//listener.warning(errorType, this.currentPlayer);
     }
+    public void setErrorType(Warnings errorType, String nickname){
+        listener.forEach(x->x.warning(errorType, nickname));//listener.warning(errorType, this.currentPlayer);
+    }
+
     public void droppedTile(Tile tile, int column){
         this.currentPlayer.getShelf().dropTile(tile, column);
         listener.forEach(ModelListener::printGame);//listener.printGame();

@@ -16,4 +16,6 @@ public interface ModelListener extends java.util.EventListener {
 
 
     void gameStarted(Player currentPlayer);
+
+        void warning(Warnings errorType, String nickname);
 }
