@@ -49,7 +49,7 @@ public class Game {
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
         listener.forEach(ModelListener::printGame);//listener.printGame();
-        listener.forEach(x->x.newTurn(currentPlayer));//listener.newTurn(currentPlayer);
+        listener.forEach(x->x.gameStarted(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
 
@@ -137,7 +137,6 @@ public class Game {
         listener.forEach(x->x.warning(this.errorType, this.currentPlayer));//listener.warning(errorType, this.currentPlayer);
     }
     public void droppedTile(Tile tile, int column){
-        this.currentPlayer.getChosenTiles().remove(tile);
         this.currentPlayer.getShelf().dropTile(tile, column);
         listener.forEach(ModelListener::printGame);//listener.printGame();
         if(!this.currentPlayer.getChosenTiles().isEmpty())
@@ -179,14 +178,12 @@ public class Game {
         }
     }
     public void checkMaxNumberOfTilesChosen() {
-
         if (this.currentPlayer.getShelf().getMaxColumnSpace() == this.currentPlayer.getChosenTiles().size() ||
                 getAvailableTilesForCurrentPlayer().isEmpty() ||
                 this.currentPlayer.getChosenTiles().size() == 3){
             listener.forEach(x->x.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer()));//this.listener.warning(Warnings.MAX_TILES_CHOSEN, this.getCurrentPlayer());
-        }else{
-            listener.forEach(ModelListener::askAction);//listener.askAction();
         }
+        else listener.forEach(x->x.askAction());
     }
 
     public boolean isEnd() {
@@ -196,8 +193,8 @@ public class Game {
         return start;
     }
 
-    public void newMessage(String nickname, String message)  {
-        this.chat.newMessage(nickname, message);
+    public void newMessage(String sender, String receiver, String message)  {
+        this.chat.newMessage(sender, receiver, message);
         listener.forEach(ModelListener::printGame);
     }
 

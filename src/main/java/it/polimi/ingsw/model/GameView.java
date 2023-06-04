@@ -13,11 +13,11 @@ public class GameView  implements Serializable {
     private final PersonalGoalCard personal;
     private final String[] commons;
     private final List<Tile> chosenTiles;
-    private final ChatView chat;
+    private final ChatView chatView;
+
 
 
     public GameView(Game model, Player p){
-        this.chat = new ChatView(model);
         this.chosenTiles = model.getCurrentPlayer().getChosenTiles();
         this.playersShelves = new HashMap<>();
         this.commons = new String[2];
@@ -30,6 +30,7 @@ public class GameView  implements Serializable {
         for(int i = 0 ; i<2 ; i++){
             commons[i] = model.getCommonGoals()[i].getDescription();
         }
+        chatView = new ChatView(model, p);
     }
 
 
@@ -52,9 +53,10 @@ public class GameView  implements Serializable {
         return this.board;
     }
     public String[] getCommonGoals(){return this.commons;}
-    public ChatView getChat(){
-        return this.chat;
+    public ChatView getChatView(){
+        return this.chatView;
     }
+
 
 
 }

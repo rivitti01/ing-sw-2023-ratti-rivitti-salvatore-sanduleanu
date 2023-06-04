@@ -77,10 +77,7 @@ public class ClientSocketImpl implements Client, ViewListener {
 
 
     }
-    @Override
-    public void printChat(ChatView chatView) throws RemoteException {
 
-    }
 
 
     @Override
@@ -96,6 +93,11 @@ public class ClientSocketImpl implements Client, ViewListener {
     @Override
     public void setNickname(String nickname) throws RemoteException {
         this.nickname = nickname;
+    }
+
+    @Override
+    public void gameStarted(boolean youTurn) {
+
     }
 
     @Override
@@ -218,13 +220,9 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
     @Override
-    public void newTurn(String currentNickname) throws RemoteException { //CLIENT
+    public void newTurn(boolean playing) throws RemoteException { //CLIENT
     }
 
-    @Override
-    public void waitingTurn() throws RemoteException {
-
-    }
 
     @Override
     public void lastTurn() throws RemoteException { //CLIENT

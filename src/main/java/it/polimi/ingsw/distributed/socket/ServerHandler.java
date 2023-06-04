@@ -305,10 +305,13 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
 
 
+
+
     @Override
-    public void printChat() {
+    public void gameStarted(Player currentPlayer) {
 
     }
+
     @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
 

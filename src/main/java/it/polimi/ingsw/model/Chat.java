@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Chat extends Thread implements Serializable {
-    private List<String> chat;
+    private List<ChatMessage> chat;
 
     public Chat() {
         this.chat = new ArrayList<>();
     }
 
-    public void newMessage(String nickname, String message) {
-        this.chat.add(nickname + ": " + message);
+    public void newMessage(String sender, String receiver, String message) {
+        this.chat.add(new ChatMessage(sender, receiver, message));
     }
 
-    public List<String> getChat() {
+    public List<ChatMessage> getChat() {
         return this.chat;
     }
 }

@@ -43,7 +43,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
 
 
-    // ***************** VIEW LISTENER METHODS
+    // ***************** VIEW LISTENER METHODS   ************************************************
     @Override
     public void clientNickNameSetting(String nickName) throws RemoteException{
         this.stub.clientNickNameSetting(this, nickName);
@@ -76,22 +76,16 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
 
 
-    //******************************************************** CLIENT METHODS
+    //*********************************      CLIENT METHODS      *********************************************************
     @Override
-    public void newTurn(String currentNickname) {
+    public void newTurn(boolean currentPlayer) {
         try {
-            if(currentNickname.equals(this.nickname)) {
-                this.view.newTurn();
-            } else
-                waitingTurn();
+            this.view.newTurn(currentPlayer);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
-    @Override
-    public void waitingTurn() throws RemoteException{
-        this.view.waitingTurn();
-    }
+
 
 
     @Override
@@ -127,17 +121,10 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     @Override
     public void askAction() throws RemoteException {
-        try {
-            this.view.chooseAction();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        this.view.chooseAction();
     }
 
-    @Override
-    public void printChat(ChatView chatView) throws RemoteException {
-        this.view.printChat(chatView);
-    }
+
 
 
     @Override
@@ -170,5 +157,10 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void setNickname(String nickname) throws RemoteException {
         this.nickname = nickname;
+    }
+
+    @Override
+    public void gameStarted(boolean yourTurn) {
+        this.view.gameStarted(yourTurn);
     }
 }

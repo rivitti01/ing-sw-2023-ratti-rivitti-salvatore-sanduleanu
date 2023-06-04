@@ -62,19 +62,21 @@ public class GameController  {
         if (model.getBoard().checkRefill())
             model.getBoard().fillBoard(model.getBag());
 
-        if(!this.endPointGiven && this.model.getCurrentPlayer().getShelf().isFull()) {  // checks if shelf of currentPlayer us full
-            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);                    // takes END_GAME_POINT
+        //checks if current shelf is full
+        if(!this.endPointGiven && this.model.getCurrentPlayer().getShelf().isFull()) {
+            this.model.getCurrentPlayer().addPoints(END_GAME_POINT);
             this.endPointGiven = true;
-            this.model.setLastTurn(true);                                                //last turn for each player...
+            this.model.setLastTurn(true);
         }
 
         int indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
+
         // checks if game is over
-        if(!this.model.isEnd()) {       // check if the game has ended
+        if(!this.model.isEnd()) {   // ending...
             if (model.isLastTurn() && indexCurrentPlayer == this.model.getPlayers().size() - 1) {
                 this.model.setEnd(true);
                 calculateWinner();
-            } else { // going to next Player
+            } else {            // going to next Player
                 if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
                     this.model.setCurrentPlayer(this.model.getPlayers().get(0));
                 else
@@ -86,7 +88,6 @@ public class GameController  {
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
-
         if(c<0 || c>=SHELF_COLUMN)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
         else{   //settaggio della colonna
@@ -114,7 +115,7 @@ public class GameController  {
         if( tilePosition-1 < 0  ||  tilePosition > model.getCurrentPlayer().getChosenTiles().size() )
             this.model.setErrorType(Warnings.INVALID_ORDER);
         else {
-            Tile chosenTile = model.getCurrentPlayer().getChosenTiles().get(tilePosition - 1);
+            Tile chosenTile = model.getCurrentPlayer().getChosenTiles().remove(tilePosition - 1);
             int column = model.getCurrentPlayer().getChosenColumn();
             model.droppedTile(chosenTile, column);
             if(this.model.getCurrentPlayer().getChosenTiles().isEmpty() && !this.model.isEnd())
@@ -123,16 +124,29 @@ public class GameController  {
     }
     public void calculateWinner() throws RemoteException {
         this.model.endGame();
-        //this.model.findWinner();  reasoning's in the gameModel
+        //this.model.findWinner();
     }
     public void setChosenTiles(List<Tile> tmp) {
         model.getCurrentPlayer().setChosenTiles(tmp);
     }
 
-    public void addChatMessage(String nickname, String message){
-        this.model.newMessage(nickname, message);
+    public void addChatMessage(String sender, String message){
+        String receiver = "";
+        String content = "";
 
-
+        if (message.startsWith("@")) {
+            int spaceIndex = message.indexOf(" ");
+            if (spaceIndex != -1) {
+                receiver = message.substring(1, spaceIndex);
+                content = message.substring(spaceIndex + 1);
+            } else {
+               this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE);
+            }
+        } else {
+            receiver = "all";
+            content = message;
+        }
+        this.model.newMessage(sender, receiver, content);
     }
 
 }

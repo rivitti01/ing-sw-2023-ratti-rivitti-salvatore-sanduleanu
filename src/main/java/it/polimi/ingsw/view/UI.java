@@ -11,7 +11,7 @@ import java.util.Map;
 public interface UI {
 
 
-    public abstract void newTurn() throws RemoteException;
+    public abstract void newTurn(boolean b) throws RemoteException;
 
 
     public abstract void askOrder();
@@ -55,5 +55,7 @@ public interface UI {
     public abstract void lastTurn();
 
     public abstract void waitingTurn() throws RemoteException;
+
+    void gameStarted(boolean nickname);
 }
 

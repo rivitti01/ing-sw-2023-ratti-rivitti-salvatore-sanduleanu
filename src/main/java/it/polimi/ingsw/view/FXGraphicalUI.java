@@ -38,7 +38,7 @@ public class FXGraphicalUI extends Application implements UI{
     }
 
     @Override
-    public void newTurn() throws RemoteException {
+    public void newTurn(boolean b) throws RemoteException {
 
     }
 
@@ -120,6 +120,11 @@ public class FXGraphicalUI extends Application implements UI{
     }
     @Override
     public void waitingTurn() throws RemoteException{
+
+    }
+
+    @Override
+    public void gameStarted(boolean nickname) {
 
     }
 
