@@ -36,7 +36,7 @@ class ShelfTest {
         int r = random.nextInt(6);
         Tile t = b.getTile();
         s.putTile(r, c, t);
-        assertEquals(4, s.checkColumnEmptiness(c));
+        assertEquals(5, s.checkColumnEmptiness(c));
     }
 
     @Test
