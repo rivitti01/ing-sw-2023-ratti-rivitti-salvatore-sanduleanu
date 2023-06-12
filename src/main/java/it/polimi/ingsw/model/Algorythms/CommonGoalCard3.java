@@ -46,6 +46,8 @@ public class CommonGoalCard3 implements CardStrategy {
                 " Le tessere di un gruppo possono essere diverse da quelle di un altro gruppo.";
     }
 
+    public String getCardName(){return "3common";}
+
     private void removeRow(int row){
         for (int c = 0; c < 5; c++) tmpShelf.putTile(row, c, null);
     }

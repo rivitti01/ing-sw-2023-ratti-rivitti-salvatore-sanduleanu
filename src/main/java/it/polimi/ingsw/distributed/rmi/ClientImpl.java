@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
-import it.polimi.ingsw.view.FXGraphicalUI;
+import it.polimi.ingsw.view.GraphicalUI.FXGraphicalUI;
 import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.UI;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
-    private UI view = new TextualUI();
+    private UI view = new FXGraphicalUI();
     private Server stub;
     private String nickname = null;
 

@@ -6,6 +6,7 @@ public class CommonGoalCard11 implements CardStrategy{
     public String toString(){
         return "Cinque tessere dello stesso tipo che formano una X.";
     }
+    public String getCardName(){return "11common";}
 
 
     public boolean algorythm(Shelf myShelf) {  // 5 Tiles of same color placed like a cross

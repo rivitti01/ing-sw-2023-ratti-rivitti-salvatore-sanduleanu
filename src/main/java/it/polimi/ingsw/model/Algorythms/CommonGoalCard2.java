@@ -27,4 +27,6 @@ public class CommonGoalCard2 implements CardStrategy {
         return "Quattro tessere dello stesso tipo" +
                 " ai quattro angoli della Libreria.";
     }
+
+    public String getCardName(){return "2common";}
 }

@@ -120,30 +120,6 @@
                   </Button>
                </children>
             </GridPane>
-            <GridPane fx:id="waitingPane" visible="false">
-              <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.5999755859375" minWidth="0.0" prefWidth="0.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="588.0" minWidth="10.0" prefWidth="588.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.60003662109375" minWidth="0.0" prefWidth="0.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints maxHeight="127.8000244140625" minHeight="10.0" prefHeight="113.40000610351562" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="200.3999816894531" minHeight="10.0" prefHeight="48.59999389648438" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="252.00000610351566" minHeight="10.0" prefHeight="237.60001220703128" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Label alignment="CENTER" prefHeight="134.0" prefWidth="627.0" text="Waiting for players, game will start soon..." textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                     <font>
-                        <Font name="Bell MT" size="26.0" />
-                     </font>
-                  </Label>
-                  <Button mnemonicParsing="false" onAction="#exit" text="Exit My Shelfie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-                     <font>
-                        <Font name="Bell MT" size="19.0" />
-                     </font>
-                  </Button>
-               </children>
-            </GridPane>
          </children>
       </StackPane>
    </children>

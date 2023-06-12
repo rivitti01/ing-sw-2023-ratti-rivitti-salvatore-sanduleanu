@@ -54,5 +54,7 @@ public class CommonGoalCard5 implements CardStrategy {
                 column can show the same or a different
                 combination of another column.""";
     }
+
+    public String getCardName(){return "5common";}
 }
 

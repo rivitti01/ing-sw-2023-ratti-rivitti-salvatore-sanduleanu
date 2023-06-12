@@ -29,4 +29,6 @@ public class CommonGoalCard12 implements CardStrategy{
         }
         return tmp;
     }
+
+    public String getCardName(){return "12common";}
 }

@@ -63,4 +63,6 @@ public class CommonGoalCard9 implements CardStrategy {
         if(tile.getColor()==Color.CYAN) colorsOccurrence[4]=true;
         if(tile.getColor()==Color.PINK) colorsOccurrence[5]=true;
     }
+
+    public String getCardName(){return "9common";}
 }

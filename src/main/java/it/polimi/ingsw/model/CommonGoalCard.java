@@ -18,17 +18,20 @@ public class CommonGoalCard {
     private CardStrategy cardStrategy;
     private Stack<Integer> scores;
     private String description;
+    private String name;
 
 
     public CommonGoalCard(int numberParticipants, DeckCommon deckCommon){
         setCardStrategy(deckCommon);
         fillStack(numberParticipants);
         description = cardStrategy.toString();
+        name = cardStrategy.getCardName();
     }
     public CommonGoalCard(CardStrategy cardStrategy, int numberParticipants){
         this.cardStrategy = cardStrategy;
         fillStack(numberParticipants);
         description = cardStrategy.toString();
+        name = cardStrategy.getCardName();
     }
 
     private void setCardStrategy(DeckCommon deckCommon){
@@ -107,6 +110,8 @@ public class CommonGoalCard {
     public String getDescription(){
         return description;
     }
+
+    public String getName() {return name;}
 
 
 }

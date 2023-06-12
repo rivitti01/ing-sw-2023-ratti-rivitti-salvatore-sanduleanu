@@ -8,6 +8,8 @@ public class CommonGoalCard6 implements CardStrategy{
                 "Non ci sono restrizioni sulla posizione di queste tessere.";
     }
 
+    public String getCardName(){return "6common";}
+
 
     public boolean algorythm(Shelf myShelf) {
         for (int r1=0; r1<6; r1++){

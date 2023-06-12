@@ -1,0 +1,20 @@
+.gamebg{
+    -fx-background-image:url("/images/game_background.jpg") ;
+    -fx-background-size: 100% 100%;
+}
+
+.boardbg{
+    -fx-background-image:url("/images/game_board.png") ;
+    -fx-background-size: 100% 100%;
+}
+
+.opponentshelf{
+    -fx-background-image:url("/images/bookshelf_opponent.png") ;
+    -fx-background-size: 100% 100%;
+}
+
+.playershelf{
+    -fx-background-image:url("/images/bookshelf_player.png") ;
+    -fx-background-size: 100% 100%;
+}
+

@@ -43,4 +43,6 @@ public class CommonGoalCard1 implements CardStrategy {
                 "dello stesso tipo (non necessariamente come mostrato in figura). " +
                 "Le tessere di un gruppo possono essere diverse da quelle di un altro gruppo.";
     }
+
+    public String getCardName(){return "1common";}
 }

@@ -54,5 +54,7 @@ public class CommonGoalCard8 implements CardStrategy {
                 line can show the same or a different
                 combination of another line.""";
     }
+
+    public String getCardName(){return "8common";}
 }
 

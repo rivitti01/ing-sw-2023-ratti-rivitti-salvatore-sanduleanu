@@ -50,6 +50,8 @@ public class CommonGoalCard4 implements CardStrategy {
                 of one square can be different from
                 those of the other square.""";
     }
+
+    public String getCardName(){return "4common";}
 }
 
 
