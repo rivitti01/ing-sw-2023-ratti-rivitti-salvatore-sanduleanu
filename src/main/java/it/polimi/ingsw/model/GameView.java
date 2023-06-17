@@ -15,6 +15,9 @@ public class GameView  implements Serializable {
     private final String[] commonName;
     private final List<Tile> chosenTiles;
     private final ChatView chatView;
+    private final int points;
+    private final List<Integer> commonGoal1;
+    private final List<Integer> commonGoal2;
 
 
 
@@ -34,8 +37,16 @@ public class GameView  implements Serializable {
             commonName[i] = model.getCommonGoals()[i].getName();
         }
         chatView = new ChatView(model, p);
+        points = p.getPoints() + p.getAdjacencyPoints() + p.getPersonalGoalPoints();
+        commonGoal1 = new ArrayList<>();
+        commonGoal2 =  new ArrayList<>();
+        commonGoal1.addAll(model.getCommonGoals()[0].getScores());
+        commonGoal2.addAll(model.getCommonGoals()[1].getScores());
     }
 
+    public int getPoints() {
+        return points;
+    }
 
     public String getNickName() {
         return this.nickName;
@@ -62,6 +73,12 @@ public class GameView  implements Serializable {
 
     public String[] getNameGoals(){return this.commonName;}
 
+    public List<Integer> getCommonGoal1() {
+        return commonGoal1;
+    }
 
 
+    public List<Integer> getCommonGoal2() {
+        return commonGoal2;
+    }
 }

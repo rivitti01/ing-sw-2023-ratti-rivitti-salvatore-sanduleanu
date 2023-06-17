@@ -113,5 +113,7 @@ public class CommonGoalCard {
 
     public String getName() {return name;}
 
-
+    public Stack<Integer> getScores() {
+        return scores;
+    }
 }

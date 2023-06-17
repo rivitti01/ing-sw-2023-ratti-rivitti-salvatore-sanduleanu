@@ -325,13 +325,24 @@ public class TextualUI implements UI {
             throw new RuntimeException(e);
         }
         System.out.println("******************* COMMON GOAL CARDS *************************************");
-        for (int i=0; i<COMMON_CARDS_PER_GAME; i++){
-            System.out.println(i+1 + ") " + gameView.getCommonGoals()[i] + "\n");
-        }
+        System.out.println(1 + ") " + gameView.getCommonGoals()[0]);
+        for(int j=gameView.getCommonGoal1().size()-1; j>=0; j--)
+            System.out.print("[ " + gameView.getCommonGoal1().get(j) + " ]" + "    ");
+        System.out.println("\n");
+        System.out.println(2 + ") " + gameView.getCommonGoals()[1]);
+        for(int j=gameView.getCommonGoal1().size()-1; j>=0; j--)
+            System.out.print("[ " + gameView.getCommonGoal1().get(j) + " ]" + "    ");
+        System.out.println();
+        System.out.println();
+
+
+
         System.out.println("******************* BOARD **************************************");
         printBoard(gameView.getBoard());
         System.out.println("******************* SHELVES **************************************");
         printShelves(gameView.getPlayersShelves());
+
+        System.out.println("************ Your Points: " + gameView.getPoints() + "        ***********\n");
         printPersonalGoalShelf(gameView.getPersonal());
 
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());

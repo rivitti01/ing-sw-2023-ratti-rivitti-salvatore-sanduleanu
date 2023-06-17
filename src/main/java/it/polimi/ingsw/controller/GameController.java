@@ -21,10 +21,6 @@ public class GameController  {
         this.numberPlayers = numberPlayers;
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     public int getNumberPlayers() {
         return numberPlayers;
     }
@@ -104,7 +100,7 @@ public class GameController  {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
                 this.model.getCurrentPlayer().addChosenCoordinate(inputCoordinates);
                 this.model.getCurrentPlayer().addChosenTile(this.model.getBoard().getTile(inputCoordinates[0], inputCoordinates[1]));
-                Tile tmp = this.model.popTileFromBoard(inputCoordinates);
+                this.model.popTileFromBoard(inputCoordinates);
                 this.model.checkMaxNumberOfTilesChosen();
                 return;
             }
@@ -122,17 +118,14 @@ public class GameController  {
                 nextPlayer();
         }
     }
-    public void calculateWinner() throws RemoteException {
+    public void calculateWinner() {
         this.model.endGame();
         //this.model.findWinner();
     }
-    public void setChosenTiles(List<Tile> tmp) {
-        model.getCurrentPlayer().setChosenTiles(tmp);
-    }
 
     public void addChatMessage(String sender, String message){
-        String receiver = "";
-        String content = "";
+        String receiver;
+        String content;
 
         if (message.startsWith("@")) {
             int spaceIndex = -1;
@@ -149,7 +142,7 @@ public class GameController  {
                 //this.model.newMessage(sender, receiver, content);
                 this.model.setErrorType(Warnings.IVALID_RECEIVER, sender);
             } else {
-               this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE, sender);
+               this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE, sender);   //@leo
             }
         } else {
             receiver = "all";
