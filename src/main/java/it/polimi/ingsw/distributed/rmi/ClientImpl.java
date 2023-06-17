@@ -10,6 +10,7 @@ import it.polimi.ingsw.view.GraphicalUI.FXGraphicalUI;
 import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.UI;
 
+import javax.swing.text.View;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
@@ -18,14 +19,18 @@ import java.util.Map;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
-    private UI view = new FXGraphicalUI();
+    private UI view /*= new FXGraphicalUI()*/;
     private Server stub;
     private String nickname = null;
 
 
-    public ClientImpl(Server s) throws RemoteException {
+    public ClientImpl(Server s, boolean gui) throws RemoteException {
         super();
         this.stub = s;
+        if(gui){
+            this.view = new FXGraphicalUI();
+        }else
+            this.view = new TextualUI();
         this.view.addListener(this);
         if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
     }
