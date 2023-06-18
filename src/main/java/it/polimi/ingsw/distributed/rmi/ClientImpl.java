@@ -19,14 +19,16 @@ import java.util.Map;
 
 
 public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
-    private UI view /*= new FXGraphicalUI()*/;
+    private UI view;
     private Server stub;
     private String nickname = null;
+    private static final int PONG_PERIOD = 1000;  // milliseconds
 
 
     public ClientImpl(Server s, boolean gui) throws RemoteException {
         super();
         this.stub = s;
+        checkServer();
         if(gui){
             this.view = new FXGraphicalUI();
         }else
@@ -45,6 +47,23 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         this.stub = s;
         this.view.addListener(this);
         if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+    }
+
+    private void checkServer(){
+        Thread pongThread = new Thread(() -> {
+            while (true){
+                try {
+                    this.stub.pong();
+                    Thread.sleep(PONG_PERIOD);
+                } catch (RemoteException e) {
+                    System.err.println("Server has crushed!\nExiting the game...");
+                    System.exit(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        pongThread.start();
     }
 
 
@@ -110,6 +129,8 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void warning(Warnings e) throws RemoteException {
         this.view.warning(e);
+        if(e == Warnings.GAME_ALREADY_STARTED || e == Warnings.CLIENT_DISCONNECTED)
+            System.exit(1);
     }
     @Override
     public void askNumberParticipants() throws RemoteException {
@@ -139,7 +160,6 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     @Override
     public void ping() throws RemoteException {
-
     }
 
     @Override

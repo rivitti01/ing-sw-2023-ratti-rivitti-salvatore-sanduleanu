@@ -187,6 +187,7 @@ public class TextualUI implements UI {
             }//askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
+            case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game\nExiting the game...");
 
         }
     }
@@ -387,66 +388,67 @@ public class TextualUI implements UI {
                     this.currentState = CurrentState.CHATTING;
                     System.out.println("Scrivi qualcosa a qualcuno");
                 } else {
-                    switch (this.currentState) {
-                        case CHOOSING_ACTION -> {
-                            try {
+                    try {
+                        switch (this.currentState) {
+                            case CHOOSING_ACTION -> {
+
                                 checkAction(input);
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
+
                             }
-                        }
-                        case WAITING_TURN -> waitingTurn();
-                        case CHATTING -> {
-                            try {
+                            case WAITING_TURN -> waitingTurn();
+                            case CHATTING -> {
+
                                 this.currentState = oldState;
                                 this.listener.newMessage(input);
                                 options();
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        case CHOOSING_TILE -> {
-                            try {
-                                // Split the input string into an array of strings
-                                String[] parts = input.split(" ");
 
-                                // Extract the numbers from the array of strings
-                                int number1 = Integer.parseInt(parts[0]);
-                                int number2 = Integer.parseInt(parts[1]);
-                                int[] coordinates = {number1, number2};
-                                this.currentState = CurrentState.CHOOSING_ACTION;
-                                this.listener.checkingCoordinates(coordinates);
-                            }catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
-                                System.err.println("hai inserito delle coordinate invalide\nRiprova");
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
                             }
-                        }
-                        case CHOOSING_COLUMN -> {
-                            try{
-                                int column = Integer.parseInt(input);
-                                this.currentState = CurrentState.CHOOSING_ORDER;
-                                this.listener.columnSetting(column);
-                            }catch (NumberFormatException e){
-                                System.err.println("inserire una colonna!");
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        case CHOOSING_ORDER ->{
-                            try {
-                                int tilePosition = Integer.parseInt(input);
-                                listener.tileToDrop(tilePosition);
-                            } catch (NumberFormatException | RemoteException e) {
-                               System.err.println("inserire una posizione sensata!");
-                            }
-                        }
+                            case CHOOSING_TILE -> {
+                                try {
+                                    // Split the input string into an array of strings
+                                    String[] parts = input.split(" ");
 
+                                    // Extract the numbers from the array of strings
+                                    int number1 = Integer.parseInt(parts[0]);
+                                    int number2 = Integer.parseInt(parts[1]);
+                                    int[] coordinates = {number1, number2};
+                                    this.currentState = CurrentState.CHOOSING_ACTION;
+                                    this.listener.checkingCoordinates(coordinates);
+                                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                                    System.err.println("hai inserito delle coordinate invalide\nRiprova");
+                                }
+                            }
+                            case CHOOSING_COLUMN -> {
+                                try {
+                                    int column = Integer.parseInt(input);
+                                    this.currentState = CurrentState.CHOOSING_ORDER;
+                                    this.listener.columnSetting(column);
+                                } catch (NumberFormatException e) {
+                                    System.err.println("inserire una colonna!");
+                                }
+                            }
+                            case CHOOSING_ORDER -> {
+                                try {
+                                    int tilePosition = Integer.parseInt(input);
+                                    listener.tileToDrop(tilePosition);
+                                } catch (NumberFormatException e) {
+                                    System.err.println("inserire una posizione sensata!");
+                                }
+                            }
+
+                        }
+                    }catch (RemoteException e){
+                        handleRemoteException();
                     }
                 }
             }
         });
         inputThread.start();
+    }
+
+    private void handleRemoteException(){
+        System.err.println("Server has crushed! Exiting...");
+        System.exit(1);
     }
 
     private void options() throws RemoteException {

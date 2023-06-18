@@ -23,6 +23,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private boolean gameAlreadyStarted;
     private final ReentrantLock connectionLock;
     private First first;
+    private static final int PING_PERIOD = 1000;   // milliseconds
 
 
     public ServerImpl(Game model, GameController controller, First first) throws RemoteException {
@@ -70,6 +71,34 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
 
     //**********************        SERVER METHODS         ************************************************
+
+    private void handleClientDisconnection(){
+        for(Client client : this.connectedClients.keySet()) {
+            try {
+                client.warning(Warnings.CLIENT_DISCONNECTED);
+            } catch (RemoteException e) {
+
+            }
+        }
+    }
+    private void addClientToGame(Client c){
+        connectedClients.put(c, null);
+        Thread pingThread = new Thread(() -> {
+            while (true){
+                try {
+                    c.ping();
+                    Thread.sleep(PING_PERIOD);
+                } catch (RemoteException e) {
+                    handleClientDisconnection();
+                    System.err.println("Closing the game...");
+                    System.exit(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        pingThread.start();
+    }
     @Override
     public void clientConnection(Client c) throws RemoteException {
         boolean canPlay = false;
@@ -84,7 +113,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             try {
                 if (!this.gameAlreadyStarted) {
                     canPlay = true;
-                    connectedClients.put(c, null);
+                    addClientToGame(c);
                     if (connectedClients.size() == 1 && first.getFirst()) {
                         first.setFirst(false);
                         try {
@@ -176,11 +205,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void pong() throws RemoteException {
-        for (Client c : connectedClients.keySet()) {
-            for (Player p : this.model.getPlayers()) {
 
-            }
-        }
     }
 
 
