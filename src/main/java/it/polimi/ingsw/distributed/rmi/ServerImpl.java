@@ -22,6 +22,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private int numParticipants;
     private boolean gameAlreadyStarted;
     private final ReentrantLock connectionLock;
+    private ReentrantLock lock = new ReentrantLock();
     private First first;
     private static final int PING_PERIOD = 1000;   // milliseconds
 
@@ -77,9 +78,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             try {
                 client.warning(Warnings.CLIENT_DISCONNECTED);
             } catch (RemoteException e) {
-
+                // e.printStackTrace();
+                System.err.println("a client has exited the game");
             }
         }
+        System.err.println("Closing the game...");
+        System.exit(1);
     }
     private void addClientToGame(Client c){
         connectedClients.put(c, null);
@@ -89,9 +93,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     c.ping();
                     Thread.sleep(PING_PERIOD);
                 } catch (RemoteException e) {
+                    lock.lock();
                     handleClientDisconnection();
-                    System.err.println("Closing the game...");
-                    System.exit(1);
+                    lock.unlock();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
