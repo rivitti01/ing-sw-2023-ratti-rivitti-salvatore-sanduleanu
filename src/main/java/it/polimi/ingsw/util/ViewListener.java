@@ -4,6 +4,9 @@ import java.rmi.RemoteException;
 
 public interface ViewListener {
     void clientNickNameSetting(String nickName) throws RemoteException;
+
+    void checkingExistingNickname(String nickname) throws RemoteException;
+
     void checkingCoordinates(int[] coordinates) throws RemoteException;
     void tileToDrop(int tilePosition)   throws RemoteException  ;
     void columnSetting(int i) throws RemoteException;

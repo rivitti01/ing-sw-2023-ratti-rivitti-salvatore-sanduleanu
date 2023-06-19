@@ -5,6 +5,10 @@ import java.rmi.RemoteException;
 
 public interface Server extends Remote {
     void clientConnection(Client c) throws RemoteException, InterruptedException;
+
+
+    void checkingExistingNickname(Client c, String nickName) throws RemoteException;
+
     void clientNickNameSetting(Client c, String nickName) throws RemoteException;
     void tileToDrop(int tilePosition) throws RemoteException;
     void checkingCoordinates(int[] coordinates) throws RemoteException;

@@ -121,6 +121,26 @@ public class TextualUI implements UI {
         }
         listener.clientNickNameSetting(nickName);
     }
+    public void askExistingNickname(){
+        boolean validName = false;
+        String nickName = null;
+        while (!validName) {
+            System.out.println("A game is already going on. If you were disconnected please type your old nickname");
+            nickName = scanner.next();
+            scanner.nextLine();
+            if (nickName.length() == 0){
+                System.err.println("nickname cannot be empty!");
+                System.err.println("Please try again:");
+            } else {
+                validName=true;
+            }
+        }
+        try {
+            this.listener.checkingExistingNickname(nickName);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void warning(Warnings e) throws RemoteException {
         switch (e){
             case INVALID_TILE -> {
@@ -188,6 +208,19 @@ public class TextualUI implements UI {
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
             case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game");
+            case WAITING_FOR_MORE_PLAYERS -> {
+                System.err.println("Waiting for more players to continue the game...");
+                this.currentState = CurrentState.WAITING_FOR_CLIENTS;
+            }
+            case NO_PLAYERS_LEFT ->System.out.println("NO PLAYERS LEFT. YOU WON!");
+            case RECONNECTION -> {
+                this.currentState = CurrentState.WAITING_TURN;
+                openScanner();
+            }
+            case INVALID_RECONNECTION_NICKNAME -> {
+                System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
+                askExistingNickname();
+            }
 
         }
     }
@@ -379,11 +412,12 @@ public class TextualUI implements UI {
 
     public void openScanner(){
         Thread inputThread = new Thread(() -> {
+            System.out.println(" prova ");
             Scanner scanner = new Scanner(System.in);
             CurrentState oldState = null;
             while (true) {
                 String input = scanner.nextLine();
-                if (input.equals("chat")) {
+                if (this.currentState!=CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
                     oldState = this.currentState;
                     this.currentState = CurrentState.CHATTING;
                     System.out.println("Scrivi qualcosa a qualcuno");
@@ -434,6 +468,9 @@ public class TextualUI implements UI {
                                 } catch (NumberFormatException e) {
                                     System.err.println("inserire una posizione sensata!");
                                 }
+                            }
+                            case WAITING_FOR_CLIENTS -> {
+                                System.err.println("Waiting for more players to continue the game...");
                             }
 
                         }

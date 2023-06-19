@@ -95,6 +95,10 @@ public class ClientSocketImpl implements Client, ViewListener {
     public void askNickname() throws RemoteException {
 
     }
+    @Override
+    public void askExistingNickname() throws RemoteException {
+
+    }
 
     @Override
     public void ping() throws RemoteException {
@@ -111,6 +115,10 @@ public class ClientSocketImpl implements Client, ViewListener {
 
     }
 
+    @Override
+    public void checkingExistingNickname(String nickname) throws RemoteException {
+
+    }
     @Override
     public void clientNickNameSetting(String nickName) throws RemoteException {
         try {

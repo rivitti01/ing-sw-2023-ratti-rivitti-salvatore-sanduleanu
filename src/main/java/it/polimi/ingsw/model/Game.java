@@ -38,8 +38,8 @@ public class Game {
         this.board = new Board(this.numberPartecipants);
         this.board.fillBoard(this.bag);
         this.board.setBorderTiles();
-        this.players = players;
-        setFirstPlayer();
+        this.players = new ArrayList<>();
+        setFirstPlayer(players);
         this.currentPlayer = this.players.get(0);
         this.commonGoals = new CommonGoalCard[2];
         DeckCommon deckCommon = new DeckCommon();
@@ -58,20 +58,28 @@ public class Game {
     }
 
     //Getters and Setters
-    public void setFirstPlayer(){
+    public void setFirstPlayer(List<Player> players){
         Random random = new Random();
         int tmp = random.nextInt(this.numberPartecipants);
         List<Player> tempList = new ArrayList<>();
+        tempList.add(players.get(tmp));
+        for(int i=0; i<players.size(); i++){
+            if(!tempList.get(0).getNickname().equals(players.get(i).getNickname()))
+                tempList.add(players.get(i));
+        }
+/*
         while(players.size() != 0){
             if (tmp < players.size()){
-                tempList.add(players.remove(tmp));
+                tempList.add(players.get(tmp));
             }else {
                 tempList.add(players.remove(0));
             }
         }
-        players = tempList;
-        players.get(0).setSeat(true);
-        setCurrentPlayer(players.get(0));
+
+ */
+        this.players = tempList;
+        this.players.get(0).setSeat(true);
+        setCurrentPlayer(this.players.get(0));
     }
     public boolean isLastTurn() {
         return this.lastTurn;

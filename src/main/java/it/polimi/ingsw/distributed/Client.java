@@ -23,6 +23,7 @@ public interface Client extends Remote {
     void askNickname() throws RemoteException;
 
 
+    void askExistingNickname() throws RemoteException;
 
     void ping() throws RemoteException;
 

@@ -57,5 +57,7 @@ public interface UI {
     public abstract void waitingTurn() throws RemoteException;
 
     void gameStarted(boolean nickname);
+
+    void askExistingNickname();
 }
 

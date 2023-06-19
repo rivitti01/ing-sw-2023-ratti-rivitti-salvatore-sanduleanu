@@ -15,6 +15,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -28,6 +29,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final ReentrantLock lock = new ReentrantLock();
     private First first;
     private static final int PING_PERIOD = 1000;   // milliseconds
+    private ScheduledExecutorService timerExecutor;
+    private ScheduledFuture<?> timerTask;
+    private static final int TIMEOUT_DURATION = 10;   // seconds
 
 
     public ServerImpl(Game model, GameController controller, First first) throws RemoteException {
@@ -78,18 +82,50 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     private void handleClientDisconnection(Client c){
         String value = this.connectedClients.remove(c);
+        for(Client client : this.connectedClients.keySet()) {
+            try {
+                client.warning(Warnings.CLIENT_DISCONNECTED);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (value != null) {
             System.out.println("removed client with string value: " + value);
             List<Player> players = this.model.getPlayers();
             for(Player player : players){
                 if(player.getNickname().equals(value)) {
                     player.setConnected(false);
-                    if(value.equals(this.model.getCurrentPlayer().getNickname())) {
+                    if(value.equals(this.model.getCurrentPlayer().getNickname())) {   // CLIENT IN PLAYING TURN DISCONNECTED
                         player.reset(this.model.getCommonGoals());
-                        try {
-                            this.controller.nextPlayer();
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
+                        if(this.connectedClients.size() > 1) {    // THE GAME CAN CONTINUE IF THERE ARE 2 OR MORE CLIENTS
+                            try {
+                                this.controller.nextPlayer();
+                            } catch (RemoteException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else {      // TIMER IF THERE IS ONE CLIENT LEFT
+                            System.out.println("waiting for more players to continue...");
+                            startTimer();
+                            for(Client client : this.connectedClients.keySet()) {
+                                try {
+                                    client.warning(Warnings.WAITING_FOR_MORE_PLAYERS);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+
+                    } else {     // CLIENT IN WAITING TURN DISCONNECTED
+                        if(this.connectedClients.size() <= 1){
+                            System.out.println("waiting for more players to continue...");
+                            startTimer();
+                            for(Client client : this.connectedClients.keySet()) {
+                                try {
+                                    client.warning(Warnings.WAITING_FOR_MORE_PLAYERS);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
 
                     }
@@ -99,11 +135,28 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         } else {
             System.out.println("Client not found: " + c);
         }
-        for(Client client : this.connectedClients.keySet()) {
+
+    }
+    private void startTimer() {
+        if (timerExecutor != null && !timerExecutor.isShutdown()) {
+            // Timer is already running, no need to start a new one
+            return;
+        }
+
+        // Schedule a timer task to be executed after a specified timeout
+        timerExecutor = Executors.newSingleThreadScheduledExecutor();
+        // Code to be executed when the timer expires
+        timerTask = timerExecutor.schedule(this::handleTimeout, TIMEOUT_DURATION, TimeUnit.SECONDS);
+    }
+
+    private void handleTimeout() {
+        // Code to be executed when the timeout occurs
+        System.out.println("Timeout! No other players!\nClosing the game...");
+        for(Client client: this.connectedClients.keySet()) {
             try {
-                client.warning(Warnings.CLIENT_DISCONNECTED);
+                client.warning(Warnings.NO_PLAYERS_LEFT);
             } catch (RemoteException e) {
-               throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -170,26 +223,65 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 this.controller.checkGameInitialization();
             }
         } else {
-            try {
-                c.warning(Warnings.GAME_ALREADY_STARTED);
-            } catch (RemoteException e) {
-                System.err.println("Unable to advice the client about the game being already full:" +
-                        e.getMessage() + ". Skipping the update...");
+            if(this.connectedClients.size() < this.controller.getNumberPlayers()){
+                addClientToGame(c);
+                if(timerTask != null)
+                    timerTask.cancel(true);
+                System.out.println("A client has RE-connected.");
+                c.askExistingNickname();
+            } else {
+                try {
+                    c.warning(Warnings.GAME_ALREADY_STARTED);
+                } catch (RemoteException e) {
+                    System.err.println("Unable to advice the client about the game being already full:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         }
     }
 
     @Override
-    public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
-        if (this.controller.setPlayerNickname(nickName)) {
+    public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
+        if (controller.checkingExistingNickname(nickName)) {
+            // if client is reconnecting I need to open the scanner thread again in the TUI
+            System.out.println(" RECONNECTION ");
+            c.warning(Warnings.RECONNECTION);
+
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
-        } else {
-            try {
-                c.warning(Warnings.INVALID_NICKNAME);
-            } catch (RemoteException e) {
-                System.err.println("Unable to advise the client about the invalidation of the chosen nick name:" +
-                        e.getMessage() + ". Skipping the update...");
+            if (connectedClients.size() == 2) {
+                this.controller.nextPlayer();
+            } else if (connectedClients.size() > 2) {
+                for(Player player : this.model.getPlayers()){
+                    if(player.getNickname().equals(nickName)) {
+                        c.printGame(new GameView(this.model, player));
+                        return;
+                    }
+                }
+            }
+        } else
+            c.warning(Warnings.INVALID_RECONNECTION_NICKNAME);
+    }
+
+    @Override
+    public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
+        if(model.getPlayers()==null || !this.controller.checkReconnection(nickName)) {
+            System.out.println(" NOT NOT NOT NOT ");
+            // if there is no reconnection
+            if (this.controller.setPlayerNickname(nickName)) {
+                System.out.println("client: " + nickName + " connected");
+                connectedClients.put(c, nickName);
+                for (Client client : connectedClients.keySet())
+                    System.out.print(connectedClients.get(client) + " - ");
+                System.out.println();
+                c.setNickname(nickName);
+            } else {
+                try {
+                    c.warning(Warnings.INVALID_NICKNAME);
+                } catch (RemoteException e) {
+                    System.err.println("Unable to advise the client about the invalidation of the chosen nick name:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         }
     }
@@ -248,7 +340,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                             break;
                         }
                     }
-
                     GameView gameView = new GameView(this.model, p);
                     c.printGame(gameView);
                 } catch (RemoteException e) {

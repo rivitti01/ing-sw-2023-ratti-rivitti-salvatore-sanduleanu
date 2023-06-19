@@ -354,6 +354,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void checkingCoordinates(int[] coordinates) throws RemoteException {
 
     }
+    @Override
+    public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
+
+    }
 
     @Override
     public void columnSetting(int i) throws RemoteException {

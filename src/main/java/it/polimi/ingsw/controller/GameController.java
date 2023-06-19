@@ -17,6 +17,13 @@ public class GameController  {
     private List<Player> players;
     private boolean endPointGiven = false;
 
+
+    public GameController (Game model){
+        this.model = model;
+        this.players = new ArrayList<>();
+        this.numberPlayers = 0;
+    }
+
     public void setNumberPlayers(int numberPlayers) {//TODO: controllare che il numero di giocatori sia corretto
         this.numberPlayers = numberPlayers;
     }
@@ -46,12 +53,29 @@ public class GameController  {
         this.players.add(new Player(s));
         return true;
     }
-
-    public GameController (Game model){
-        this.model = model;
-        this.players = new ArrayList<>();
-        this.numberPlayers = 0;
+    public boolean checkingExistingNickname(String nickname){
+        for (Player player : this.model.getPlayers()) {
+            if (player.getNickname().equals(nickname) && !player.isConnected()) return true;
+        }
+        return false;
     }
+
+
+    /*
+     * I need this method to check if a client is reconnecting to the game
+     * or is connecting for the first time.
+     * ( setPlayerNickname tells the server only if the nickname was set correctly )
+     */
+    public boolean checkReconnection(String nickname) {
+        for (Player player : this.model.getPlayers()) {
+            if (player.getNickname().equals(nickname))
+                return true;
+        }
+        return false;
+    }
+
+
+
     public void nextPlayer() throws RemoteException {
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //checks if board is empty or tiles are "alone" on board

@@ -44,6 +44,10 @@ public class ServerStub implements Server {
     }
 
     @Override
+    public void checkingExistingNickname(Client c, String nickname) throws RemoteException {
+
+    }
+    @Override
     public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
         try {
             this.socket = new Socket(ip, port);

@@ -2,7 +2,6 @@ package it.polimi.ingsw.distributed.rmi;
 
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.Server;
-import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ViewListener;
@@ -10,7 +9,6 @@ import it.polimi.ingsw.view.GraphicalUI.FXGraphicalUI;
 import it.polimi.ingsw.view.TextualUI;
 import it.polimi.ingsw.view.UI;
 
-import javax.swing.text.View;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
@@ -74,6 +72,10 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     }
     @Override
+    public void checkingExistingNickname(String nickname) throws RemoteException{
+        this.stub.checkingExistingNickname(this, nickname);
+    }
+    @Override
     public void checkingCoordinates(int[] coordinates) throws RemoteException{
         this.stub.checkingCoordinates(coordinates);
 
@@ -129,7 +131,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void warning(Warnings e) throws RemoteException {
         this.view.warning(e);
-        if(e == Warnings.GAME_ALREADY_STARTED)
+        if(e == Warnings.GAME_ALREADY_STARTED || e == Warnings.NO_PLAYERS_LEFT)
             System.exit(1);
     }
     @Override
@@ -156,6 +158,10 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void askNickname() throws RemoteException {
         this.view.askNickName();
+    }
+    @Override
+    public void askExistingNickname() throws RemoteException{
+        this.view.askExistingNickname();
     }
 
     @Override

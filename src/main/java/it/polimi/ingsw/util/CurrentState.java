@@ -6,6 +6,8 @@ public enum CurrentState {
     CHOOSING_COLUMN,
     CHATTING,
     CHOOSING_ORDER,
-    WAITING_TURN
+    WAITING_TURN,
+    WAITING_FOR_CLIENTS,
+
 
 }

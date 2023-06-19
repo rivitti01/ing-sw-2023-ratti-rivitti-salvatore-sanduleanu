@@ -102,6 +102,9 @@ public class FXGraphicalUI implements UI {
     public void askNickName() throws RemoteException{
         //
     }
+    public void askExistingNickname() {
+
+    }
 
     public void printShelves(Map <String, Shelf> playerShelves){}
 
