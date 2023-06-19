@@ -187,7 +187,7 @@ public class TextualUI implements UI {
             }//askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
-            case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game\nExiting the game...");
+            case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game");
 
         }
     }

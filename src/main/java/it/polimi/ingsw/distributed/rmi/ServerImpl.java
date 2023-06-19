@@ -13,6 +13,7 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
@@ -73,29 +74,43 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     //**********************        SERVER METHODS         ************************************************
 
-    private void handleClientDisconnection(){
+    private void handleClientDisconnection(Client c){
+        String value = this.connectedClients.remove(c);
+        if (value != null) {
+            System.out.println("removed client with string value: " + value);
+            List<Player> players = this.model.getPlayers();
+            for(Player player : players){
+                if(player.getNickname().equals(value))
+                    player.setConnected(false);
+            }
+        } else {
+            System.out.println("Client not found: " + c);
+        }
         for(Client client : this.connectedClients.keySet()) {
             try {
                 client.warning(Warnings.CLIENT_DISCONNECTED);
             } catch (RemoteException e) {
-                // e.printStackTrace();
-                System.err.println("a client has exited the game");
+               throw new RuntimeException(e);
             }
         }
-        System.err.println("Closing the game...");
-        System.exit(1);
+        //System.err.println("Closing the game...");
+        //System.exit(1);
     }
     private void addClientToGame(Client c){
         connectedClients.put(c, null);
+        AtomicBoolean running = new AtomicBoolean(true);
+
         Thread pingThread = new Thread(() -> {
-            while (true){
+            while (running.get()){
                 try {
                     c.ping();
                     Thread.sleep(PING_PERIOD);
                 } catch (RemoteException e) {
+                    System.err.println("a client has exited the game");
                     lock.lock();
-                    handleClientDisconnection();
+                    handleClientDisconnection(c);
                     lock.unlock();
+                    running.set(false);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

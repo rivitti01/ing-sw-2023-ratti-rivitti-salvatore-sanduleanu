@@ -129,7 +129,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void warning(Warnings e) throws RemoteException {
         this.view.warning(e);
-        if(e == Warnings.GAME_ALREADY_STARTED || e == Warnings.CLIENT_DISCONNECTED)
+        if(e == Warnings.GAME_ALREADY_STARTED)
             System.exit(1);
     }
     @Override

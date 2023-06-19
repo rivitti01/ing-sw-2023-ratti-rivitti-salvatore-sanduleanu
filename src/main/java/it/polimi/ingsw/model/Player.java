@@ -18,7 +18,7 @@ public class Player {
     private int points;
     private int personalGoalPoints;
     private int adjacencyPoints;
-    private boolean isChatting;
+    private boolean connected;
 
     public Player(String nickname){
         this.nickname = nickname;
@@ -26,16 +26,23 @@ public class Player {
         chosenCoordinates = new ArrayList<>();
         chosenTiles = new ArrayList<>();
         this.goalsCompleted = new boolean[COMMON_CARDS_PER_GAME];
-        this.isChatting = false;
         points = 0;
         personalGoalPoints = 0;
         adjacencyPoints = 0;
         chosenColumn = -1;
+        this.connected = true;
     }
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
         boolean oldValue = this.seat;
         this.seat = seat;
+    }
+
+    public void setConnected(boolean connected){
+        this.connected = connected;
+    }
+    public boolean isConnected(){
+        return this.connected;
     }
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;

@@ -73,14 +73,22 @@ public class GameController  {
                 this.model.setEnd(true);
                 calculateWinner();
             } else {            // going to next Player
-                if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
-                    this.model.setCurrentPlayer(this.model.getPlayers().get(0));
-                else
-                    this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+                switchCurrentPlayer(indexCurrentPlayer);
+                // checking if the player is associated to a connected client
+                while(!this.model.getCurrentPlayer().isConnected()) {
+                    indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
+                    switchCurrentPlayer(indexCurrentPlayer);
+                }
                 this.model.getBoard().setBorderTiles();
                 this.model.newTurn();
             }
         }
+    }
+    private void switchCurrentPlayer(int indexCurrentPlayer){
+        if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
+            this.model.setCurrentPlayer(this.model.getPlayers().get(0));
+        else
+            this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna
