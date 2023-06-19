@@ -283,10 +283,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void newTurn(Player currentPlayer) {
-
+        if(isMine()) {
             if (!this.model.isLastTurn()) {
                 try {
-                    for(Client c: this.connectedClients.keySet()) {
+                    for (Client c : this.connectedClients.keySet()) {
                         c.newTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
                     }
                 } catch (RemoteException exception) {
@@ -295,13 +295,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
             } else {
                 try {
-                   for(Client c : this.connectedClients.keySet())
-                       c.lastTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
+                    for (Client c : this.connectedClients.keySet())
+                        c.lastTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
                 } catch (RemoteException exception) {
                     System.err.println("Unable to start the last turn:" +
                             exception.getMessage() + ". Skipping the update...");
                 }
             }
+        }
 
 
     }
