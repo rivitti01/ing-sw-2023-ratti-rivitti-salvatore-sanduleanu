@@ -80,8 +80,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             System.out.println("removed client with string value: " + value);
             List<Player> players = this.model.getPlayers();
             for(Player player : players){
-                if(player.getNickname().equals(value))
-                    player.setConnected(false);
+                if(player.getNickname().equals(value)) {
+                    if(value.equals(this.model.getCurrentPlayer().getNickname())) {
+                        player.setConnected(false);
+                        player.reset(this.model.getCommonGoals());
+                        try {
+                            this.controller.nextPlayer();
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    }else{
+                        player.setConnected(false);
+
+                    }
+                }
             }
         } else {
             System.out.println("Client not found: " + c);
@@ -270,7 +283,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if (isMine()) {
+
             if (!this.model.isLastTurn()) {
                 try {
                     for(Client c: this.connectedClients.keySet()) {
@@ -290,7 +303,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
             }
 
-        }
+
     }
     @Override
     public void askOrder() {
