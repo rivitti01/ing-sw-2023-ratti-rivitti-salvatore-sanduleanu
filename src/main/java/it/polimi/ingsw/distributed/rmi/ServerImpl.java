@@ -13,7 +13,9 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
@@ -23,7 +25,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private int numParticipants;
     private boolean gameAlreadyStarted;
     private final ReentrantLock connectionLock;
-    private ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
     private First first;
     private static final int PING_PERIOD = 1000;   // milliseconds
 
@@ -81,8 +83,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             List<Player> players = this.model.getPlayers();
             for(Player player : players){
                 if(player.getNickname().equals(value)) {
+                    player.setConnected(false);
                     if(value.equals(this.model.getCurrentPlayer().getNickname())) {
-                        player.setConnected(false);
                         player.reset(this.model.getCommonGoals());
                         try {
                             this.controller.nextPlayer();
@@ -90,10 +92,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                             throw new RuntimeException(e);
                         }
 
-                    }else{
-                        player.setConnected(false);
-
                     }
+                    return;
                 }
             }
         } else {
@@ -106,30 +106,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                throw new RuntimeException(e);
             }
         }
-        //System.err.println("Closing the game...");
-        //System.exit(1);
     }
-    private void addClientToGame(Client c){
+    private void addClientToGame(Client c) {
         connectedClients.put(c, null);
-        AtomicBoolean running = new AtomicBoolean(true);
-
-        Thread pingThread = new Thread(() -> {
-            while (running.get()){
-                try {
-                    c.ping();
-                    Thread.sleep(PING_PERIOD);
-                } catch (RemoteException e) {
-                    System.err.println("a client has exited the game");
-                    lock.lock();
-                    handleClientDisconnection(c);
-                    lock.unlock();
-                    running.set(false);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            try {
+                c.ping();
+            } catch (RemoteException e) {
+                System.err.println("A client has exited the game");
+                lock.lock();
+                handleClientDisconnection(c);
+                lock.unlock();
+                executorService.shutdown();
             }
-        });
-        pingThread.start();
+        }, 0, PING_PERIOD, TimeUnit.MILLISECONDS);
     }
     @Override
     public void clientConnection(Client c) throws RemoteException {
