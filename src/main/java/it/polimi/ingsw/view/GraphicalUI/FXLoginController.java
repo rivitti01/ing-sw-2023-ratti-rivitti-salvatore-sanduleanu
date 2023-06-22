@@ -26,16 +26,15 @@ public class FXLoginController {
     }*/
 
     public FXLoginController(ViewListener listener, Scene game, FXGameController secondController){
-        this.tempClient=listener;
+        tempClient=listener;
         this.gameScene=game;
         this.gameController=secondController;
     }
 
-    private FXGameController gameController;
-    private Scene gameScene;
-    private ViewListener tempClient;
+    private final ViewListener tempClient;
     private ViewListener client;
-
+    private final FXGameController gameController;
+    private final Scene gameScene;
     private boolean playerNumber;
 
     private final ObservableList<Integer> numberList = FXCollections.observableArrayList(2,3,4);

@@ -4,12 +4,9 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
-
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +15,38 @@ public class FXGraphicalUI implements UI {
 
     public GameView model;
     private static ViewListener listener;
+    private FXLoginController loginController;
+    private FXGameController gameController;
     private int numberPlayers;
     private boolean started;
-    private FXStageLauncher stageLauncher;
 
-    public void launchGUI(){
-        stageLauncher = new FXStageLauncher(listener);
-        stageLauncher.launchStage();
+    public void launchGUI() throws Exception {
+
+        FXMLLoader loginFXML = new FXMLLoader();
+        FXMLLoader gameFXML = new FXMLLoader();
+        loginFXML.setLocation(getClass().getResource("/Login.fxml"));
+        gameFXML.setLocation(getClass().getResource("/Game.fxml"));
+
+        gameController = new FXGameController(listener);
+        gameFXML.setController(gameController);
+
+        Parent gameRoot = gameFXML.load();
+        Scene gameScene = new Scene(gameRoot, 1366, 768);
+
+        loginController = new FXLoginController(listener, gameScene, gameController);
+        loginFXML.setController(loginController);
+
+        FXStageLauncher gameLauncher = new FXStageLauncher();
+        Thread GUIThread = new Thread(){
+
+        };
+
+
     }
 
     @Override
     public void newTurn(boolean b) throws RemoteException {
-        stageLauncher.gameController.newTurn(b);
+        gameController.newTurn(b);
     }
 
     @Override
@@ -54,7 +71,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void lastTurnReached(String nickname) {
-        stageLauncher.gameController.lastTurnReached();
+        gameController.lastTurnReached();
     }
 
 
@@ -63,7 +80,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void printFinalPoints(Map<String, Integer> chart) {
-        stageLauncher.gameController.printFinalPoints(chart);
+        gameController.printFinalPoints(chart);
     }
 
     @Override
@@ -73,31 +90,31 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void printGame(GameView gameView) {
-        stageLauncher.gameController.printGame(gameView);
+        gameController.printGame(gameView);
     }
 
     @Override
     public void lastTurn(boolean playing) {
-        stageLauncher.gameController.lastTurn(playing);
+        gameController.lastTurn(playing);
     }
 
     @Override
-    public void gameStarted(boolean nickname) { stageLauncher.gameController.startGame();}
+    public void gameStarted(boolean nickname) { gameController.startGame();}
 
 
     public void waitingTurn() throws RemoteException{
-        stageLauncher.gameController.waitingTurn();
+        gameController.waitingTurn();
     }
 
     public void askNumber() throws RemoteException{
         System.out.println("d");
-        stageLauncher.loginController.setPlayerNumber(true);
+        loginController.setPlayerNumber(true);
     }
     public void chooseAction() throws RemoteException{
         //
     }
     public void printChat(ChatView chatView) throws RemoteException {
-        stageLauncher.gameController.printChat(chatView);
+        gameController.printChat(chatView);
     }
     public void askNickName() throws RemoteException{
         //
