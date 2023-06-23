@@ -5,7 +5,9 @@ import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
+import it.polimi.ingsw.view.GraphicalUI.FXGraphicalUI;
 import it.polimi.ingsw.view.TextualUI;
+import it.polimi.ingsw.view.UI;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClientSocketImpl implements Client, ViewListener {
-    private TextualUI view = new TextualUI();
+    private UI view;
     private Socket socket;
     private int port;
     private String ip;
@@ -26,20 +28,27 @@ public class ClientSocketImpl implements Client, ViewListener {
     boolean lastTurn = false;
     boolean gameStarted = false;
 
-    public ClientSocketImpl(String ip, int port){
+    public ClientSocketImpl(String ip, int port,boolean gui){
         this.ip = ip;
         this.port = port;
+        if (gui) this.view = new FXGraphicalUI();
+        else this.view = new TextualUI();
         this.view.addListener(this);
     }
-    public void start() throws IOException, ClassNotFoundException {
+    public void start() throws IOException {
         socket = new Socket(ip,port);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
 
         while (true) {
-            Object object = new Object();
-            object = in.readObject();
-            analyzeMessage(object);
+            try {
+                Object object = new Object();
+                object = in.readObject();
+                analyzeMessage(object);
+            }catch (IOException | ClassNotFoundException e){
+                System.err.println("Something went wrong with the connection to the server!\nExiting the game...");
+                System.exit(1);
+            }
         }
 
     }

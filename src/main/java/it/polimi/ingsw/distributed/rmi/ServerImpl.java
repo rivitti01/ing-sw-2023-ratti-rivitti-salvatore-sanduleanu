@@ -247,6 +247,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             System.out.println(" RECONNECTION ");
             c.warning(Warnings.RECONNECTION);
 
+            for (Player player : this.model.getPlayers()) {
+                if (player.getNickname().equals(nickName)) {
+                    player.setConnected(true);
+                }
+            }
+
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
             if (connectedClients.size() == 2) {
@@ -331,11 +337,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     //************************      MODEL LISTENER METHODS      ************************************************
     @Override
     public void printGame() {
-        for (Client c : connectedClients.keySet()) {
+        if (isMine()) {
+            for (Client c : connectedClients.keySet()) {
                 try {
                     Player p = null;
-                    for(int i=0; i<model.getPlayers().size(); i++){
-                        if(model.getPlayers().get(i).getNickname().equals(connectedClients.get(c))) {
+                    for (int i = 0; i < model.getPlayers().size(); i++) {
+                        if (model.getPlayers().get(i).getNickname().equals(connectedClients.get(c))) {
                             p = model.getPlayers().get(i);
                             break;
                         }
@@ -346,6 +353,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     System.err.println("Unable to print the game:" +
                             e.getMessage() + ". Skipping the update...");
                 }
+            }
         }
     }
 

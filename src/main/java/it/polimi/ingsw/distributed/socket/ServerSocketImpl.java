@@ -22,7 +22,6 @@ public class ServerSocketImpl {
     private Map<Integer,ServerHandler> clients;
     private final int port;
     private final Object lock;
-    private Boolean isOperationComplete;
     private First first;
 
     public ServerSocketImpl(int port, Game model, GameController controller, First first) {
@@ -39,7 +38,7 @@ public class ServerSocketImpl {
 
 
         while (true){
-            System.out.println("Aspetto connessione");
+            System.out.println("Socket: Aspetto connessione");
             Socket socket = serverSocket.accept();
             ServerHandler serverHandler;
             if (clients.size() == 0 && first.getFirst()){
@@ -51,12 +50,6 @@ public class ServerSocketImpl {
             clients.put(clients.size(), serverHandler);
             Thread thread = new Thread(serverHandler);
             thread.start();
-            if (clients.size() == 4){
-                while (true){
-
-                }
-            }
-
         }
     }
 }

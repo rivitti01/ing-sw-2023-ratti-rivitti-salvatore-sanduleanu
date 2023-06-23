@@ -99,20 +99,44 @@ public class GameController  {
             } else {            // going to next Player
                 switchCurrentPlayer(indexCurrentPlayer);
                 // checking if the player is associated to a connected client
-                while(!this.model.getCurrentPlayer().isConnected()) {
-                    indexCurrentPlayer = this.model.getPlayers().indexOf(this.model.getCurrentPlayer());
-                    switchCurrentPlayer(indexCurrentPlayer);
-                }
+
                 this.model.getBoard().setBorderTiles();
                 this.model.newTurn();
             }
         }
     }
     private void switchCurrentPlayer(int indexCurrentPlayer){
-        if (indexCurrentPlayer == this.model.getPlayers().size() - 1)
-            this.model.setCurrentPlayer(this.model.getPlayers().get(0));
-        else
-            this.model.setCurrentPlayer(this.model.getPlayers().get(indexCurrentPlayer + 1));
+        int connectedPlayers = 0;
+        for (int i = 0; i < this.model.getPlayers().size(); i++) {
+            if (this.model.getPlayers().get(i).isConnected()) {
+                connectedPlayers++;
+            }
+        }
+        if(connectedPlayers == 1){
+            //gestire il caso in cui rimane un solo giocatore connesso
+        }
+        if (indexCurrentPlayer == this.model.getPlayers().size() - 1) {
+            for (int i = 0; i < this.model.getPlayers().size(); i++) {
+                if (this.model.getPlayers().get(i).isConnected()) {
+                    this.model.setCurrentPlayer(this.model.getPlayers().get(i));
+                    return;
+                }
+            }
+            //this.model.setCurrentPlayer(this.model.getPlayers().get(0));
+        }else{
+            for (int i = indexCurrentPlayer + 1; i < this.model.getPlayers().size(); i++) {
+                if (this.model.getPlayers().get(i).isConnected()) {
+                    this.model.setCurrentPlayer(this.model.getPlayers().get(i));
+                    return;
+                }
+            }
+            for (int i = 0; i < this.model.getPlayers().size(); i++) {
+                if (this.model.getPlayers().get(i).isConnected() && i != indexCurrentPlayer) {
+                    this.model.setCurrentPlayer(this.model.getPlayers().get(i));
+                    return;
+                }
+            }
+        }
     }
     public void setChosenColumn(int c){
         //controllo sulla colonna

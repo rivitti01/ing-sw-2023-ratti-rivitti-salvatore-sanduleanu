@@ -175,6 +175,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     @Override
     public void run()  {
+        System.out.println("Client running");
         try {
             this.stub.clientConnection(this);
         } catch (RemoteException | InterruptedException e) {

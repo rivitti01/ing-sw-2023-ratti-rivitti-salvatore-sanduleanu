@@ -182,6 +182,9 @@ public class Game {
             listener = new ArrayList<>();
         listener.add(l);
     }
+    public void remove(ModelListener l){
+        listener.remove(l);
+    }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
             listener.forEach(x->x.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer()));//listener.warning(Warnings.INVALID_ACTION, this.getCurrentPlayer());

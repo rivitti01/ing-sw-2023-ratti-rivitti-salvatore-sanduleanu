@@ -215,6 +215,7 @@ public class TextualUI implements UI {
             case NO_PLAYERS_LEFT ->System.out.println("NO PLAYERS LEFT. YOU WON!");
             case RECONNECTION -> {
                 this.currentState = CurrentState.WAITING_TURN;
+                System.out.println("You have been disconnected. Please wait for your turn");
                 openScanner();
             }
             case INVALID_RECONNECTION_NICKNAME -> {
@@ -412,7 +413,6 @@ public class TextualUI implements UI {
 
     public void openScanner(){
         Thread inputThread = new Thread(() -> {
-            System.out.println(" prova ");
             Scanner scanner = new Scanner(System.in);
             CurrentState oldState = null;
             while (true) {

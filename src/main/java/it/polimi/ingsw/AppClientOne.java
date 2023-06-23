@@ -44,7 +44,7 @@ public class AppClientOne {
         while (!ok) {
             System.out.println("choose:\n[R] RMI Server\n[S] Socket Server");
             serverType = scanner.nextLine();
-            if (!serverType.equals("R") && !serverType.equals("S"))
+            if (!serverType.toUpperCase().equals("R") && !serverType.toUpperCase().equals("S"))
                 System.out.println("ERRORE: comando sconosciuto!");
             else
                 ok = true;
@@ -55,14 +55,14 @@ public class AppClientOne {
         while (!ok) {
             System.out.println("choose:\n[G] GUI\n[T] TUI");
             uiType = scanner.nextLine();
-            if (!uiType.equals("G") && !uiType.equals("T"))
+            if (!uiType.toUpperCase().equals("G") && !uiType.toUpperCase().equals("T"))
                 System.out.println("ERRORE: comando sconosciuto!");
             else
                 ok = true;
         }
 
-        if (serverType.equals("R")) {
-            if (uiType.equals("G")) {     // RMI GUI
+        if (serverType.toUpperCase().equals("R")) {
+            if (uiType.toUpperCase().equals("G")) {     // RMI GUI
                 try {
                     // Obtain a reference to the remote object
                     Registry registry = LocateRegistry.getRegistry();
@@ -85,12 +85,12 @@ public class AppClientOne {
                     e.printStackTrace();
                 }
             }
-        } else {
+        }else {
             if (uiType.equals("G")) {   // SOCKET GUI
-
-
+                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000, true);
+                client.start();
             } else {                    // SOCKET TUI
-                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000);
+                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000, false);
                 client.start();
             }
         }

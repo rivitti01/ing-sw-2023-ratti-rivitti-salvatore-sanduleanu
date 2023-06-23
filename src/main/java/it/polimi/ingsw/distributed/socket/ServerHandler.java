@@ -50,13 +50,27 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
+            //CheckConnection checkConnection = new CheckConnection(in, out,1000);
+            //Thread checkConnectionThread = new Thread(checkConnection);
+            //checkConnectionThread.start();
+
             setUp();
+
 
             while (true) {
                 analyzeMessage(in.readObject());
             }
-        } catch (IOException | ClassNotFoundException  e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.err.println("Client "+ this.socket.getPort()+" disconnected");
+            try {
+                disconnectedClient();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            Thread.currentThread().interrupt();
+        }
+        catch (ClassNotFoundException  e) {
+            System.err.println("Class not found");
         }
     }
     private void analyzeMessage(Object response) throws IOException {
@@ -90,7 +104,8 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
 
     private void setUp() throws IOException, ClassNotFoundException {
-        if (creator){
+
+        if (creator) {
             out.writeObject(Warnings.SET_NUMBER_PLAYERS);
             out.reset();
             out.flush();
@@ -98,11 +113,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 waitAndSetNumberPlayers();
                 this.lock.notifyAll();
             }
-        }else {
+        } else {
             out.writeObject(Warnings.WAIT);
             out.reset();
             out.flush();
-            if (controller.getNumberPlayers() == 0){
+            if (controller.getNumberPlayers() == 0) {
                 System.out.println(Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
                 synchronized (this.lock) {
                     System.out.println(Thread.currentThread().getName() + " is not waiting anymore");
@@ -116,15 +131,46 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         waitAndSetNickname();
     }
     private void waitAndSetNickname() throws IOException, ClassNotFoundException {
+
         String nickname = (String) in.readObject();
-        System.out.println(socket.getPort()+": Nickname = "+nickname);
-        if (nickname !=null){
-            if(controller.setPlayerNickname(nickname)){
+        System.out.println(socket.getPort() + ": Nickname = " + nickname);
+        if (nickname != null) {
+            if (model.isStart()) {
+                if (playerIsBack(nickname)){
+
+                    for (Player player : model.getPlayers()){
+                        if (player.getNickname().equals(nickname)){
+                            player.setConnected(true);
+                        }
+                    }
+
+                    System.out.println("Client" + socket.getPort() + " "+ nickname + " is back");
+                    this.nickname = nickname;
+                    out.writeObject(Warnings.RECONNECTION);
+                    out.reset();
+                    out.flush();
+                    printGame();
+                    return;
+                }
+                for (Player player : model.getPlayers()){
+                    if(!player.isConnected()){
+                        out.writeObject(Warnings.INVALID_RECONNECTION_NICKNAME);
+                        out.reset();
+                        out.flush();
+                        return;
+                    }
+                }
+                out.writeObject(Warnings.GAME_ALREADY_STARTED);
+                out.reset();
+                out.flush();
+                socket.close();
+            }
+            if (controller.setPlayerNickname(nickname)) {
                 this.nickname = nickname;
                 out.writeObject(Warnings.OK_JOINER);
                 out.reset();
                 out.flush();
-                if (controller.getNumberPlayers()>1 && controller.getNumberPlayers()<5 && controller.getNumberPlayers()==controller.getPlayers().size() && !model.isStart()){//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
+                if (controller.getNumberPlayers() > 1 && controller.getNumberPlayers() < 5 && controller.getNumberPlayers() == controller.getPlayers().size() && !model.isStart()) {//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
                     controller.initializeModel();
                 }
             } else {
@@ -134,7 +180,15 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 waitAndSetNickname();
             }
         }
-        System.out.println("Client"+socket.getPort()+ ": nome assegnato -> "+nickname);
+        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + nickname);
+    }
+    private boolean playerIsBack(String nickname){
+        for (Player player : model.getPlayers()){
+            if (player.getNickname().equals(nickname) && !player.isConnected()){
+                return true;
+            }
+        }
+        return false;
     }
     private void waitAndSetNumberPlayers() throws IOException, ClassNotFoundException {
         int numberPlayers = (int) in.readObject();
@@ -163,6 +217,15 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             }
         }
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
+    }
+    private void disconnectedClient() throws RemoteException {
+        for (Player player : model.getPlayers()){
+            if (player.getNickname().equals(nickname)){
+                player.setConnected(false);
+                model.remove(this);
+                controller.nextPlayer();
+            }
+        }
     }
 
     @Override
@@ -368,6 +431,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void endsSelection() throws RemoteException {
 
     }
+
 
 
 
