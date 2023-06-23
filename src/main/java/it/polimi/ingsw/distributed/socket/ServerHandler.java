@@ -2,6 +2,7 @@ package it.polimi.ingsw.distributed.socket;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.Client;
+import it.polimi.ingsw.distributed.First;
 import it.polimi.ingsw.distributed.Server;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.GameView;
@@ -29,12 +30,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private ObjectOutputStream out;
     private boolean creator;
     private state currentState;
-    private final Object lock;
+    private final First lock;
     private Condition condition;
     public enum state{
         COORD, COLUMN, ORDER
     }
-    public ServerHandler(Socket socket, Game model, GameController controller,boolean creator, Object lock){
+    public ServerHandler(Socket socket, Game model, GameController controller,boolean creator, First lock){
         this.socket = socket;
         this.model = model;
         this.controller = controller;
@@ -50,9 +51,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
-            //CheckConnection checkConnection = new CheckConnection(in, out,1000);
-            //Thread checkConnectionThread = new Thread(checkConnection);
-            //checkConnectionThread.start();
 
             setUp();
 
@@ -223,7 +221,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             if (player.getNickname().equals(nickname)){
                 player.setConnected(false);
                 model.remove(this);
-                controller.nextPlayer();
+                if (model.getCurrentPlayer().getNickname().equals(nickname)){
+                    controller.nextPlayer();
+                }
             }
         }
     }

@@ -43,9 +43,9 @@ public class ServerSocketImpl {
             ServerHandler serverHandler;
             if (clients.size() == 0 && first.getFirst()){
                 first.setFirst(false);
-                serverHandler = new ServerHandler(socket,model,controller,true,lock);
+                serverHandler = new ServerHandler(socket,model,controller,true,first);
             }else {
-                serverHandler = new ServerHandler(socket, model, controller, false, lock);
+                serverHandler = new ServerHandler(socket, model, controller, false, first);
             }
             clients.put(clients.size(), serverHandler);
             Thread thread = new Thread(serverHandler);

@@ -190,17 +190,23 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 if (!this.gameAlreadyStarted) {
                     canPlay = true;
                     addClientToGame(c);
-                    if (connectedClients.size() == 1 && first.getFirst()) {
-                        first.setFirst(false);
-                        try {
-                            c.askNumberParticipants();
-                        } catch (RemoteException e) {
-                            System.err.println("Unable to ask the number of participants the client: "
-                                    + e.getMessage() + ". Skipping the update...");
+                    synchronized (first) {
+                        if (connectedClients.size() == 1 && first.getFirst()) {
+                            first.setFirst(false);
+                            try {
+                                c.askNumberParticipants();
+                            } catch (RemoteException e) {
+                                System.err.println("Unable to ask the number of participants the client: "
+                                        + e.getMessage() + ". Skipping the update...");
+                            }
                         }
-                    } else if (this.connectedClients.size() == this.numParticipants) {
+                        first.notifyAll();
+                    }
+
+                    if (this.connectedClients.size() == this.numParticipants) {
                         this.gameAlreadyStarted = true;
                     }
+
                 } else {
                     try {
                         c.warning(Warnings.GAME_ALREADY_STARTED);
