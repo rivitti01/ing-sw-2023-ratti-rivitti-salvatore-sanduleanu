@@ -4,45 +4,37 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
 public class FXGraphicalUI implements UI {
-
-    public GameView model;
     private static ViewListener listener;
-    private FXLoginController loginController;
-    private FXGameController gameController;
-    private int numberPlayers;
+    private static FXLoginController loginController = null;
+    private static FXGameController gameController = null;
+    //private int numberPlayers;
     private boolean started;
 
     public void launchGUI() throws Exception {
-
-        FXMLLoader loginFXML = new FXMLLoader();
-        FXMLLoader gameFXML = new FXMLLoader();
-        loginFXML.setLocation(getClass().getResource("/Login.fxml"));
-        gameFXML.setLocation(getClass().getResource("/Game.fxml"));
-
-        gameController = new FXGameController(listener);
-        gameFXML.setController(gameController);
-
-        Parent gameRoot = gameFXML.load();
-        Scene gameScene = new Scene(gameRoot, 1366, 768);
-
-        loginController = new FXLoginController(listener, gameScene, gameController);
-        loginFXML.setController(loginController);
-
-        FXStageLauncher gameLauncher = new FXStageLauncher();
-        Thread GUIThread = new Thread(){
-
-        };
-
-
+        GUIRunnable gr = new GUIRunnable(listener);
+        Thread GUIThread = new Thread(gr);
+        GUIThread.start();
     }
+
+    private class GUIRunnable implements Runnable{
+
+        private final ViewListener clientListener;
+        public GUIRunnable(ViewListener l){
+            clientListener = l;
+        }
+        public void run(){
+            FXStageLauncher gameLauncher = new FXStageLauncher();
+            gameLauncher.addListener(clientListener);
+            gameLauncher.launchStage();
+        }
+    }
+
+
 
     @Override
     public void newTurn(boolean b) throws RemoteException {
@@ -85,7 +77,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void addListener(ViewListener l) {
-        this.listener=l;
+        FXGraphicalUI.listener=l;
     }
 
     @Override
@@ -107,6 +99,17 @@ public class FXGraphicalUI implements UI {
     }
 
     public void askNumber() throws RemoteException{
+        while(loginController==null)
+        {
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
         System.out.println("d");
         loginController.setPlayerNumber(true);
     }
@@ -117,7 +120,19 @@ public class FXGraphicalUI implements UI {
         gameController.printChat(chatView);
     }
     public void askNickName() throws RemoteException{
-        //
+
+        while(loginController==null)
+        {
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
     }
     public void askExistingNickname() {
 
@@ -128,5 +143,10 @@ public class FXGraphicalUI implements UI {
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){}
 
     public void printChosenTiles(List<Tile> chosenTiles, String nickname){}
+
+    public static void setControllers(FXLoginController controller1, FXGameController controller2){
+        FXGraphicalUI.loginController=controller1;
+        FXGraphicalUI.gameController=controller2;
+    }
 
 }

@@ -17,7 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,10 +24,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static it.polimi.ingsw.util.Costants.*;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-
 public class FXGameController {
 
     public FXGameController(ViewListener listener) {
@@ -37,7 +33,7 @@ public class FXGameController {
 
 
 
-    private ViewListener tempClient;
+    private final ViewListener tempClient;
     private ViewListener client;
 
     public GameView model;

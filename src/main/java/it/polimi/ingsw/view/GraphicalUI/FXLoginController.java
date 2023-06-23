@@ -16,7 +16,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
 import java.rmi.RemoteException;
 
 public class FXLoginController {
@@ -27,12 +26,12 @@ public class FXLoginController {
 
     public FXLoginController(ViewListener listener, Scene game, FXGameController secondController){
         tempClient=listener;
-        this.gameScene=game;
+        gameScene= game;
         this.gameController=secondController;
     }
 
     private final ViewListener tempClient;
-    private ViewListener client;
+    private static ViewListener client;
     private final FXGameController gameController;
     private final Scene gameScene;
     private boolean playerNumber;
@@ -90,7 +89,7 @@ public class FXLoginController {
     }
 
     public void addListener(ViewListener lis) {
-        this.client = lis;
+        FXLoginController.client = lis;
     }
 
 
