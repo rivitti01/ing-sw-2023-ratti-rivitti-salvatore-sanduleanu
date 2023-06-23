@@ -4,32 +4,41 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
 public class FXGraphicalUI implements UI {
-
-    public GameView model;
     private static ViewListener listener;
-    private int numberPlayers;
+    private static FXLoginController loginController = null;
+    private static FXGameController gameController = null;
+    //private int numberPlayers;
     private boolean started;
-    private FXStageLauncher stageLauncher;
 
-    public void launchGUI(){
-        stageLauncher = new FXStageLauncher(listener);
-        stageLauncher.launchStage();
+    public void launchGUI() throws Exception {
+        GUIRunnable gr = new GUIRunnable(listener);
+        Thread GUIThread = new Thread(gr);
+        GUIThread.start();
     }
+
+    private class GUIRunnable implements Runnable{
+
+        private final ViewListener clientListener;
+        public GUIRunnable(ViewListener l){
+            clientListener = l;
+        }
+        public void run(){
+            FXStageLauncher gameLauncher = new FXStageLauncher();
+            gameLauncher.addListener(clientListener);
+            gameLauncher.launchStage();
+        }
+    }
+
+
 
     @Override
     public void newTurn(boolean b) throws RemoteException {
-        stageLauncher.gameController.newTurn(b);
+        gameController.newTurn(b);
     }
 
     @Override
@@ -54,7 +63,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void lastTurnReached(String nickname) {
-        stageLauncher.gameController.lastTurnReached();
+        gameController.lastTurnReached();
     }
 
 
@@ -63,44 +72,67 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void printFinalPoints(Map<String, Integer> chart) {
-        stageLauncher.gameController.printFinalPoints(chart);
+        gameController.printFinalPoints(chart);
     }
 
     @Override
     public void addListener(ViewListener l) {
-        this.listener=l;
+        FXGraphicalUI.listener=l;
     }
 
     @Override
     public void printGame(GameView gameView) {
-        stageLauncher.gameController.printGame(gameView);
+        gameController.printGame(gameView);
     }
 
     @Override
     public void lastTurn(boolean playing) {
-        stageLauncher.gameController.lastTurn(playing);
+        gameController.lastTurn(playing);
     }
 
     @Override
-    public void gameStarted(boolean nickname) { stageLauncher.gameController.startGame();}
+    public void gameStarted(boolean nickname) { gameController.startGame();}
 
 
     public void waitingTurn() throws RemoteException{
-        stageLauncher.gameController.waitingTurn();
+        gameController.waitingTurn();
     }
 
     public void askNumber() throws RemoteException{
+        while(loginController==null)
+        {
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
         System.out.println("d");
-        stageLauncher.loginController.setPlayerNumber(true);
+        loginController.setPlayerNumber(true);
     }
     public void chooseAction() throws RemoteException{
         //
     }
     public void printChat(ChatView chatView) throws RemoteException {
-        stageLauncher.gameController.printChat(chatView);
+        gameController.printChat(chatView);
     }
     public void askNickName() throws RemoteException{
-        //
+
+        while(loginController==null)
+        {
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
     }
     public void askExistingNickname() {
 
@@ -111,5 +143,10 @@ public class FXGraphicalUI implements UI {
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){}
 
     public void printChosenTiles(List<Tile> chosenTiles, String nickname){}
+
+    public static void setControllers(FXLoginController controller1, FXGameController controller2){
+        FXGraphicalUI.loginController=controller1;
+        FXGraphicalUI.gameController=controller2;
+    }
 
 }

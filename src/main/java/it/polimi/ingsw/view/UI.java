@@ -11,50 +11,50 @@ import java.util.Map;
 public interface UI {
 
 
-    public abstract void newTurn(boolean b) throws RemoteException;
+    void newTurn(boolean b) throws RemoteException;
 
 
-    public abstract void askOrder();
+    void askOrder();
 
 
-    public abstract void askColumn();
+    void askColumn();
 
 
-    public abstract void chooseAction() throws RemoteException;
+    void chooseAction() throws RemoteException;
 
-    public abstract void askNumber() throws RemoteException;
+    void askNumber() throws RemoteException;
 
-    public abstract void askNickName() throws RemoteException;
+    void askNickName() throws RemoteException;
 
-    public abstract void warning(Warnings e) throws RemoteException;
-
-
-    public abstract void lastTurnReached(String nickname);
+    void warning(Warnings e) throws RemoteException;
 
 
-    public abstract void printBoard(Board b);
-
-    public abstract void printShelves(Map<String, Shelf> playerShelves);
+    void lastTurnReached(String nickname);
 
 
-    public abstract void printPersonalGoalShelf(PersonalGoalCard personalGoalCard);
+    void printBoard(Board b);
+
+    void printShelves(Map<String, Shelf> playerShelves);
 
 
-    public abstract void printChosenTiles(List<Tile> chosenTiles, String nickname);
+    void printPersonalGoalShelf(PersonalGoalCard personalGoalCard);
 
 
-    public abstract void printFinalPoints(Map<String, Integer> chart);
-
-    public abstract void addListener(ViewListener l);
+    void printChosenTiles(List<Tile> chosenTiles, String nickname);
 
 
-    public abstract void printGame(GameView gameView);
+    void printFinalPoints(Map<String, Integer> chart);
 
-    public abstract void printChat(ChatView chatView) throws RemoteException;
+    void addListener(ViewListener l);
 
-    public abstract void lastTurn(boolean currentPlayer);
 
-    public abstract void waitingTurn() throws RemoteException;
+    void printGame(GameView gameView);
+
+    void printChat(ChatView chatView) throws RemoteException;
+
+    void lastTurn(boolean currentPlayer);
+
+    void waitingTurn() throws RemoteException;
 
     void gameStarted(boolean nickname);
 

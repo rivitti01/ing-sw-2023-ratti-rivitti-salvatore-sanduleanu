@@ -32,19 +32,31 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         }else
             this.view = new TextualUI();
         this.view.addListener(this);
-        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        try {
+            if (view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public ClientImpl(Server s, int port) throws RemoteException {
         super(port);
         this.stub = s;
         this.view.addListener(this);
-        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        try {
+            if (view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public ClientImpl(Server s, int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         this.stub = s;
         this.view.addListener(this);
-        if(view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        try {
+            if (view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void checkServer(){
