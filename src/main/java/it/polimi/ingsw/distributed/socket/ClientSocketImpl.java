@@ -34,6 +34,11 @@ public class ClientSocketImpl implements Client, ViewListener {
         if (gui) this.view = new FXGraphicalUI();
         else this.view = new TextualUI();
         this.view.addListener(this);
+        try {
+            if (view instanceof FXGraphicalUI) ((FXGraphicalUI) view).launchGUI();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public void start() throws IOException {
         socket = new Socket(ip,port);

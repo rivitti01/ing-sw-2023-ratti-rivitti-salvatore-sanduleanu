@@ -14,7 +14,7 @@ public class AppClientRMI {
             // Obtain a reference to the remote object
             Registry registry = LocateRegistry.getRegistry();
             Server server = (Server) registry.lookup("server");
-            ClientImpl client = new ClientImpl(server, false);
+            ClientImpl client = new ClientImpl(server, true);
             client.run();
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());

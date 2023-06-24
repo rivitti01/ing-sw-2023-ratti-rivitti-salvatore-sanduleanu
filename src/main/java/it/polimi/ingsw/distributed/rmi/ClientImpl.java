@@ -164,9 +164,6 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         this.view.chooseAction();
     }
 
-
-
-
     @Override
     public void askNickname() throws RemoteException {
         this.view.askNickName();

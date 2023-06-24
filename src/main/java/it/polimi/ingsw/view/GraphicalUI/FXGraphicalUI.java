@@ -34,8 +34,6 @@ public class FXGraphicalUI implements UI {
         }
     }
 
-
-
     @Override
     public void newTurn(boolean b) throws RemoteException {
         gameController.newTurn(b);
@@ -66,10 +64,6 @@ public class FXGraphicalUI implements UI {
         gameController.lastTurnReached();
     }
 
-
-
-
-
     @Override
     public void printFinalPoints(Map<String, Integer> chart) {
         gameController.printFinalPoints(chart);
@@ -93,25 +87,23 @@ public class FXGraphicalUI implements UI {
     @Override
     public void gameStarted(boolean nickname) { gameController.startGame();}
 
-
     public void waitingTurn() throws RemoteException{
         gameController.waitingTurn();
     }
 
     public void askNumber() throws RemoteException{
-        while(loginController==null)
-        {
-            try
-            {
-                Thread.sleep(500);
-            }
-            catch(InterruptedException ex)
-            {
-                Thread.currentThread().interrupt();
+        synchronized (listener) {
+        while(loginController==null) {
+            try {
+                listener.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
-        System.out.println("d");
-        loginController.setPlayerNumber(true);
+            System.out.println("d");
+            loginController.setPlayerNumber(true);
+            listener.notifyAll();
+        }
     }
     public void chooseAction() throws RemoteException{
         //
@@ -120,19 +112,16 @@ public class FXGraphicalUI implements UI {
         gameController.printChat(chatView);
     }
     public void askNickName() throws RemoteException{
-
-        while(loginController==null)
-        {
-            try
-            {
-                Thread.sleep(500);
+        synchronized (listener){
+            while(loginController==null) {
+                try {
+                    listener.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch(InterruptedException ex)
-            {
-                Thread.currentThread().interrupt();
-            }
+            listener.notifyAll();
         }
-
     }
     public void askExistingNickname() {
 
