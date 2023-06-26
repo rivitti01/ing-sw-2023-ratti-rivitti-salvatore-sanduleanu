@@ -42,20 +42,20 @@
       <version>5.9.2</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.openjfx</groupId>
-          <artifactId>javafx-graphics</artifactId>
-          <version>19.0.2</version>
-      </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>19.0.2.1</version>
+    </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>19.0.2</version>
+      <version>19.0.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-swing</artifactId>
-      <version>19</version>
+      <version>19.0.2.1</version>
     </dependency>
   </dependencies>
 

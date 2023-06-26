@@ -1,22 +1,26 @@
 package it.polimi.ingsw.view.GraphicalUI;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.CurrentState;
 import it.polimi.ingsw.util.ViewListener;
-import it.polimi.ingsw.util.Warnings;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.ColorAdjust;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -38,13 +42,13 @@ public class FXGameController {
 
     public GameView model;
     private StringBuilder fieldContent;
-    private Stack<Node> chosenTiles = new Stack<>();
-    private int tileCount;
-    private boolean columnChosen;
     private TurnState turn;
+    private CurrentState currentState;
     private String playerNick;
     boolean started;
 
+
+    Node[][] tmpMatrix;
     private List <PlayerObjects> playersObjects = new ArrayList<>(1);
     private BufferedImage[] tileImages = new BufferedImage[12];
     private Node[][] playerMatrix = new Node[6][5];
@@ -57,6 +61,7 @@ public class FXGameController {
     public void initialize() {
         client = tempClient;
         loadTileImages(tileImages);
+        numberBox.setItems(numberList);
         chatArea.setText("Start the message with @nickname to send a message to a specific player.");
     }
 
@@ -76,6 +81,9 @@ public class FXGameController {
 
     @FXML
     private TextField chatField;
+
+    @FXML
+    private Label chatErrorLabel;
 
     @FXML
     private ImageView firstCommonView;
@@ -133,6 +141,14 @@ public class FXGameController {
     @FXML
     private Label thirdPoints;
 
+    @FXML
+    private ImageView firstChosenTile;
+    @FXML
+    private ImageView secondChosenTile;
+    @FXML
+    private ImageView thirdChosenTile;
+
+
 
     @FXML
     void sendMessage(KeyEvent event) {
@@ -147,11 +163,10 @@ public class FXGameController {
 
     @FXML
     void chosenColumn(MouseEvent event) {
-        if (turn == TurnState.PLAYER && tileCount > 0 && tileCount < 4) {
+        if (turn == TurnState.PLAYER && (currentState == CurrentState.CHOOSING_COLUMN || currentState == CurrentState.CHOOSING_ACTION)) {
             try {
                 int offsetX = (GridPane.getColumnIndex((Node) event.getSource()) - 1) / 2;
                 client.columnSetting(GridPane.getColumnIndex((Node) event.getSource()) - offsetX - 1);
-                columnChosen = true;
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -160,7 +175,7 @@ public class FXGameController {
 
     @FXML
     void chosenTile(MouseEvent event) {
-        if (turn == TurnState.PLAYER && tileCount < 3 && !columnChosen) {
+        if (turn == TurnState.PLAYER && currentState!=CurrentState.CHOOSING_COLUMN) {
             try {
                 int[] coordinates = new int[2];
                 int offsetX = (GridPane.getRowIndex((Node) event.getSource()) - 1) / 2;
@@ -168,30 +183,40 @@ public class FXGameController {
                 coordinates[0] = (GridPane.getColumnIndex((Node) event.getSource()) - offsetX - 1);
                 coordinates[1] = (GridPane.getRowIndex((Node) event.getSource()) - offsetY - 1);
                 this.client.checkingCoordinates(coordinates);
-                chosenTiles.add((Node)event.getSource());
-                tileCount++;
-                ColorAdjust chosenEffect = new ColorAdjust(0, 0.2, 0.2, 0.1);
-                ((ImageView) (event.getSource())).setEffect(chosenEffect);
             } catch (InputMismatchException | RemoteException e1) {
                 if (e1 instanceof RemoteException)
                     ((RemoteException) e1).printStackTrace();
             }
         }
+    }
 
-        if (turn == TurnState.PLAYER && tileCount < 4 && tileCount > 0 && columnChosen) {
-            ColorAdjust orderEffect = new ColorAdjust(0, 0.6, 0.6, 0.25);
-            for(Node n : chosenTiles){
+    @FXML
+    void chosenOrder(MouseEvent event){
+        ImageView tmp = (ImageView)event.getSource();
+        if(turn == TurnState.PLAYER && currentState!=CurrentState.CHOOSING_ORDER) {
+            if(tmp==firstChosenTile) {
                 try {
-                    if (((Node) (event.getSource())).equals(n)) {
-                        ((ImageView)n).setEffect(orderEffect);
-                        chosenTiles.pop();
-                        client.tileToDrop(chosenTiles.indexOf(n));
-                    }
-                }catch(RemoteException e){
-                    e.printStackTrace();
+                    client.tileToDrop(0);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
                 }
             }
 
+            if(tmp == secondChosenTile){
+                try {
+                    client.tileToDrop(1);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if(tmp == thirdChosenTile){
+                try {
+                    client.tileToDrop(2);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -207,20 +232,27 @@ public class FXGameController {
 
     public void printGame(GameView gameView) {
 
-
-        setGameScene(gameView);
+        if(model==null) setGameScene(gameView);
         printTurnState(gameView.getNickName());
-        if (model.getNameGoals() != gameView.getNameGoals()) printCommonGoals(gameView.getNameGoals());
-        if (model.getBoard() != gameView.getBoard()) printBoard(gameView.getBoard());
-        if (model.getPlayersShelves() != gameView.getPlayersShelves()) printShelves(gameView.getPlayersShelves());
-        if (model.getPersonal() != gameView.getPersonal()) printPersonalGoalShelf(gameView.getPersonal());
-        //printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+        if (model.getNameGoals() != gameView.getNameGoals())
+            printCommonGoals(gameView.getNameGoals());
+        if (model.getBoard() != gameView.getBoard())
+            printBoard(gameView.getBoard());
+        if (model.getPlayersShelves() != gameView.getPlayersShelves())
+            printShelves(gameView.getPlayersShelves());
+        if (model.getPersonal() != gameView.getPersonal())
+            printPersonalGoalShelf(gameView.getPersonal());
+        if (model.getChosenTiles()!=gameView.getChosenTiles() || model.getNickName()!=gameView.getNickName())
+            printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+
         model = gameView;
 
     }
 
     public void printShelves(Map<String, Shelf> playerShelves) {
-        Node[][] tmpMatrix = new Node[6][5];
+
+
+        tmpMatrix = new Node[6][5];
         for (String s : playerShelves.keySet()) {
             if (s.equals(playerNick))
                 tmpMatrix = playerMatrix;
@@ -232,9 +264,13 @@ public class FXGameController {
                 }
             }
             Shelf tmpShelf = playerShelves.get(s);
+
             for (int i = 0; i < SHELF_ROWS; i++) {
                 for (int j = 0; j < SHELF_COLUMN; j++) {
-                    ((ImageView) tmpMatrix[i][j]).setImage(getTileImage(tmpShelf.getTile(i, j)));
+                    int finalI = i;
+                    int finalJ = j;
+                    Platform.runLater(() -> ((ImageView) tmpMatrix[finalI][finalJ]).setImage(getTileImage(tmpShelf.getTile(finalI, finalJ))));
+
                 }
             }
         }
@@ -243,8 +279,11 @@ public class FXGameController {
     private void printBoard(Board b) {
         for (int i = 0; i < b.getSize(); i++)
             for (int j = 0; j < b.getSize(); j++) {
-                if (b.getTile(i, j) != null && b.getTile(i, j).getColor() != null && b.getTile(i, j).getColor() != Color.TRANSPARENT)
-                    ((ImageView) boardMatrix[i][j]).setImage(getTileImage(b.getTile(i, j)));
+                if (b.getTile(i, j) != null && b.getTile(i, j).getColor() != null && b.getTile(i, j).getColor() != Color.TRANSPARENT) {
+                    int finalI = i;
+                    int finalJ = j;
+                    Platform.runLater(() -> ((ImageView) boardMatrix[finalI][finalJ]).setImage(getTileImage(b.getTile(finalI, finalJ))));
+                }
             }
     }
 
@@ -254,7 +293,7 @@ public class FXGameController {
         for (String message : chat.getChat()) {
             fieldContent.append("" + message + "\n");
         }
-        chatArea.setText(fieldContent.toString());
+        Platform.runLater(() -> chatArea.setText(fieldContent.toString()));
     }
 
     private void printPersonalGoalShelf(PersonalGoalCard personal) {
@@ -265,8 +304,8 @@ public class FXGameController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        personalGoal.setImage(SwingFXUtils.toFXImage(tmp, null));
+        BufferedImage finalTmp = tmp;
+        Platform.runLater(() -> personalGoal.setImage(SwingFXUtils.toFXImage(finalTmp, null)));
     }
 
     private void printCommonGoals(String[] goals) {
@@ -278,12 +317,40 @@ public class FXGameController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (i == 0) firstCommonView.setImage(SwingFXUtils.toFXImage(c, null));
-            if (i == 1) secondCommonView.setImage(SwingFXUtils.toFXImage(c, null));
+            BufferedImage finalC = c;
+            if (i == 0) Platform.runLater(() -> firstCommonView.setImage(SwingFXUtils.toFXImage(finalC, null)));
+            if (i == 1) Platform.runLater(() -> secondCommonView.setImage(SwingFXUtils.toFXImage(finalC, null)));
         }
     }
 
-    private void printChosenTiles() {
+    private void printChosenTiles(List<Tile> chosenTiles, String nickname) {
+
+        Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
+
+        if(chosenTiles.size()>=1) {
+            Platform.runLater(() -> {
+                firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
+                firstChosenTile.setVisible(true);
+            });
+        }
+        else Platform.runLater(() -> firstChosenTile.setVisible(false));
+
+        if(chosenTiles.size()>=2){
+            Platform.runLater(() -> {
+                secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
+                secondChosenTile.setVisible(true);
+            });
+        }
+        else Platform.runLater(() -> secondChosenTile.setVisible(false));
+
+        if(chosenTiles.size()>=3){
+            Platform.runLater(() -> {
+                thirdChosenTile.setImage(getTileImage(chosenTiles.get(2)));
+                thirdChosenTile.setVisible(true);
+            });
+        }
+        else Platform.runLater(() -> thirdChosenTile.setVisible(false));
+
     }
 
     private Image getTileImage(Tile tile) {
@@ -330,15 +397,15 @@ public class FXGameController {
     }
 
     public void newTurn(boolean b) {
-
-        //if(x.visible=true){
-
-        //}
-
-        if(b)
+        if(b) {
             turn = TurnState.PLAYER;
-        else turn = TurnState.OPPONENT;
-        tileCount = 0;
+            currentState = CurrentState.CHOOSING_ACTION;
+        }
+
+        else{
+            turn = TurnState.OPPONENT;
+            currentState = CurrentState.WAITING_TURN;
+        }
     }
 
     public void waitingTurn() {
@@ -349,6 +416,9 @@ public class FXGameController {
         turn = TurnState.LAST_PLAYER;
     }
 
+    public void askOrder(){
+        currentState=CurrentState.CHOOSING_ORDER;
+    }
     public void lastTurnReached() {
         turn = TurnState.LAST_ROUND;
     }
@@ -356,31 +426,39 @@ public class FXGameController {
     public void printTurnState(String playingPlayer) {
 
         if(started)
-            printToken(playingPlayer);
+            Platform.runLater(() -> printToken(playingPlayer));
 
 
         switch (turn) {
             case PLAYER:
-                topText.setText("It's your turn");
-                bottomText.setText("Choose available tiles, then click on the column you want to fill");
+                Platform.runLater(() -> {
+                    topText.setText("It's your turn");
+                    bottomText.setText("Choose available tiles, then click on the column you want to fill");
+                });
                 break;
             case OPPONENT:
-                topText.setText("It's " + playingPlayer + "'s turn");
-                bottomText.setText("Wait for your turn");
+                Platform.runLater(() -> {
+                    topText.setText("It's " + playingPlayer + "'s turn");
+                    bottomText.setText("Wait for your turn");
+                });
                 break;
             case LAST_PLAYER:
-                topText.setText("It's your last turn");
-                bottomText.setText("Choose available tiles");
+                Platform.runLater(() -> {
+                    topText.setText("It's your last turn");
+                    bottomText.setText("Choose available tiles");
+                });
                 break;
 
             default:
-                if (!playingPlayer.equals(playerNick)) {
-                    topText.setText("It's " + playingPlayer + "'s turn");
-                    bottomText.setText("Last round starts from now!");
-                } else {
-                    topText.setText("It's your turn");
-                    bottomText.setText("Last round starts from now!");
-                }
+                if (!playingPlayer.equals(playerNick))
+                    Platform.runLater(() -> {
+                        topText.setText("It's " + playingPlayer + "'s turn");
+                        bottomText.setText("Last round starts from now!");
+                    });
+                else Platform.runLater(() -> {
+                        topText.setText("It's your turn");
+                        bottomText.setText("Last round starts from now!");
+                    });
         }
     }
 
@@ -388,14 +466,20 @@ public class FXGameController {
         int winner = -1;
         for (String s : chart.keySet()) {
             if (chart.get(s) > winner) winner = chart.get(s);
-            if (s.equals(playerNick)) bottomText.setText("You scored " + chart.get(s) + " points");
-            else for (int i = 0; i < chart.size() - 1; i++)
-                if (playersObjects.get(i).getName().equals(s)) {
-                    playersObjects.get(i).getLabelPoints().setText("Points: " + chart.get(s));
-                    playersObjects.get(i).getLabelPoints().setVisible(true);
-                }
+            if (s.equals(playerNick))
+                Platform.runLater(() -> bottomText.setText("You scored " + chart.get(s) + " points"));
+            else
+                for (int i = 0; i < chart.size() - 1; i++)
+                    if (playersObjects.get(i).getName().equals(s)) {
+                        int finalI = i;
+                        Platform.runLater(() -> {
+                            playersObjects.get(finalI).getLabelPoints().setText("Points: " + chart.get(s));
+                            playersObjects.get(finalI).getLabelPoints().setVisible(true);
+                        });
+                    }
         }
-        topText.setText("Game has ended. " + winner + " won!");
+        int finalWinner = winner;
+        Platform.runLater(() -> topText.setText("Game has ended. " + finalWinner + " won!"));
     }
 
     protected static class PlayerObjects {
@@ -456,35 +540,25 @@ public class FXGameController {
 
     }
 
-    public void warnings(Warnings e) throws RemoteException {
-        switch (e) {
-            case INVALID_TILE -> bottomText.setText("Wrong tile chosen, try again.");
-            case INVALID_COLUMN -> bottomText.setText("Invalid column, try again");
-            case INVALID_ORDER -> {
-                // System.err.println("AOO metti una posizione sensata.");
-                // askOrder();
-            }
-            case YOUR_TURN ->{}
-        }
-
-    }
-
     public void setPlayerNickname(String playerName){
         this.playerNick=playerName;
     }
 
     public void startGame(){
 
+        System.out.println("fff");
         linkOpponentItems(playersObjects);
         setMatrix(playerShelf, playerMatrix);
         setMatrix(gameBoard, boardMatrix);
-        waitingPane.setVisible(false);
-        gamePane.setVisible(true);
+        Platform.runLater(()->{
+            waitingPane.setVisible(false);
+            gamePane.setVisible(true);
+        });
         started=true;
     }
 
     public void setGameScene(GameView model){
-        playerName.setText(model.getNickName());
+        Platform.runLater(() -> playerName.setText(model.getNickName()));
 
 
         Set<String> playerNameSet = model.getPlayersShelves().keySet();
@@ -516,15 +590,173 @@ public class FXGameController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        BufferedImage finalFirstTmp = firstTmp;
         for (PlayerObjects p : playersObjects)
             if (p.getName().equals(firstPlayer)) {
-                p.getSeat().setImage(SwingFXUtils.toFXImage(firstTmp, null));
+                Platform.runLater(() -> p.getSeat().setImage(SwingFXUtils.toFXImage(finalFirstTmp, null)));
                 started = false;
             }
-
-        if(started)
-            playerToken.setImage(SwingFXUtils.toFXImage(firstTmp, null));
+        if(started) {
+            Platform.runLater(() -> playerToken.setImage(SwingFXUtils.toFXImage(finalFirstTmp, null)));
+        }
 
     }
+
+    public void invalidTile(){
+        Platform.runLater(() -> bottomText.setText("Invalid tile, try again then click on the column you want to fill"));
+    }
+
+    public void maxTiles(){
+        currentState=CurrentState.CHOOSING_COLUMN;
+    }
+
+    public void  chooseNext(){
+        currentState=CurrentState.CHOOSING_ACTION;
+
+    }
+
+    public void invalidColumn(){
+        this.currentState = CurrentState.CHOOSING_COLUMN;
+        Platform.runLater(() -> bottomText.setText("Not a valid column, choose another one"));
+    }
+
+    public void invalidChatMessage(){
+        Platform.runLater(() -> chatErrorLabel.setText("invalid message"));
+    }
+
+    public void invalidReceiver(){
+        Platform.runLater(() -> chatErrorLabel.setText("invalid message receiver"));
+    }
+
+    public void reconnectedMessage(){
+        Platform.runLater(() -> bottomText.setText("You have been disconnected. Please wait for your turn"));
+        currentState=CurrentState.WAITING_TURN;
+    }
+
+    public void noPlayersLeft(){
+        Platform.runLater(() -> topText.setText("No players left"));
+        Platform.runLater(() -> bottomText.setText("You won!"));
+    }
+
+    public void waitingToContinue(){
+        this.currentState = CurrentState.WAITING_FOR_CLIENTS;
+        Platform.runLater(() -> topText.setText("Not enough players"));
+        Platform.runLater(() -> bottomText.setText("Waiting for more players to continue the game..."));
+    }
+
+    public void playerDisconnected(){
+        Platform.runLater(() -> topText.setText("A player has disconnected."));
+    }
+
+
+
+
+
+    ////////////LOGIN//////////////////
+    private LoginState loginState;
+    private final ObservableList<Integer> numberList = FXCollections.observableArrayList(2,3,4);
+
+    @FXML
+    private Button enterButton;
+    @FXML
+    private Button joinButton;
+    @FXML
+    private TextField nicknameField;
+    @FXML
+    private Label nickLabel;
+    @FXML
+    private GridPane nicknamePane;
+    @FXML
+    private GridPane waitingLoginPane;
+    @FXML
+    private Label waitingLabel;
+    @FXML
+    private AnchorPane rootPane;
+
+    @FXML
+    private ChoiceBox<Integer> numberBox;
+
+    @FXML
+    Pane startPane;
+    @FXML
+    Pane numberPane;
+
+    @FXML
+    void exit(ActionEvent event) {
+        System.exit(0);
+    }
+
+    @FXML
+    void play(ActionEvent event) {
+        startPane.setVisible(false);
+        switch (loginState) {
+            case ASK_NUMBER -> numberPane.setVisible(true);
+            case DEFAULT_NICK -> nicknamePane.setVisible(true);
+            case WAITING_FOR_NUMBER -> {
+                waitingLoginPane.setVisible(true);
+                waitingLabel.setText("Host is creating the game. Wait...");
+            }
+            case GAME_ALREADY_STARTED -> {
+                waitingLoginPane.setVisible(true);
+                waitingLabel.setText("Game is full, you cannot play. Sorry :(");
+            }
+        }
+    }
+
+    @FXML
+    void sendNumber(ActionEvent event) throws RemoteException {
+        numberPane.setVisible(false);
+        nicknamePane.setVisible(true);
+        client.numberPartecipantsSetting(numberBox.getValue());
+    }
+
+    @FXML
+    void joinGame(ActionEvent event) throws RemoteException {
+        if(loginState==LoginState.RECONNECTING){
+            client.checkingExistingNickname(nicknameField.getText());
+        }
+        else {
+            client.clientNickNameSetting((nicknameField.getText()));
+            Platform.runLater(()-> waitingPane.setVisible(true));
+        }
+        setPlayerNickname(nicknameField.getText());
+    }
+
+    public void setPlayerNumber(boolean number) {
+        loginState=LoginState.ASK_NUMBER;
+    }
+
+    public void invalidNickname(){
+        Platform.runLater(() -> nickLabel.setText("Nickname already chosen, try again"));
+    }
+
+    public void invalidReconnectionNickname(){
+        Platform.runLater(() -> nickLabel.setText("Nickname already used or there wasn't a player with this nickname"));
+    }
+
+    public void askReconnectingNickname(){
+        loginState=LoginState.RECONNECTING;
+    }
+
+    public void waitForNumber(){
+        loginState=LoginState.WAITING_FOR_NUMBER;
+    }
+
+    public void askNickname(){
+        loginState=LoginState.DEFAULT_NICK;
+        if(waitingLoginPane.isVisible())
+            Platform.runLater(()-> {
+                nicknamePane.setVisible(true);
+                waitingPane.setVisible(true);
+            });
+    }
+
+    public void gameAlreadyStarted(){
+        loginState=LoginState.GAME_ALREADY_STARTED;
+    }
+
+    private enum LoginState{
+        WAITING_FOR_NUMBER, GAME_ALREADY_STARTED, DEFAULT_NICK, RECONNECTING, ASK_NUMBER
+    }
+
 }
