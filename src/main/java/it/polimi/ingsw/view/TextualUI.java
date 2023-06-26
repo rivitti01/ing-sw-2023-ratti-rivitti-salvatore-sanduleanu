@@ -221,7 +221,7 @@ public class TextualUI implements UI {
                 openScanner();
             }
             case INVALID_RECONNECTION_NICKNAME -> {
-                System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
+                //System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
                 askExistingNickname();
             }
 
@@ -403,7 +403,7 @@ public class TextualUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        System.out.println("Game has started:");
+        //System.out.println("Game has started:");
         if(yourTurn) {
             try {
                 chooseAction();
