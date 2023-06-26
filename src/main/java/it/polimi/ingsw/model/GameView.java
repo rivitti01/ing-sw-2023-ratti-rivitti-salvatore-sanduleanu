@@ -18,6 +18,7 @@ public class GameView  implements Serializable {
     private final int points;
     private final List<Integer> commonGoal1;
     private final List<Integer> commonGoal2;
+    private  boolean yourTurn = false;
 
 
 
@@ -42,6 +43,8 @@ public class GameView  implements Serializable {
         commonGoal2 =  new ArrayList<>();
         commonGoal1.addAll(model.getCommonGoals()[0].getScores());
         commonGoal2.addAll(model.getCommonGoals()[1].getScores());
+        if(p.getNickname().equals(model.getCurrentPlayer().getNickname()))
+            yourTurn = true;
     }
 
     public int getPoints() {
@@ -80,5 +83,9 @@ public class GameView  implements Serializable {
 
     public List<Integer> getCommonGoal2() {
         return commonGoal2;
+    }
+
+    public boolean isYourTurn() {
+        return yourTurn;
     }
 }

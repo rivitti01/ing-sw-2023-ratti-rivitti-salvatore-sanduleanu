@@ -10,11 +10,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class ServerOne {
+public class ServerOne implements ServerListener {
     private ServerSocketImpl serverSocket;
     private ServerImpl serverRMI;
     private Game model;
     private GameController controller;
+    private int connectedClients = 0;
     private Registry registry;
     private First first;
 
@@ -23,7 +24,9 @@ public class ServerOne {
         model = new Game();
         controller = new GameController(model);
         serverSocket = new ServerSocketImpl(2000,model,controller,first);
+        serverSocket.addServerListener(this);
         serverRMI = new ServerImpl(model,controller,first);
+        serverRMI.addServerListener(this);
     }
     public void start() throws IOException {
         Thread rmi = new Thread(() -> {
@@ -47,4 +50,17 @@ public class ServerOne {
         socket.start();
     }
 
+    @Override
+    public void clientConnected() {
+        this.connectedClients++;
+    }
+
+    @Override
+    public void clientDisconnected() {
+        this.connectedClients--;
+    }
+
+    public int getConnectedClients() {
+        return connectedClients;
+    }
 }

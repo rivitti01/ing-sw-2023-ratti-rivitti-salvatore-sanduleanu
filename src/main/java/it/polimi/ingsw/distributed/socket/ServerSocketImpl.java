@@ -2,6 +2,7 @@ package it.polimi.ingsw.distributed.socket;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.First;
+import it.polimi.ingsw.distributed.ServerListener;
 import it.polimi.ingsw.model.Game;
 
 import java.io.File;
@@ -23,6 +24,8 @@ public class ServerSocketImpl {
     private final int port;
     private final Object lock;
     private First first;
+    private ServerListener serverONE;
+
 
     public ServerSocketImpl(int port, Game model, GameController controller, First first) {
         this.port = port;
@@ -30,6 +33,9 @@ public class ServerSocketImpl {
         this.controller = controller;
         this.lock = new Object();
         this.first = first;
+    }
+    public void addServerListener(ServerListener serverListener){
+        this.serverONE = serverListener;
     }
     public void start() throws IOException {
         clients = new HashMap<>();
@@ -40,7 +46,10 @@ public class ServerSocketImpl {
         while (true){
             System.out.println("Socket: Aspetto connessione");
             Socket socket = serverSocket.accept();
+
+            this.serverONE.clientConnected();
             ServerHandler serverHandler;
+
             if (clients.size() == 0 && first.getFirst()){
                 first.setFirst(false);
                 serverHandler = new ServerHandler(socket,model,controller,true,first);

@@ -227,6 +227,7 @@ public class TextualUI implements UI {
 
         }
     }
+
     public void lastTurnReached(String nickname){
         System.out.println(nickname + " ha riempito la shelf\nInizia l'ultimo giro");
     }
@@ -384,6 +385,8 @@ public class TextualUI implements UI {
 
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
         System.out.println("E' il turno di: "+gameView.getNickName());
+        if(!gameView.isYourTurn())
+            System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
     }
 
     public void printChat(ChatView chatView) throws RemoteException {
@@ -395,7 +398,6 @@ public class TextualUI implements UI {
 
     public void waitingTurn() {
         this.currentState = CurrentState.WAITING_TURN;
-        System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
     }
 
 
@@ -431,7 +433,7 @@ public class TextualUI implements UI {
                                 checkAction(input);
 
                             }
-                            case WAITING_TURN -> waitingTurn();
+                            case WAITING_TURN -> System.err.println("It's not your turn.\nYou can type [chat] to write in the chat.");
                             case CHATTING -> {
 
                                 this.currentState = oldState;

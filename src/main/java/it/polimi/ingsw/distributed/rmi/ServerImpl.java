@@ -1,9 +1,7 @@
 package it.polimi.ingsw.distributed.rmi;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.distributed.First;
-import it.polimi.ingsw.distributed.Server;
+import it.polimi.ingsw.distributed.*;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
@@ -19,6 +17,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static it.polimi.ingsw.util.Costants.PING_PERIOD;
+import static it.polimi.ingsw.util.Costants.TIMEOUT_DURATION;
+
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
     private final Game model;
     private final GameController controller;
@@ -28,10 +29,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final ReentrantLock connectionLock;
     private final ReentrantLock lock = new ReentrantLock();
     private First first;
-    private static final int PING_PERIOD = 1000;   // milliseconds
     private ScheduledExecutorService timerExecutor;
     private ScheduledFuture<?> timerTask;
-    private static final int TIMEOUT_DURATION = 10;   // seconds
+    private ServerListener serverONE;
 
 
     public ServerImpl(Game model, GameController controller, First first) throws RemoteException {
@@ -68,6 +68,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         this.connectionLock = new ReentrantLock();
     }
 
+    public void addServerListener(ServerListener serverListener){
+        this.serverONE = serverListener;
+    }
     private Client getKeyByValue(Player p) {
         for (Client c : this.connectedClients.keySet()) {
             if (this.connectedClients.get(c).equals(p.getNickname())) {
@@ -200,10 +203,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if (!controller.isGameAlreadystarted()) {
             connectionLock.lock();
             try {
+                this.serverONE.clientConnected();
                 canPlay = true;
-                addClientToGame(c);
                 synchronized (first) {
-                    if (connectedClients.size() == 1 && first.getFirst()) {
+                    if (first.getFirst()) {
                         first.setFirst(false);
                         try {
                             c.askNumberParticipants();
@@ -211,25 +214,28 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                             System.err.println("Unable to ask the number of participants the client: "
                                     + e.getMessage() + ". Skipping the update...");
                         }
-                    }
+                    } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
+                        canPlay = false;
                     first.notifyAll();
                 }
-
-            } finally {
+            }finally {
                 connectionLock.unlock();
             }
-            if(controller.getPlayers().size() == controller.getNumberPlayers())
-                canPlay = false;
-            if (canPlay) {
-                c.askNickname();
-                try {
-                    c.warning(Warnings.WAIT);
-                } catch (RemoteException e) {
-                    System.err.println("Unable to advice the client about the loading:" +
-                            e.getMessage() + ". Skipping the update...");
-                }
-                this.controller.checkGameInitialization();
-            }
+
+                if (canPlay) {
+                    addClientToGame(c);
+                    c.askNickname();
+                    try {
+                        c.warning(Warnings.WAIT);
+                    } catch (RemoteException e) {
+                        System.err.println("Unable to advice the client about the loading:" +
+                                e.getMessage() + ". Skipping the update...");
+                    }
+                    this.controller.checkGameInitialization();
+                } else
+                    c.warning(Warnings.GAME_ALREADY_STARTED);
+
+
         } else {
             if(onlinePlayers() < this.controller.getNumberPlayers()){
                 addClientToGame(c);
@@ -344,24 +350,24 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     //************************      MODEL LISTENER METHODS      ************************************************
     @Override
     public void printGame() {
-        if (isMine()) {
-            for (Client c : connectedClients.keySet()) {
-                try {
-                    Player p = null;
-                    for (int i = 0; i < model.getPlayers().size(); i++) {
-                        if (model.getPlayers().get(i).getNickname().equals(connectedClients.get(c))) {
-                            p = model.getPlayers().get(i);
-                            break;
-                        }
+
+        for (Client c : connectedClients.keySet()) {
+            try {
+                Player p = null;
+                for (int i = 0; i < model.getPlayers().size(); i++) {
+                    if (model.getPlayers().get(i).getNickname().equals(connectedClients.get(c))) {
+                        p = model.getPlayers().get(i);
+                        break;
                     }
-                    GameView gameView = new GameView(this.model, p);
-                    c.printGame(gameView);
-                } catch (RemoteException e) {
-                    System.err.println("Unable to print the game:" +
-                            e.getMessage() + ". Skipping the update...");
                 }
+                GameView gameView = new GameView(this.model, p);
+                c.printGame(gameView);
+            } catch (RemoteException e) {
+                System.err.println("Unable to print the game:" +
+                        e.getMessage() + ". Skipping the update...");
             }
         }
+
     }
 
     @Override
@@ -380,28 +386,24 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void newTurn(Player currentPlayer) {
-        if(isMine()) {
-            if (!this.model.isLastTurn()) {
-                try {
-                    for (Client c : this.connectedClients.keySet()) {
-                        c.newTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
-                    }
-                } catch (RemoteException exception) {
-                    System.err.println("Unable to start a new turn:" +
-                            exception.getMessage() + ". Skipping the update...");
+        if (!this.model.isLastTurn()) {
+            try {
+                for (Client c : this.connectedClients.keySet()) {
+                    c.newTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
                 }
-            } else {
-                try {
-                    for (Client c : this.connectedClients.keySet())
-                        c.lastTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
-                } catch (RemoteException exception) {
-                    System.err.println("Unable to start the last turn:" +
-                            exception.getMessage() + ". Skipping the update...");
-                }
+            } catch (RemoteException exception) {
+                System.err.println("Unable to start a new turn:" +
+                        exception.getMessage() + ". Skipping the update...");
+            }
+        } else {
+            try {
+                for (Client c : this.connectedClients.keySet())
+                    c.lastTurn(this.connectedClients.get(c).equals(model.getCurrentPlayer().getNickname()));
+            } catch (RemoteException exception) {
+                System.err.println("Unable to start the last turn:" +
+                        exception.getMessage() + ". Skipping the update...");
             }
         }
-
-
     }
     @Override
     public void askOrder() {
