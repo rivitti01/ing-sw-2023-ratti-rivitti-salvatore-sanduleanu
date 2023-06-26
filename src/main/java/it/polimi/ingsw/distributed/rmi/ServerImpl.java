@@ -80,6 +80,17 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     //**********************        SERVER METHODS         ************************************************
 
+
+    private int onlinePlayers(){
+        int count = 0;
+        for(Player player : this.controller.getPlayers()) {
+            if (player.isConnected())
+                count++;
+        }
+        System.out.println(" SONO RIMASTI " + count + " GIOCATORI ONLINE");
+        return count;
+
+    }
     private void handleClientDisconnection(Client c){
         String value = this.connectedClients.remove(c);
         for(Client client : this.connectedClients.keySet()) {
@@ -94,16 +105,18 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             List<Player> players = this.model.getPlayers();
             for(Player player : players){
                 if(player.getNickname().equals(value)) {
-                    player.setConnected(false);
+                    controller.disconnectedPlayer(player);
                     if(value.equals(this.model.getCurrentPlayer().getNickname())) {   // CLIENT IN PLAYING TURN DISCONNECTED
                         player.reset(this.model.getCommonGoals());
-                        if(this.connectedClients.size() > 1) {    // THE GAME CAN CONTINUE IF THERE ARE 2 OR MORE CLIENTS
+                        // TODO put tiles back one the board
+                        System.out.println(" SONO RIMASTI " + onlinePlayers() + " GIOCATORI ONLINE");
+                        if(onlinePlayers() > 1) {    // THE GAME CAN CONTINUE IF THERE ARE 2 OR MORE CLIENTS
                             try {
                                 this.controller.nextPlayer();
                             } catch (RemoteException e) {
                                 throw new RuntimeException(e);
                             }
-                        } else {      // TIMER IF THERE IS ONE CLIENT LEFT
+                        } else {      // TIMER IF THERE IS ONE CLIENT LEFT    // ne rimane uno
                             System.out.println("waiting for more players to continue...");
                             startTimer();
                             for(Client client : this.connectedClients.keySet()) {
@@ -116,7 +129,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                         }
 
                     } else {     // CLIENT IN WAITING TURN DISCONNECTED
-                        if(this.connectedClients.size() <= 1){
+                        if(onlinePlayers() <= 1){
                             System.out.println("waiting for more players to continue...");
                             startTimer();
                             for(Client client : this.connectedClients.keySet()) {
@@ -184,40 +197,29 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             System.err.println("Unable to advice the client about the loading:" +
                     e.getMessage() + ". Skipping the update...");
         }
-        if (!this.gameAlreadyStarted) {
+        if (!controller.isGameAlreadystarted()) {
             connectionLock.lock();
             try {
-                if (!this.gameAlreadyStarted) { //TODO: gameAlreadyStarted va controllato nel model, non a livello atomico RMI
-                    canPlay = true;
-                    addClientToGame(c);
-                    synchronized (first) {
-                        if (connectedClients.size() == 1 && first.getFirst()) {
-                            first.setFirst(false);
-                            try {
-                                c.askNumberParticipants();
-                            } catch (RemoteException e) {
-                                System.err.println("Unable to ask the number of participants the client: "
-                                        + e.getMessage() + ". Skipping the update...");
-                            }
+                canPlay = true;
+                addClientToGame(c);
+                synchronized (first) {
+                    if (connectedClients.size() == 1 && first.getFirst()) {
+                        first.setFirst(false);
+                        try {
+                            c.askNumberParticipants();
+                        } catch (RemoteException e) {
+                            System.err.println("Unable to ask the number of participants the client: "
+                                    + e.getMessage() + ". Skipping the update...");
                         }
-                        first.notifyAll();
                     }
-
-                    if (this.connectedClients.size() == this.numParticipants) {
-                        this.gameAlreadyStarted = true;
-                    }
-
-                } else {
-                    try {
-                        c.warning(Warnings.GAME_ALREADY_STARTED);
-                    } catch (RemoteException e) {
-                        System.err.println("Unable to advice the client about the game being already full:" +
-                                e.getMessage() + ". Skipping the update...");
-                    }
+                    first.notifyAll();
                 }
+
             } finally {
                 connectionLock.unlock();
             }
+            if(controller.getPlayers().size() == controller.getNumberPlayers())
+                canPlay = false;
             if (canPlay) {
                 c.askNickname();
                 try {
@@ -229,7 +231,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 this.controller.checkGameInitialization();
             }
         } else {
-            if(this.connectedClients.size() < this.controller.getNumberPlayers()){
+            if(onlinePlayers() < this.controller.getNumberPlayers()){
                 addClientToGame(c);
                 if(timerTask != null)
                     timerTask.cancel(true);
@@ -278,7 +280,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
         if(model.getPlayers()==null || !this.controller.checkReconnection(nickName)) {
-            System.out.println(" NOT NOT NOT NOT ");
             // if there is no reconnection
             if (this.controller.setPlayerNickname(nickName)) {
                 System.out.println("client: " + nickName + " connected");
@@ -514,6 +515,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void playerDisconnected(String nickname) {
-
+        for(Client client : this.connectedClients.keySet()) {
+            try {
+                client.warning(Warnings.CLIENT_DISCONNECTED);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

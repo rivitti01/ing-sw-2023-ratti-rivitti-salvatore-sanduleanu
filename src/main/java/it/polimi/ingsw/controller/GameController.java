@@ -15,6 +15,7 @@ import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
 public class GameController  {
     //attributo a Model per poterlo modificare
     private Game model;
+    private boolean gameAlreadystarted = false;
     private int numberPlayers;
     private List<Player> players;
     private boolean endPointGiven = false;
@@ -46,6 +47,7 @@ public class GameController  {
     public void initializeModel(){
         model.startGame(this.numberPlayers, this.players);
         model.setStart(true);
+        this.gameAlreadystarted = true;
     }
 
     public boolean setPlayerNickname(String s){
@@ -198,7 +200,7 @@ public class GameController  {
     public void disconnectedPlayer(Player player){
         player.setConnected(false);
         for (ModelListener listener: model.getListener()){
-            if (listener instanceof ServerHandler) listener.playerDisconnected(player.getNickname());
+            listener.playerDisconnected(player.getNickname());
         }
         /*if(model.getListener().size() == 1){
             //Player lastPlayer = model.getPlayers().stream().filter(Player::isConnected).findFirst().get();
@@ -240,4 +242,11 @@ public class GameController  {
 
     }
 
+    public boolean isGameAlreadystarted() {
+        return gameAlreadystarted;
+    }
+
+    public void setGameAlreadystarted(boolean gameAlreadystarted) {
+        this.gameAlreadystarted = gameAlreadystarted;
+    }
 }

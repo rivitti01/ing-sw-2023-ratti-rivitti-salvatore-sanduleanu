@@ -66,9 +66,10 @@ public class Game {
         int tmp = random.nextInt(this.numberPartecipants);
         List<Player> tempList = new ArrayList<>();
         tempList.add(players.get(tmp));
-        for(int i=0; i<players.size(); i++){
-            if(!tempList.get(0).getNickname().equals(players.get(i).getNickname()))
-                tempList.add(players.get(i));
+        for(int i = tmp+1; i<players.size(); i++)
+            tempList.add(players.get(i));
+        for(int i=0; i<tmp; i++){
+            tempList.add(players.get(i));
         }
 /*
         while(players.size() != 0){
