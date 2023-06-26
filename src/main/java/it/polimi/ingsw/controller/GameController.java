@@ -1,6 +1,8 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.distributed.socket.ServerHandler;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.util.ModelListener;
 import it.polimi.ingsw.util.Warnings;
 
 
@@ -56,6 +58,12 @@ public class GameController  {
     public boolean checkingExistingNickname(String nickname){
         for (Player player : this.model.getPlayers()) {
             if (player.getNickname().equals(nickname) && !player.isConnected()) return true;
+        }
+        return false;
+    }
+    public boolean playerOffline(){//controlla se c'è almeno un player offline
+        for (Player player : this.model.getPlayers()) {
+            if (!player.isConnected()) return true;
         }
         return false;
     }
@@ -177,6 +185,30 @@ public class GameController  {
     public void calculateWinner() {
         this.model.endGame();
         //this.model.findWinner();
+    }
+    public void reconnectedPlayer(String nickname){
+
+        for (Player player : model.getPlayers()) {
+            if (player.getNickname().equals(nickname)) {
+                player.setConnected(true);
+            }
+        }
+
+    }
+    public void disconnectedPlayer(Player player){
+        player.setConnected(false);
+        for (ModelListener listener: model.getListener()){
+            if (listener instanceof ServerHandler) listener.playerDisconnected(player.getNickname());
+        }
+        /*if(model.getListener().size() == 1){
+            //Player lastPlayer = model.getPlayers().stream().filter(Player::isConnected).findFirst().get();
+            for (Player p : model.getPlayers()){
+                if (p.isConnected()){
+                    model.getListener().get(model.getPlayers().indexOf(p)).onePlayerLeft(p,10000);
+                    break;
+                }
+            }
+        }*/
     }
 
     public void addChatMessage(String sender, String message){

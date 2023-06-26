@@ -51,7 +51,7 @@ public class ClientSocketImpl implements Client, ViewListener {
                 object = in.readObject();
                 analyzeMessage(object);
             }catch (IOException | ClassNotFoundException e){
-                System.err.println("Something went wrong with the connection to the server!\nExiting the game...");
+                System.err.println("Something went wrong with the connection to the server!");
                 System.exit(1);
             }
         }
@@ -73,7 +73,7 @@ public class ClientSocketImpl implements Client, ViewListener {
                             return;
                         }
                     }
-                    case NOT_YOUR_TURN -> {
+                    case NOT_YOUR_TURN, RECONNECTION -> {
                         if (!gameStarted){
                             view.gameStarted(false);
                             gameStarted = true;
@@ -81,6 +81,10 @@ public class ClientSocketImpl implements Client, ViewListener {
                         }
                     }
                     case LAST_TURN_NOTIFICATION -> lastTurn = true;
+                    case ASK_RECONNECTION_NICKNAME -> {
+                        view.askExistingNickname();
+                        return;
+                    }
                 }
 
                 view.warning(warnings);
@@ -132,6 +136,15 @@ public class ClientSocketImpl implements Client, ViewListener {
     @Override
     public void checkingExistingNickname(String nickname) throws RemoteException {
 
+        try {
+            out.writeObject(nickname);
+            out.reset();
+            out.flush();
+            this.nickname = nickname;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
     @Override
     public void clientNickNameSetting(String nickName) throws RemoteException {
@@ -139,7 +152,12 @@ public class ClientSocketImpl implements Client, ViewListener {
             out.writeObject(nickName);
             out.reset();
             out.flush();
-            Warnings response = (Warnings) in.readObject();
+            Object object = in.readObject();
+            Warnings response = null;
+            if (object instanceof Warnings){
+                response = (Warnings) object;
+            }
+            //Warnings response = (Warnings) in.readObject();
 
             if (response != null && response.equals(Warnings.INVALID_NICKNAME)) {
                 //view.askNickName();
@@ -151,7 +169,6 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             else if( response != null && response.equals(Warnings.OK_JOINER)){
                 nickname = nickName;
-                //view.askNumber(); deve aspettare che la partita sia completa
             }
 
 

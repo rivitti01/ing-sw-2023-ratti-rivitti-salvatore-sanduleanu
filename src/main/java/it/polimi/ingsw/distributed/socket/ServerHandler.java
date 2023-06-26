@@ -46,14 +46,12 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     @Override
     public void run() {
-        System.out.println("ServerClientHandler of "+ socket.getPort());
+        System.out.println("accepted connection: "+ socket.getPort());
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
-
             setUp();
-
 
             while (true) {
                 analyzeMessage(in.readObject());
@@ -122,10 +120,30 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 }
             }
         }
-
-        out.writeObject(Warnings.ASK_NICKNAME);
-        out.reset();
-        out.flush();
+        if (model.isStart()){
+            boolean playerOffline = false;
+            for(Player player : model.getPlayers()){
+                if(!player.isConnected()){
+                    playerOffline = true;
+                    out.writeObject(Warnings.ASK_RECONNECTION_NICKNAME);
+                    out.reset();
+                    out.flush();
+                    break;
+                }
+            }
+            //se tutti i giocatori sono connessi e la partita è iniziata allora saluto il giocatore e chiudo la connessione
+            if (!playerOffline){
+                out.writeObject(Warnings.GAME_ALREADY_STARTED);
+                out.reset();
+                out.flush();
+                model.removeModelListener(this);
+                socket.close();
+            }
+        }else{
+            out.writeObject(Warnings.ASK_NICKNAME);
+            out.reset();
+            out.flush();
+        }
         waitAndSetNickname();
     }
     private void waitAndSetNickname() throws IOException, ClassNotFoundException {
@@ -134,34 +152,33 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         System.out.println(socket.getPort() + ": Nickname = " + nickname);
         if (nickname != null) {
             if (model.isStart()) {
-                if (playerIsBack(nickname)){
+                if (controller.playerOffline()) {
+                    if (controller.checkingExistingNickname(nickname)) { //playerIsBack(nickname)
 
-                    for (Player player : model.getPlayers()){
-                        if (player.getNickname().equals(nickname)){
-                            player.setConnected(true);
-                        }
-                    }
+                        controller.reconnectedPlayer(nickname); //setta a true il connected del player e comunica a tutti i thread che un player si è riconesso
 
-                    System.out.println("Client" + socket.getPort() + " "+ nickname + " is back");
-                    this.nickname = nickname;
-                    out.writeObject(Warnings.RECONNECTION);
-                    out.reset();
-                    out.flush();
-                    printGame();
-                    return;
-                }
-                for (Player player : model.getPlayers()){
-                    if(!player.isConnected()){
+                        System.out.println("Client" + socket.getPort() + " " + nickname + " is back");
+                        this.nickname = nickname;
+                        out.writeObject(Warnings.RECONNECTION);
+                        out.reset();
+                        out.flush();
+                        printGame();
+                        return;
+                    } else {
                         out.writeObject(Warnings.INVALID_RECONNECTION_NICKNAME);
                         out.reset();
                         out.flush();
+                        waitAndSetNickname();
                         return;
                     }
+                }else {
+                    out.writeObject(Warnings.GAME_ALREADY_STARTED);
+                    out.reset();
+                    out.flush();
+                    model.removeModelListener(this);
+                    socket.close();
+                    Thread.currentThread().interrupt();
                 }
-                out.writeObject(Warnings.GAME_ALREADY_STARTED);
-                out.reset();
-                out.flush();
-                socket.close();
             }
             if (controller.setPlayerNickname(nickname)) {
                 this.nickname = nickname;
@@ -178,15 +195,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 waitAndSetNickname();
             }
         }
-        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + nickname);
-    }
-    private boolean playerIsBack(String nickname){
-        for (Player player : model.getPlayers()){
-            if (player.getNickname().equals(nickname) && !player.isConnected()){
-                return true;
-            }
-        }
-        return false;
+        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
     }
     private void waitAndSetNumberPlayers() throws IOException, ClassNotFoundException {
         int numberPlayers = (int) in.readObject();
@@ -217,10 +226,10 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
     }
     private void disconnectedClient() throws RemoteException {
-        for (Player player : model.getPlayers()){
+        for (Player player : controller.getPlayers()){
             if (player.getNickname().equals(nickname)){
-                player.setConnected(false);
-                model.remove(this);
+                model.removeModelListener(this);
+                controller.disconnectedPlayer(player); //player.setConnected(false);
                 if (model.getCurrentPlayer().getNickname().equals(nickname)){
                     controller.nextPlayer();
                 }
@@ -385,6 +394,48 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+    }
+
+    @Override
+    public void onePlayerLeft(Player theOnlyPlayerLeft, int countdownToEnd) {
+        if (theOnlyPlayerLeft.getNickname().equals(nickname)){
+            if (countdownToEnd != 0){
+                try {
+                    System.out.println("One player left");
+                    out.writeObject(Warnings.WAITING_FOR_MORE_PLAYERS);
+                    out.reset();
+                    out.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+
+    }
+
+    @Override
+    public void playerDisconnected(String nickname) {
+        try {
+            out.writeObject(Warnings.CLIENT_DISCONNECTED);
+            out.reset();
+            out.flush();
+            int counter = 0;
+            for (Player p : model.getPlayers()){
+                if (p.isConnected()){
+                    counter++;
+                }
+            }
+            if (counter == 1){
+                out.writeObject(Warnings.WAITING_FOR_MORE_PLAYERS);
+                out.reset();
+                out.flush();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }

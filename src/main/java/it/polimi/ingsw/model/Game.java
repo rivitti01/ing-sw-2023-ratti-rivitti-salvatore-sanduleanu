@@ -52,6 +52,9 @@ public class Game {
         listener.forEach(x->x.gameStarted(currentPlayer));//listener.newTurn(currentPlayer);
     }
 
+    public List<ModelListener> getListener() {
+        return listener;
+    }
 
     public Chat getChat() {
         return chat;
@@ -182,8 +185,9 @@ public class Game {
             listener = new ArrayList<>();
         listener.add(l);
     }
-    public void remove(ModelListener l){
+    public void removeModelListener(ModelListener l){
         listener.remove(l);
+        //checkOnlinePlayers();
     }
     public void selectionControl() {
         if (this.currentPlayer.getChosenTiles().size()==0) {
@@ -211,6 +215,25 @@ public class Game {
     public void newMessage(String sender, String receiver, String message)  {
         this.chat.newMessage(sender, receiver, message);
         listener.forEach(ModelListener::printGame);
+    }
+    private void checkOnlinePlayers(){
+        int count = 0;
+        Player thePlayer = null;
+        for(Player p : players){
+            if(p.isConnected()){
+                count++;
+                thePlayer = p;
+            }
+        }
+        if(count == 1){
+            Player finalThePlayer = thePlayer;
+            listener.stream().filter(x->x instanceof ServerHandler).forEach(x->x.onePlayerLeft(finalThePlayer,10000));
+            //for (ModelListener listener : this.listener) {
+                //if (listener instanceof ServerHandler && ((ServerHandler) listener).getNickname().equals(thePlayer.getNickname())){
+                    //listener.onePlayerLeft(thePlayer,10000);
+                //}
+            //}
+        }
     }
 
 }

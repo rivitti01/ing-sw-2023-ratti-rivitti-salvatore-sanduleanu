@@ -187,7 +187,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if (!this.gameAlreadyStarted) {
             connectionLock.lock();
             try {
-                if (!this.gameAlreadyStarted) {
+                if (!this.gameAlreadyStarted) { //TODO: gameAlreadyStarted va controllato nel model, non a livello atomico RMI
                     canPlay = true;
                     addClientToGame(c);
                     synchronized (first) {
@@ -505,5 +505,15 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 }
             }
         }
+    }
+
+    @Override
+    public void onePlayerLeft(Player theOnlyPlayerLeft, int countdownToEnd) {
+
+    }
+
+    @Override
+    public void playerDisconnected(String nickname) {
+
     }
 }

@@ -190,10 +190,12 @@ public class TextualUI implements UI {
                 System.err.println("Are you sure this nickname exist? Maybe you misspelled it :(");
             }
             case YOUR_TURN -> {
-                chooseAction();
+                //chooseAction();
+                newTurn(true);
             }//newTurn();
             case NOT_YOUR_TURN -> {
-                waitingTurn();
+                //waitingTurn();
+                newTurn(false);
             }
             case CORRECT_CORD -> {}
             case CONTINUE_TO_CHOOSE -> {

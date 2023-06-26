@@ -86,7 +86,7 @@ public class AppClientOne {
                 }
             }
         }else {
-            if (uiType.equals("G")) {   // SOCKET GUI
+            if (uiType.toUpperCase().equals("G")) {   // SOCKET GUI
                 ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000, true);
                 client.start();
             } else {                    // SOCKET TUI
