@@ -27,7 +27,7 @@ public class GameController  {
         this.numberPlayers = 0;
     }
 
-    public void setNumberPlayers(int numberPlayers) {//TODO: controllare che il numero di giocatori sia corretto
+    public void setNumberPlayers(int numberPlayers) {
         this.numberPlayers = numberPlayers;
     }
 

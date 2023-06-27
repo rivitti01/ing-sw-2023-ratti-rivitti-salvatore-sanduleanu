@@ -51,7 +51,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             out = new ObjectOutputStream(socket.getOutputStream());
 
             try {
-                setUp();//TODO: sconnettere il client in più prima di chiedergli il nickname
+                setUp();//TODO: sconnettere il client prima di chiedergli il nickname
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -174,7 +174,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         return;
                     }
                 } else {
-                    serverOne.clientDisconnected(this.nickname);//TODO: stai implementando la disconnessione e riconnessione con serverone
+                    serverOne.clientDisconnected(this.nickname);
                     out.writeObject(Warnings.GAME_ALREADY_STARTED);
                     out.reset();
                     out.flush();
@@ -188,7 +188,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     out.writeObject(Warnings.OK_JOINER);
                     out.reset();
                     out.flush();
-                    if (controller.getPlayers().size() == controller.getNumberPlayers()) {//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
+                    if (controller.getPlayers().size() == controller.getNumberPlayers()) {
                         synchronized (this.lock) {
                             controller.checkGameInitialization();
                             this.lock.notifyAll();

@@ -88,7 +88,7 @@ public class ServerOne implements ServerListener {
 
         if(this.connectedClients > 1) {   // multiple players left
             if (nickname.equals(model.getCurrentPlayer().getNickname())) {    // currentPlayer Disconnected
-                disconnectedPlayer.reset(model.getCommonGoals()); //TODO put the tiles back on the board
+                disconnectedPlayer.reset(model.getCommonGoals());
                 try {
                     this.controller.nextPlayer();
                 } catch (RemoteException e) {

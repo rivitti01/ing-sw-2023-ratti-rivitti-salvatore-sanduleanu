@@ -100,7 +100,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             System.err.println("Unable to advice the client about the loading:" +
                     e.getMessage() + ". Skipping the update...");
         }
+
         if (!controller.isGameAlreadystarted()) {
+            synchronized (connectionLock){
             this.serverONE.clientConnected();
             canPlay = true;
             synchronized (first) {
@@ -117,6 +119,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 first.notifyAll();
 
             }
+            connectionLock.notifyAll();
+        }
                 if (canPlay) {
                     addClientToGame(c);
                     c.askNickname();
@@ -350,12 +354,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     public void finalPoints(){
         Map<String, Integer> finalPoints = new HashMap<>();
         for(Player p: this.model.getPlayers()) {
-            finalPoints.put(p.getNickname(), p.getPoints());
-            try {
-                Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);//TODO: crasherà qui perchè non tutti i player p sono di rmi
-            } catch (RemoteException e) {
-                System.err.println("Unable to advice the client about the final points:" +
-                        e.getMessage() + ". Skipping the update...");
+            if(isMine()) {
+                finalPoints.put(p.getNickname(), p.getPoints());
+                try {
+                    Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
+                } catch (RemoteException e) {
+                    System.err.println("Unable to advice the client about the final points:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         }
     }
