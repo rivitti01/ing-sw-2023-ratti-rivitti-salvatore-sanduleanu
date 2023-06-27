@@ -419,4 +419,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
         }
     }
+
+    @Override
+    public void playerReconnected(String nickname) {
+
+    }
+
 }

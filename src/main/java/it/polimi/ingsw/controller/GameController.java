@@ -195,6 +195,11 @@ public class GameController  {
                 player.setConnected(true);
             }
         }
+        for (ModelListener listener: model.getListener()){
+            if (listener instanceof ServerHandler){
+                listener.playerReconnected(nickname);
+            }
+        }
 
     }
     public void disconnectedPlayer(Player player){
