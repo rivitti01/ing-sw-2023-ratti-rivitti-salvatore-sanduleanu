@@ -717,7 +717,6 @@ public class FXGameController {
         }
         else {
             client.clientNickNameSetting((nicknameField.getText()));
-            Platform.runLater(()-> waitingPane.setVisible(true));
         }
         setPlayerNickname(nicknameField.getText());
     }
@@ -747,7 +746,7 @@ public class FXGameController {
         if(waitingLoginPane.isVisible())
             Platform.runLater(()-> {
                 nicknamePane.setVisible(true);
-                waitingPane.setVisible(true);
+                waitingLoginPane.setVisible(false);
             });
     }
 
@@ -755,6 +754,14 @@ public class FXGameController {
         loginState=LoginState.GAME_ALREADY_STARTED;
     }
 
+    public void setJoiningPane(){
+        Platform.runLater(()->{
+            waitingPane.setVisible(true);
+            nicknamePane.setVisible(false);
+        });
+
+
+    }
     private enum LoginState{
         WAITING_FOR_NUMBER, GAME_ALREADY_STARTED, DEFAULT_NICK, RECONNECTING, ASK_NUMBER
     }

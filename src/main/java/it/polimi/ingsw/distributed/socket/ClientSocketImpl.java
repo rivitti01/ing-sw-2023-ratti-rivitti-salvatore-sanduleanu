@@ -1,7 +1,6 @@
 package it.polimi.ingsw.distributed.socket;
 
 import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.model.ChatView;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
@@ -14,7 +13,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ClientSocketImpl implements Client, ViewListener {
@@ -85,8 +83,19 @@ public class ClientSocketImpl implements Client, ViewListener {
                         view.askExistingNickname();
                         return;
                     }
+                    case OK_JOINER -> {
+                        return;
+                    }
+                    case OK_CREATOR -> {
+                        view.askNumber();
+                        return;
+                    }
+                    case INVALID_NICKNAME -> {
+                        this.nickname = null;
+                        view.warning(Warnings.INVALID_NICKNAME);
+                        return;
+                    }
                 }
-
                 view.warning(warnings);
             }
             case "String" -> {
@@ -149,10 +158,11 @@ public class ClientSocketImpl implements Client, ViewListener {
     @Override
     public void clientNickNameSetting(String nickName) throws RemoteException {
         try {
+            this.nickname = nickName;
             out.writeObject(nickName);
             out.reset();
             out.flush();
-            Object object = in.readObject();
+            /*Object object = in.readObject();
             Warnings response = null;
             if (object instanceof Warnings){
                 response = (Warnings) object;
@@ -169,10 +179,10 @@ public class ClientSocketImpl implements Client, ViewListener {
             }
             else if( response != null && response.equals(Warnings.OK_JOINER)){
                 nickname = nickName;
-            }
+            }*/
 
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException /*| ClassNotFoundException*/ e) {
             throw new RuntimeException("Cannot create client connection",e);
         }
     }

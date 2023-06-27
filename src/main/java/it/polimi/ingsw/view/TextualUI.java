@@ -424,7 +424,7 @@ public class TextualUI implements UI {
                 if (this.currentState!=CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
                     oldState = this.currentState;
                     this.currentState = CurrentState.CHATTING;
-                    System.out.println("Scrivi qualcosa a qualcuno");
+                    System.out.println("scrivi qualcosa a qualcuno! (Inizia con @nickname per mandarlo in privato)");
                 } else {
                     try {
                         switch (this.currentState) {

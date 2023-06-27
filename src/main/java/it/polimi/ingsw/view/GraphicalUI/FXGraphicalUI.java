@@ -92,7 +92,7 @@ public class FXGraphicalUI implements UI {
                     }
                     gameController.waitForNumber();
             }
-            case OK_JOINER -> {}
+            case OK_JOINER -> {gameController.setJoiningPane();}
             case INVALID_CHAT_MESSAGE -> {
                 gameController.invalidChatMessage(); // con un label sotto la chat
             }
@@ -175,7 +175,7 @@ public class FXGraphicalUI implements UI {
     }
 
     @Override
-    public void gameStarted(boolean nickname) {
+    public void gameStarted(boolean yourTurn) {
         System.out.println("DDDDD");
         gameController.startGame();}
 
