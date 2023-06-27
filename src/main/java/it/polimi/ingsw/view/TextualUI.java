@@ -17,6 +17,7 @@ import static it.polimi.ingsw.view.Colors.*;
 public class TextualUI implements UI {
     private ViewListener listener;
     private final Scanner scanner = new Scanner(System.in);
+    private CurrentState previousState = null;
     private CurrentState currentState = null;
 
     public void newTurn(boolean playing) throws RemoteException {
@@ -63,10 +64,6 @@ public class TextualUI implements UI {
     }
     public void chooseAction() throws RemoteException {
         this.currentState = CurrentState.CHOOSING_ACTION;
-        System.out.println("""
-                [S] : seleziona una tessera disponibile
-                [Q] : passa alla selezione della colonna
-                [chat] scrivi qualcosa nella chat""");
 
     }
     public void checkAction(String input) throws RemoteException {
@@ -181,7 +178,7 @@ public class TextualUI implements UI {
                 askOrder();
             }
             case WAIT -> System.out.println("Loading. Wait...");
-            case OK_JOINER -> System.out.println("name set correctly");
+            case OK_JOINER -> {}
             case INVALID_CHAT_MESSAGE -> {
                 System.err.println("messaggio invalido! scrivere un messaggio da mandare a tutti\n" +
                         "oppure scrivere |@nickname| |messaggio da inviare|");
@@ -212,6 +209,7 @@ public class TextualUI implements UI {
             case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game");
             case WAITING_FOR_MORE_PLAYERS -> {
                 System.err.println("Waiting for more players to continue the game...");
+                this.previousState = this.currentState;
                 this.currentState = CurrentState.WAITING_FOR_CLIENTS;
             }
             case NO_PLAYERS_LEFT ->System.out.println("NO PLAYERS LEFT. YOU WON!");
@@ -387,6 +385,13 @@ public class TextualUI implements UI {
         System.out.println("E' il turno di: "+gameView.getNickName());
         if(!gameView.isYourTurn())
             System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
+        else {
+            try {
+                options();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void printChat(ChatView chatView) throws RemoteException {
@@ -429,17 +434,12 @@ public class TextualUI implements UI {
                     try {
                         switch (this.currentState) {
                             case CHOOSING_ACTION -> {
-
                                 checkAction(input);
-
                             }
                             case WAITING_TURN -> System.err.println("It's not your turn.\nYou can type [chat] to write in the chat.");
                             case CHATTING -> {
-
                                 this.currentState = oldState;
                                 this.listener.newMessage(input);
-                                options();
-
                             }
                             case CHOOSING_TILE -> {
                                 try {
@@ -493,13 +493,18 @@ public class TextualUI implements UI {
     }
 
     private void options() throws RemoteException {
-        switch (this.currentState) {
-            case CHOOSING_ACTION -> chooseAction();
-            case CHOOSING_ORDER -> askOrder();
-            case CHOOSING_COLUMN -> askColumn();
-            case WAITING_TURN -> waitingTurn();
-            case CHATTING -> chat();
-            case CHOOSING_TILE -> System.out.println("Scegli una tessera");
+        if(this.currentState != null) {
+            switch (this.currentState) {
+                case CHOOSING_ACTION -> System.out.println("""
+                [S] : seleziona una tessera disponibile
+                [Q] : passa alla selezione della colonna
+                [chat] scrivi qualcosa nella chat""");
+                case CHOOSING_ORDER -> askOrder();
+                case CHOOSING_COLUMN -> askColumn();
+                case WAITING_TURN -> waitingTurn();
+                case CHATTING -> chat();
+                case CHOOSING_TILE -> System.out.println("Scegli una tessera");
+            }
         }
     }
 

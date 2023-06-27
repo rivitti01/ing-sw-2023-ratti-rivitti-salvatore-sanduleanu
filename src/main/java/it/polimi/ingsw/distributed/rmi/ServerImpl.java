@@ -24,8 +24,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final Game model;
     private final GameController controller;
     private final LinkedHashMap<Client, String> connectedClients;
-    private int numParticipants;
-    private boolean gameAlreadyStarted;
     private final ReentrantLock connectionLock;
     private final ReentrantLock lock = new ReentrantLock();
     private First first;
@@ -38,33 +36,27 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         super();
         this.first = first;
         connectedClients = new LinkedHashMap<>();
-        this.gameAlreadyStarted = false;
         this.model = model;
         this.model.addModelListener(this);
         this.controller = controller;
-        this.numParticipants = 0;
         this.connectionLock = new ReentrantLock();
     }
 
     public ServerImpl(int port) throws RemoteException {
         super(port);
         connectedClients = new LinkedHashMap<>();
-        this.gameAlreadyStarted = false;
         this.model = new Game();
         this.model.addModelListener(this);
         this.controller = new GameController(this.model);
-        this.numParticipants = 0;
         this.connectionLock = new ReentrantLock();
     }
 
     public ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         connectedClients = new LinkedHashMap<>();
-        this.gameAlreadyStarted = false;
         this.model = new Game();
         this.model.addModelListener(this);
         this.controller = new GameController(this.model);
-        this.numParticipants = 0;
         this.connectionLock = new ReentrantLock();
     }
 
@@ -80,102 +72,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         return null; // valore non trovato nella mappa
     }
 
+    public LinkedHashMap<Client, String> getRMIClients(){
+        return this.connectedClients;
+    }
 
     //**********************        SERVER METHODS         ************************************************
 
-
-    private int onlinePlayers(){
-        int count = 0;
-        for(Player player : this.controller.getPlayers()) {
-            if (player.isConnected())
-                count++;
-        }
-        System.out.println(" SONO RIMASTI " + count + " GIOCATORI ONLINE");
-        return count;
-
-    }
-    private void handleClientDisconnection(Client c){
-        String value = this.connectedClients.remove(c);
-        for(Client client : this.connectedClients.keySet()) {
-            try {
-                client.warning(Warnings.CLIENT_DISCONNECTED);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (value != null) {
-            System.out.println("removed client with string value: " + value);
-            List<Player> players = this.model.getPlayers();
-            for(Player player : players){
-                if(player.getNickname().equals(value)) {
-                    controller.disconnectedPlayer(player);
-                    if(value.equals(this.model.getCurrentPlayer().getNickname())) {   // CLIENT IN PLAYING TURN DISCONNECTED
-                        player.reset(this.model.getCommonGoals());
-                        // TODO put tiles back one the board
-                        System.out.println(" SONO RIMASTI " + onlinePlayers() + " GIOCATORI ONLINE");
-                        if(onlinePlayers() > 1) {    // THE GAME CAN CONTINUE IF THERE ARE 2 OR MORE CLIENTS
-                            try {
-                                this.controller.nextPlayer();
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
-                            }
-                        } else {      // TIMER IF THERE IS ONE CLIENT LEFT    // ne rimane uno
-                            System.out.println("waiting for more players to continue...");
-                            startTimer();
-                            for(Client client : this.connectedClients.keySet()) {
-                                try {
-                                    client.warning(Warnings.WAITING_FOR_MORE_PLAYERS);
-                                } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-
-                    } else {     // CLIENT IN WAITING TURN DISCONNECTED
-                        if(onlinePlayers() <= 1){
-                            System.out.println("waiting for more players to continue...");
-                            startTimer();
-                            for(Client client : this.connectedClients.keySet()) {
-                                try {
-                                    client.warning(Warnings.WAITING_FOR_MORE_PLAYERS);
-                                } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-
-                    }
-                    return;
-                }
-            }
-        } else {
-            System.out.println("Client not found: " + c);
-        }
-
-    }
-    private void startTimer() {
-        if (timerExecutor != null && !timerExecutor.isShutdown()) {
-            // Timer is already running, no need to start a new one
-            return;
-        }
-
-        // Schedule a timer task to be executed after a specified timeout
-        timerExecutor = Executors.newSingleThreadScheduledExecutor();
-        // Code to be executed when the timer expires
-        timerTask = timerExecutor.schedule(this::handleTimeout, TIMEOUT_DURATION, TimeUnit.SECONDS);
-    }
-
-    private void handleTimeout() {
-        // Code to be executed when the timeout occurs
-        System.out.println("Timeout! No other players!\nClosing the game...");
-        for(Client client: this.connectedClients.keySet()) {
-            try {
-                client.warning(Warnings.NO_PLAYERS_LEFT);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
     private void addClientToGame(Client c) {
         connectedClients.put(c, null);
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -184,9 +86,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 c.ping();
             } catch (RemoteException e) {
                 System.err.println("A client has exited the game");
-                lock.lock();
-                handleClientDisconnection(c);
-                lock.unlock();
+                serverONE.clientDisconnected(this.connectedClients.remove(c));
                 executorService.shutdown();
             }
         }, 0, PING_PERIOD, TimeUnit.MILLISECONDS);
@@ -200,28 +100,27 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             System.err.println("Unable to advice the client about the loading:" +
                     e.getMessage() + ". Skipping the update...");
         }
-        if (!controller.isGameAlreadystarted()) {
-            connectionLock.lock();
-            try {
-                this.serverONE.clientConnected();
-                canPlay = true;
-                synchronized (first) {
-                    if (first.getFirst()) {
-                        first.setFirst(false);
-                        try {
-                            c.askNumberParticipants();
-                        } catch (RemoteException e) {
-                            System.err.println("Unable to ask the number of participants the client: "
-                                    + e.getMessage() + ". Skipping the update...");
-                        }
-                    } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
-                        canPlay = false;
-                    first.notifyAll();
-                }
-            }finally {
-                connectionLock.unlock();
-            }
 
+        if (!controller.isGameAlreadystarted()) {
+            synchronized (connectionLock){
+            this.serverONE.clientConnected();
+            canPlay = true;
+            synchronized (first) {
+                if (first.getFirst()) {
+                    first.setFirst(false);
+                    try {
+                        c.askNumberParticipants();
+                    } catch (RemoteException e) {
+                        System.err.println("Unable to ask the number of participants the client: "
+                                + e.getMessage() + ". Skipping the update...");
+                    }
+                } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
+                    canPlay = false;
+                first.notifyAll();
+
+            }
+            connectionLock.notifyAll();
+        }
                 if (canPlay) {
                     addClientToGame(c);
                     c.askNickname();
@@ -231,17 +130,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                         System.err.println("Unable to advice the client about the loading:" +
                                 e.getMessage() + ". Skipping the update...");
                     }
-                    this.controller.checkGameInitialization();
+                    synchronized (first) {
+                        this.controller.checkGameInitialization();
+                        first.notifyAll();
+                    }
                 } else
                     c.warning(Warnings.GAME_ALREADY_STARTED);
-
-
         } else {
-            if(onlinePlayers() < this.controller.getNumberPlayers()){
+            if(((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()){
                 addClientToGame(c);
-                if(timerTask != null)
-                    timerTask.cancel(true);
-                System.out.println("A client has RE-connected.");
+                System.out.println("RMI: A client has RE-connected.");
                 c.askExistingNickname();
             } else {
                 try {
@@ -257,6 +155,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
         if (controller.checkingExistingNickname(nickName)) {
+            serverONE.clientConnected();
             // if client is reconnecting I need to open the scanner thread again in the TUI
             System.out.println(" RECONNECTION ");
             c.warning(Warnings.RECONNECTION);
@@ -266,12 +165,11 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     player.setConnected(true);
                 }
             }
-
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
-            if (connectedClients.size() == 2) {
-                this.controller.nextPlayer();
-            } else if (connectedClients.size() > 2) {
+            if (((ServerOne) serverONE).getConnectedClients() == 2) {
+                this.model.newTurn();
+            } else if (((ServerOne) serverONE).getConnectedClients() > 2) {
                 for(Player player : this.model.getPlayers()){
                     if(player.getNickname().equals(nickName)) {
                         c.printGame(new GameView(this.model, player));
@@ -327,7 +225,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public synchronized void numberOfParticipantsSetting(int n) throws RemoteException {
-        this.numParticipants = n;
         this.controller.setNumberPlayers(n);
     }
 
@@ -350,7 +247,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     //************************      MODEL LISTENER METHODS      ************************************************
     @Override
     public void printGame() {
-
         for (Client c : connectedClients.keySet()) {
             try {
                 Player p = null;
@@ -458,12 +354,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     public void finalPoints(){
         Map<String, Integer> finalPoints = new HashMap<>();
         for(Player p: this.model.getPlayers()) {
-            finalPoints.put(p.getNickname(), p.getPoints());
-            try {
-                Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);//TODO: crasherà qui perchè non tutti i player p sono di rmi
-            } catch (RemoteException e) {
-                System.err.println("Unable to advice the client about the final points:" +
-                        e.getMessage() + ". Skipping the update...");
+            if(isMine()) {
+                finalPoints.put(p.getNickname(), p.getPoints());
+                try {
+                    Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
+                } catch (RemoteException e) {
+                    System.err.println("Unable to advice the client about the final points:" +
+                            e.getMessage() + ". Skipping the update...");
+                }
             }
         }
     }
@@ -517,12 +415,59 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void playerDisconnected(String nickname) {
-        for(Client client : this.connectedClients.keySet()) {
-            try {
-                client.warning(Warnings.CLIENT_DISCONNECTED);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
+        if(connectedClients.size() > 0) {
+            for (Client client : this.connectedClients.keySet()) {
+                try {
+                    client.warning(Warnings.CLIENT_DISCONNECTED);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            int counter = 0;
+            for (Player p : model.getPlayers()) {
+                if (p.isConnected()) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                try {
+                    getLastRMIClient().warning(Warnings.WAITING_FOR_MORE_PLAYERS);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
+
+
+
+    private Client getLastRMIClient() {
+        Iterator<Map.Entry<Client, String>> iterator = this.connectedClients.entrySet().iterator();
+        if (iterator.hasNext()) {
+            Map.Entry<Client, String> firstEntry = iterator.next();
+            return firstEntry.getKey();
+        }
+        return null;
+    }
+
+    @Override
+    public void playerReconnected(String nickname) {
+        for(Client client : this.connectedClients.keySet()){
+            if(model.getCurrentPlayer().getNickname().equals(connectedClients.get(client))) {
+                try {
+                    client.newTurn(true);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    client.newTurn(false);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+    }
+
 }

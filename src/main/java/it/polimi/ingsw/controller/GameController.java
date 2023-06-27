@@ -27,7 +27,7 @@ public class GameController  {
         this.numberPlayers = 0;
     }
 
-    public void setNumberPlayers(int numberPlayers) {//TODO: controllare che il numero di giocatori sia corretto
+    public void setNumberPlayers(int numberPlayers) {
         this.numberPlayers = numberPlayers;
     }
 
@@ -39,8 +39,12 @@ public class GameController  {
         return players;
     }
     public void checkGameInitialization(){
-        if (this.players.size() == this.numberPlayers)
-            initializeModel();
+        if(!gameAlreadystarted) {
+            if (this.players.size() == this.numberPlayers) {
+                initializeModel();
+                gameAlreadystarted = true;
+            }
+        }
     }
 
     //crea il Model in base a numberPlayers e alla List di players
@@ -196,9 +200,32 @@ public class GameController  {
             }
         }
 
+        for (ModelListener listener: model.getListener()){
+            listener.playerReconnected(nickname);
+        }
+
+    }
+
+    private void putBackTiles(Player player){
+        if(!player.getChosenTiles().isEmpty()){
+            List<Tile> tiles = player.getChosenTiles();
+            List<int[]> coordinates = player.getChosenCoordinates();
+            Board board = model.getBoard();
+            for(int i=0; i<tiles.size(); i++){
+                board.putTile(tiles.get(i), coordinates.get(i));
+            }
+        }
     }
     public void disconnectedPlayer(Player player){
         player.setConnected(false);
+        putBackTiles(player);
+        if(player.equals(model.getCurrentPlayer())){
+            try {
+                nextPlayer();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
         for (ModelListener listener: model.getListener()){
             listener.playerDisconnected(player.getNickname());
         }
