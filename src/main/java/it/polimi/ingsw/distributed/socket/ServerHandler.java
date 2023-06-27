@@ -174,7 +174,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         return;
                     }
                 }else {
-                    serverOne.clientDisconnected();//TODO: stai implementando la disconnessione e riconnessione con serverone
+                    serverOne.clientDisconnected(this.nickname);//TODO: stai implementando la disconnessione e riconnessione con serverone
                     out.writeObject(Warnings.GAME_ALREADY_STARTED);
                     out.reset();
                     out.flush();
@@ -243,7 +243,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
     }
     private void disconnectedClient() throws RemoteException {
-        serverOne.clientDisconnected();
+        serverOne.clientDisconnected(this.nickname);
         for (Player player : controller.getPlayers()){
             if (player.getNickname().equals(nickname)){
                 model.removeModelListener(this);
@@ -455,6 +455,26 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @Override
+    public void playerReconnected(String nickname) {
+        try {
+            if (model.getCurrentPlayer().getNickname().equals(this.nickname)){
+                out.writeObject(Warnings.YOUR_TURN);
+                out.reset();
+                out.flush();
+            }else {
+                out.writeObject(Warnings.NOT_YOUR_TURN);
+                out.reset();
+                out.flush();
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
