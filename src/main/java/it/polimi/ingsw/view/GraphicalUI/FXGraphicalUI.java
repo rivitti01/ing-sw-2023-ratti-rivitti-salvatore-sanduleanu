@@ -135,6 +135,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void newTurn(boolean b) throws RemoteException {
+        System.out.println("E' IL MIO TURNO PORCODIO");
         gameController.newTurn(b);
     }
 

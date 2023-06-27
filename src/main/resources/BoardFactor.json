@@ -1,12 +1,14 @@
 {
   "Board2": [
-    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
-    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
-    {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"},
-    {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"},
-    {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"},
-    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
-    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"},        {"color": "null"},        {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
+    {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}],
   "Board3": [
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},
     {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "null"}, {"color": "null"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"}, {"color": "TRANSPARENT"},

@@ -20,6 +20,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -133,7 +134,7 @@ public class FXGameController {
     private Label thirdOpponentName;
 
     @FXML
-    private Label topText;
+    private Text topText;
     @FXML
     private Label firstPoints;
     @FXML
@@ -329,32 +330,30 @@ public class FXGameController {
     }
 
     private void printChosenTiles(List<Tile> chosenTiles, String nickname) {
+        if(!chosenTiles.isEmpty()) {
+            Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
 
-        Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
+            if (chosenTiles.size() >= 1) {
+                Platform.runLater(() -> {
+                    firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
+                    firstChosenTile.setVisible(true);
+                });
+            } else Platform.runLater(() -> firstChosenTile.setVisible(false));
 
-        if(chosenTiles.size()>=1) {
-            Platform.runLater(() -> {
-                firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
-                firstChosenTile.setVisible(true);
-            });
+            if (chosenTiles.size() >= 2) {
+                Platform.runLater(() -> {
+                    secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
+                    secondChosenTile.setVisible(true);
+                });
+            } else Platform.runLater(() -> secondChosenTile.setVisible(false));
+
+            if (chosenTiles.size() >= 3) {
+                Platform.runLater(() -> {
+                    thirdChosenTile.setImage(getTileImage(chosenTiles.get(2)));
+                    thirdChosenTile.setVisible(true);
+                });
+            } else Platform.runLater(() -> thirdChosenTile.setVisible(false));
         }
-        else Platform.runLater(() -> firstChosenTile.setVisible(false));
-
-        if(chosenTiles.size()>=2){
-            Platform.runLater(() -> {
-                secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
-                secondChosenTile.setVisible(true);
-            });
-        }
-        else Platform.runLater(() -> secondChosenTile.setVisible(false));
-
-        if(chosenTiles.size()>=3){
-            Platform.runLater(() -> {
-                thirdChosenTile.setImage(getTileImage(chosenTiles.get(2)));
-                thirdChosenTile.setVisible(true);
-            });
-        }
-        else Platform.runLater(() -> thirdChosenTile.setVisible(false));
 
     }
 
@@ -404,7 +403,7 @@ public class FXGameController {
     public void newTurn(boolean b) {
         if(b) {
             turn = TurnState.PLAYER;
-            currentState = CurrentState.CHOOSING_ACTION;
+            currentState = CurrentState.CHOOSING_TILE;
         }
 
         else{
@@ -575,7 +574,7 @@ public class FXGameController {
     }
 
     public void setGameScene(GameView model){
-        Platform.runLater(() -> playerName.setText(model.getNickName()));
+        Platform.runLater(() -> playerName.setText(playerNick));
 
 
         Set<String> playerNameSet = model.getPlayersShelves().keySet();
