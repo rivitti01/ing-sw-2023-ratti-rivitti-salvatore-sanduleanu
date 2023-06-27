@@ -92,7 +92,8 @@ public class FXGraphicalUI implements UI {
                     }
                     gameController.waitForNumber();
             }
-            case OK_JOINER -> {gameController.setJoiningPane();}
+            case OK_JOINER -> {System.out.println("NOOO");
+                gameController.setJoiningPane();}
             case INVALID_CHAT_MESSAGE -> {
                 gameController.invalidChatMessage(); // con un label sotto la chat
             }
@@ -176,8 +177,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        System.out.println("DDDDD");
-        gameController.startGame();}
+        System.out.println("DDDDD");}
 
     public void waitingTurn() throws RemoteException{
         gameController.waitingTurn();

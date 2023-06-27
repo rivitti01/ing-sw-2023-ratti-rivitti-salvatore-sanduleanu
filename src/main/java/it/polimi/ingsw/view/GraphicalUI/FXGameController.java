@@ -49,7 +49,7 @@ public class FXGameController {
 
 
     Node[][] tmpMatrix;
-    private List <PlayerObjects> playersObjects = new ArrayList<>(1);
+    private List <PlayerObjects> playersObjects;
     private BufferedImage[] tileImages = new BufferedImage[12];
     private Node[][] playerMatrix = new Node[6][5];
     private Node[][] boardMatrix = new Node[9][9];
@@ -225,24 +225,28 @@ public class FXGameController {
             if (node instanceof ImageView) {
                 int offsetY = (GridPane.getRowIndex(node) - 1) / 2;
                 int offsetX = (GridPane.getColumnIndex(node) - 1) / 2;
-                Matrix[GridPane.getColumnIndex(node) - offsetY - 1][GridPane.getRowIndex(node) - offsetX - 1] = node;
+                Matrix[GridPane.getRowIndex(node) - offsetY -1][GridPane.getColumnIndex(node) - offsetX -1] = node;
             }
         }
     }
 
     public void printGame(GameView gameView) {
-
-        if(model==null) setGameScene(gameView);
+        if(model==null) {
+            initializeGraphicObjects();
+            startGame();
+            setGameScene(gameView);
+            Platform.runLater(()-> waitingPane.setVisible(false));
+        }
         printTurnState(gameView.getNickName());
-        if (model.getNameGoals() != gameView.getNameGoals())
+        if (model == null || model.getNameGoals() != gameView.getNameGoals())
             printCommonGoals(gameView.getNameGoals());
-        if (model.getBoard() != gameView.getBoard())
+        if (model == null ||  model.getBoard() != gameView.getBoard())
             printBoard(gameView.getBoard());
-        if (model.getPlayersShelves() != gameView.getPlayersShelves())
+        if (model == null ||  model.getPlayersShelves() != gameView.getPlayersShelves())
             printShelves(gameView.getPlayersShelves());
-        if (model.getPersonal() != gameView.getPersonal())
+        if (model == null ||  model.getPersonal() != gameView.getPersonal())
             printPersonalGoalShelf(gameView.getPersonal());
-        if (model.getChosenTiles()!=gameView.getChosenTiles() || model.getNickName()!=gameView.getNickName())
+        if (model == null ||  model.getChosenTiles()!=gameView.getChosenTiles() || model.getNickName()!=gameView.getNickName())
             printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
 
         model = gameView;
@@ -267,10 +271,11 @@ public class FXGameController {
 
             for (int i = 0; i < SHELF_ROWS; i++) {
                 for (int j = 0; j < SHELF_COLUMN; j++) {
-                    int finalI = i;
-                    int finalJ = j;
-                    Platform.runLater(() -> ((ImageView) tmpMatrix[finalI][finalJ]).setImage(getTileImage(tmpShelf.getTile(finalI, finalJ))));
-
+                    if (tmpShelf.getTile(i, j) != null) {
+                        int finalI = i;
+                        int finalJ = j;
+                        Platform.runLater(() -> ((ImageView) tmpMatrix[finalI][finalJ]).setImage(getTileImage(tmpShelf.getTile(finalI, finalJ))));
+                    }
                 }
             }
         }
@@ -297,7 +302,7 @@ public class FXGameController {
     }
 
     private void printPersonalGoalShelf(PersonalGoalCard personal) {
-        File p = new File("src/main/resources/images/personal goals/" + personal.toString() + "_personal.png");
+        File p = new File("src/main/resources/images/personal goals/" + personal.getCardName() + "_personal.png");
         BufferedImage tmp = null;
         try {
             tmp = ImageIO.read(p);
@@ -313,7 +318,7 @@ public class FXGameController {
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
 
             try {
-                c = ImageIO.read(new File("src/main/resources/images/common goals/" + goals[i] + ".png"));
+                c = ImageIO.read(new File("src/main/resources/images/common goals/" + goals[i] + ".jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -425,6 +430,10 @@ public class FXGameController {
 
     public void printTurnState(String playingPlayer) {
 
+        if(playingPlayer == playerNick)
+            turn=TurnState.PLAYER;
+        else turn=TurnState.OPPONENT;
+
         if(started)
             Platform.runLater(() -> printToken(playingPlayer));
 
@@ -482,7 +491,15 @@ public class FXGameController {
         Platform.runLater(() -> topText.setText("Game has ended. " + finalWinner + " won!"));
     }
 
-    protected static class PlayerObjects {
+    private class PlayerObjects {
+
+        public PlayerObjects(){
+            shelf = new Node[9][9];
+            seat = new ImageView();
+            labelNick = new Label();
+            points = new Label();
+            shelfPane = new GridPane();
+        }
         private String nick;
         private Node[][] shelf;
         private ImageView seat;
@@ -570,12 +587,14 @@ public class FXGameController {
                 i--;
             }
             else {
-                playersObjects.get(i).getLabelNick().setVisible(true);
-                playersObjects.get(i).setNick(nickList.get(i));
-                playersObjects.get(i).getLabelNick().setText(nickList.get(i));
-                playersObjects.get(i).getSeat().setVisible(true);
-                playersObjects.get(i).getGrid().setVisible(true);
-
+                int finalI = i;
+                Platform.runLater(()->{
+                    playersObjects.get(finalI).getLabelNick().setVisible(true);
+                    playersObjects.get(finalI).setNick(nickList.get(finalI));
+                    playersObjects.get(finalI).getLabelNick().setText(nickList.get(finalI));
+                    playersObjects.get(finalI).getSeat().setVisible(true);
+                    playersObjects.get(finalI).getGrid().setVisible(true);
+                });
             }
         }
 
@@ -583,7 +602,7 @@ public class FXGameController {
 
     private void printToken(String firstPlayer){
 
-        File f = new File("src/main/resources/images/firstplayertoken");
+        File f = new File("src/main/resources/images/firstplayertoken.png");
         BufferedImage firstTmp = null;
         try {
             firstTmp = ImageIO.read(f);
@@ -592,7 +611,7 @@ public class FXGameController {
         }
         BufferedImage finalFirstTmp = firstTmp;
         for (PlayerObjects p : playersObjects)
-            if (p.getName().equals(firstPlayer)) {
+            if (p.getName()!=null && p.getName().equals(firstPlayer)) {
                 Platform.runLater(() -> p.getSeat().setImage(SwingFXUtils.toFXImage(finalFirstTmp, null)));
                 started = false;
             }
@@ -649,6 +668,17 @@ public class FXGameController {
     }
 
 
+    private void initializeGraphicObjects(){
+
+        PlayerObjects firstPlayerObjs = new PlayerObjects();
+        PlayerObjects secondPlayerObjs = new PlayerObjects();
+        PlayerObjects thirdPlayerObjs = new PlayerObjects();
+        playersObjects = new ArrayList<>();
+        playersObjects.add(firstPlayerObjs);
+        playersObjects.add(secondPlayerObjs);
+        playersObjects.add(thirdPlayerObjs);
+
+    }
 
 
 

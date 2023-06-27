@@ -119,15 +119,15 @@
                               <Insets top="50.0" />
                            </HBox.margin>
                            <children>
-                              <Label fx:id="firstOpponentName" alignment="CENTER" contentDisplay="CENTER" prefHeight="46.0" prefWidth="66.0" text="Opponent 1" visible="false">
+                              <Label fx:id="firstOpponentName" alignment="CENTER" contentDisplay="CENTER" prefHeight="60.0" prefWidth="130.0" text="Opponent 1" visible="false">
                                  <font>
-                                    <Font name="Bodoni MT" size="10.0" />
+                                    <Font name="Bodoni MT" size="16.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="firstPoints" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="65.0" text="Points:" textAlignment="CENTER" visible="false" />
+                              <Label fx:id="firstPoints" alignment="CENTER" contentDisplay="CENTER" prefHeight="60.0" prefWidth="65.0" text="Points:" textAlignment="CENTER" visible="false" />
                            </children>
                         </VBox>
-                        <ImageView fx:id="firstOpponentToken" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <ImageView fx:id="firstOpponentToken" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <HBox.margin>
                               <Insets top="63.0" />
                            </HBox.margin>
@@ -328,7 +328,7 @@
                                     <Font name="Bodoni MT" size="21.0" />
                                  </font>
                               </Label>
-                              <ImageView fx:id="playerToken" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fx:id="playerToken" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <HBox.margin>
                                     <Insets top="15.0" />
                                  </HBox.margin>

@@ -84,7 +84,8 @@ public class ClientSocketImpl implements Client, ViewListener {
                         return;
                     }
                     case OK_JOINER -> {
-                        return;
+
+                       // return;
                     }
                     case OK_CREATOR -> {
                         view.askNumber();
