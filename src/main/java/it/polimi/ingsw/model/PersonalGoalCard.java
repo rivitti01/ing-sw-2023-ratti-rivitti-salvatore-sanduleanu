@@ -44,4 +44,8 @@ public class PersonalGoalCard implements Serializable {
     public Tile[][] getGoalsShelf() {
         return goalsShelf;
     }
+
+    public String getCardName() {
+        return cardName;
+    }
 }

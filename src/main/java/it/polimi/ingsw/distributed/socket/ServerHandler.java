@@ -1,9 +1,7 @@
 package it.polimi.ingsw.distributed.socket;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.distributed.First;
-import it.polimi.ingsw.distributed.Server;
+import it.polimi.ingsw.distributed.*;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.model.Player;
@@ -31,11 +29,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private boolean creator;
     private state currentState;
     private final First lock;
-    private Condition condition;
+    private ServerListener serverOne;
     public enum state{
         COORD, COLUMN, ORDER
     }
-    public ServerHandler(Socket socket, Game model, GameController controller,boolean creator, First lock){
+    public ServerHandler(Socket socket, Game model, GameController controller, boolean creator, First lock, ServerListener serverOne){
         this.socket = socket;
         this.model = model;
         this.controller = controller;
@@ -43,6 +41,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         this.creator = creator;
         currentState = state.COORD;
         this.lock = lock;
+        this.serverOne = serverOne;
     }
     @Override
     public void run() {
@@ -51,7 +50,11 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
-            setUp();
+            try {
+                setUp();//TODO: sconnettere il client in più prima di chiedergli il nickname
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             while (true) {
                 analyzeMessage(in.readObject());
@@ -99,7 +102,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }
     }
 
-    private void setUp() throws IOException, ClassNotFoundException {
+    private void setUp() throws IOException, ClassNotFoundException, InterruptedException {
 
         if (creator) {
             out.writeObject(Warnings.SET_NUMBER_PLAYERS);
@@ -146,7 +149,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }
         waitAndSetNickname();
     }
-    private void waitAndSetNickname() throws IOException, ClassNotFoundException {
+    private void waitAndSetNickname() throws IOException, ClassNotFoundException, InterruptedException {
 
         String nickname = (String) in.readObject();
         System.out.println(socket.getPort() + ": Nickname = " + nickname);
@@ -156,7 +159,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     if (controller.checkingExistingNickname(nickname)) { //playerIsBack(nickname)
 
                         controller.reconnectedPlayer(nickname); //setta a true il connected del player e comunica a tutti i thread che un player si è riconesso
-
                         System.out.println("Client" + socket.getPort() + " " + nickname + " is back");
                         this.nickname = nickname;
                         out.writeObject(Warnings.RECONNECTION);
@@ -172,6 +174,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         return;
                     }
                 }else {
+                    serverOne.clientDisconnected();//TODO: stai implementando la disconnessione e riconnessione con serverone
                     out.writeObject(Warnings.GAME_ALREADY_STARTED);
                     out.reset();
                     out.flush();
@@ -186,7 +189,21 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 out.reset();
                 out.flush();
                 if (controller.getNumberPlayers() > 1 && controller.getNumberPlayers() < 5 && controller.getNumberPlayers() == controller.getPlayers().size() && !model.isStart()) {//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
-                    controller.initializeModel();
+                    synchronized (this.lock){
+                        controller.initializeModel();
+                        this.lock.notifyAll();
+                    }
+                    System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+                    return;
+                }else {
+                    out.writeObject(Warnings.WAIT);
+                    out.reset();
+                    out.flush();
+                    while (controller.getPlayers().size() != controller.getNumberPlayers()){
+                        synchronized (this.lock) {
+                            this.lock.wait();
+                        }
+                    }
                 }
             } else {
                 out.writeObject(Warnings.INVALID_NICKNAME);
@@ -226,6 +243,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
     }
     private void disconnectedClient() throws RemoteException {
+        serverOne.clientDisconnected();
         for (Player player : controller.getPlayers()){
             if (player.getNickname().equals(nickname)){
                 model.removeModelListener(this);

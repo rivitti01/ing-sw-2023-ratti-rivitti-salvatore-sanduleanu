@@ -221,7 +221,7 @@ public class TextualUI implements UI {
                 openScanner();
             }
             case INVALID_RECONNECTION_NICKNAME -> {
-                System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
+                //System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
                 askExistingNickname();
             }
 
@@ -403,7 +403,7 @@ public class TextualUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        System.out.println("Game has started:");
+        //System.out.println("Game has started:");
         if(yourTurn) {
             try {
                 chooseAction();
@@ -424,7 +424,7 @@ public class TextualUI implements UI {
                 if (this.currentState!=CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
                     oldState = this.currentState;
                     this.currentState = CurrentState.CHATTING;
-                    System.out.println("Scrivi qualcosa a qualcuno");
+                    System.out.println("scrivi qualcosa a qualcuno! (Inizia con @nickname per mandarlo in privato)");
                 } else {
                     try {
                         switch (this.currentState) {

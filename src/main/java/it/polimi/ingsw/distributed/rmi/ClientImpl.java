@@ -118,7 +118,11 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void newTurn(boolean playing) {
         try {
-            this.view.newTurn(playing);
+            //this.view.newTurn(playing);
+            if (playing)
+                view.warning(Warnings.YOUR_TURN);
+            else
+                view.warning(Warnings.NOT_YOUR_TURN);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -148,11 +152,17 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     }
     @Override
     public void askNumberParticipants() throws RemoteException {
-        this.view.askNumber();
+        //this.view.askNumber();
+        view.warning(Warnings.SET_NUMBER_PLAYERS);
     }
     @Override
     public void askOrder(){
-        this.view.askOrder();
+        //this.view.askOrder();
+        try {
+            view.warning(Warnings.ASK_ORDER);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
     @Override
     public void lastTurnNotification(String nickname){
@@ -161,16 +171,19 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     @Override
     public void askAction() throws RemoteException {
-        this.view.chooseAction();
+        //this.view.chooseAction();
+        view.warning(Warnings.CONTINUE_TO_CHOOSE);
     }
 
     @Override
     public void askNickname() throws RemoteException {
-        this.view.askNickName();
+        //this.view.askNickName();
+        view.warning(Warnings.ASK_NICKNAME);
     }
     @Override
     public void askExistingNickname() throws RemoteException{
-        this.view.askExistingNickname();
+        //this.view.askExistingNickname();
+        view.warning(Warnings.ASK_RECONNECTION_NICKNAME);
     }
 
     @Override
@@ -179,7 +192,8 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
 
     @Override
     public void askColumn() throws RemoteException {
-        this.view.askColumn();
+        //this.view.askColumn();
+        view.warning(Warnings.ASK_COLUMN);
     }
 
     @Override
