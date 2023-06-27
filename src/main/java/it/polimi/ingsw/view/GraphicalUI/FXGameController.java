@@ -50,7 +50,7 @@ public class FXGameController {
 
     Node[][] tmpMatrix;
     private List <PlayerObjects> playersObjects;
-    private BufferedImage[] tileImages = new BufferedImage[12];
+    private BufferedImage[] tileImages = new BufferedImage[18];
     private Node[][] playerMatrix = new Node[6][5];
     private Node[][] boardMatrix = new Node[9][9];
 
@@ -368,8 +368,8 @@ public class FXGameController {
 
     private void loadTileImages(BufferedImage[] tiles) {
         Color[] colors = Color.values();
-        for (int i = 0; i < Arrays.stream(colors).count(); i++)
-            for (int j = 0; i < 3; i++) {
+        for (int i = 0; i < Arrays.stream(colors).count()-1; i++)
+            for (int j = 0; j < 3; j++) {
                 try {
                     tiles[(i * 3) + j] = ImageIO.read(new File("src/main/resources/images/tiles/" + j + colors[i] + ".png"));
                 } catch (IOException e) {
