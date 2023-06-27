@@ -101,25 +101,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     e.getMessage() + ". Skipping the update...");
         }
         if (!controller.isGameAlreadystarted()) {
-            connectionLock.lock();
-            try {
-                this.serverONE.clientConnected();
-                canPlay = true;
-                synchronized (first) {
-                    if (first.getFirst()) {
-                        first.setFirst(false);
-                        try {
-                            c.askNumberParticipants();
-                        } catch (RemoteException e) {
-                            System.err.println("Unable to ask the number of participants the client: "
-                                    + e.getMessage() + ". Skipping the update...");
-                        }
-                    } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
-                        canPlay = false;
-                    first.notifyAll();
-                }
-            }finally {
-                connectionLock.unlock();
+            this.serverONE.clientConnected();
+            canPlay = true;
+            synchronized (first) {
+                if (first.getFirst()) {
+                    first.setFirst(false);
+                    try {
+                        c.askNumberParticipants();
+                    } catch (RemoteException e) {
+                        System.err.println("Unable to ask the number of participants the client: "
+                                + e.getMessage() + ". Skipping the update...");
+                    }
+                } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
+                    canPlay = false;
+                first.notifyAll();
+
             }
                 if (canPlay) {
                     addClientToGame(c);
@@ -130,13 +126,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                         System.err.println("Unable to advice the client about the loading:" +
                                 e.getMessage() + ". Skipping the update...");
                     }
-                    this.controller.checkGameInitialization();
+                    synchronized (first) {
+                        this.controller.checkGameInitialization();
+                        first.notifyAll();
+                    }
                 } else
                     c.warning(Warnings.GAME_ALREADY_STARTED);
         } else {
             if(((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()){
                 addClientToGame(c);
-                System.out.println("A client has RE-connected.");
+                System.out.println("RMI: A client has RE-connected.");
                 c.askExistingNickname();
             } else {
                 try {
@@ -164,9 +163,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
-            if (connectedClients.size() == 2) {
+            if (((ServerOne) serverONE).getConnectedClients() == 2) {
                 this.model.newTurn();
-            } else if (connectedClients.size() > 2) {
+            } else if (((ServerOne) serverONE).getConnectedClients() > 2) {
                 for(Player player : this.model.getPlayers()){
                     if(player.getNickname().equals(nickName)) {
                         c.printGame(new GameView(this.model, player));
@@ -244,7 +243,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     //************************      MODEL LISTENER METHODS      ************************************************
     @Override
     public void printGame() {
-
         for (Client c : connectedClients.keySet()) {
             try {
                 Player p = null;
@@ -411,17 +409,58 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void playerDisconnected(String nickname) {
-        for(Client client : this.connectedClients.keySet()) {
-            try {
-                client.warning(Warnings.CLIENT_DISCONNECTED);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
+        if(connectedClients.size() > 0) {
+            for (Client client : this.connectedClients.keySet()) {
+                try {
+                    client.warning(Warnings.CLIENT_DISCONNECTED);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            int counter = 0;
+            for (Player p : model.getPlayers()) {
+                if (p.isConnected()) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                try {
+                    getLastRMIClient().warning(Warnings.WAITING_FOR_MORE_PLAYERS);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
+
+
+    private Client getLastRMIClient() {
+        Iterator<Map.Entry<Client, String>> iterator = this.connectedClients.entrySet().iterator();
+        if (iterator.hasNext()) {
+            Map.Entry<Client, String> firstEntry = iterator.next();
+            return firstEntry.getKey();
+        }
+        return null;
+    }
+
     @Override
     public void playerReconnected(String nickname) {
+        for(Client client : this.connectedClients.keySet()){
+            if(model.getCurrentPlayer().getNickname().equals(connectedClients.get(client))) {
+                try {
+                    client.newTurn(true);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    client.newTurn(false);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
     }
 

@@ -30,6 +30,10 @@ public class Board implements Serializable {
         return board;
     }
 
+    public void putTile(Tile tile, int[] coordinates){
+        board[coordinates[0]] [coordinates[1]] = tile;
+    }
+
     private void setupBoard(String boardName){
         String filePath = "src/main/resources/BoardFactor.json";
         File input = new File(filePath);

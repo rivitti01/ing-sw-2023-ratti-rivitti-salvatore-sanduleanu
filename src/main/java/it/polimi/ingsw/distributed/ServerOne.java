@@ -65,13 +65,16 @@ public class ServerOne implements ServerListener {
     @Override
     public void clientConnected() {
         this.connectedClients++;
-        if(timerTask != null)
+        if(timerTask != null) {
+            System.out.println("ServerONE: timer has been stopped!");
             timerTask.cancel(true);
+            timerTask = null;
+        }
     }
 
     @Override
     public void clientDisconnected(String nickname) {
-        System.out.println("SERVEROOOOOOOOONE");
+        System.err.println("SERVERONE: client " + nickname + " has disconnected");
         this.connectedClients--;
         Player disconnectedPlayer = null;
         for(Player player : model.getPlayers()){
@@ -85,8 +88,7 @@ public class ServerOne implements ServerListener {
 
         if(this.connectedClients > 1) {   // multiple players left
             if (nickname.equals(model.getCurrentPlayer().getNickname())) {    // currentPlayer Disconnected
-                //TODO put the tiles back on the board
-                disconnectedPlayer.reset(model.getCommonGoals());
+                disconnectedPlayer.reset(model.getCommonGoals()); //TODO put the tiles back on the board
                 try {
                     this.controller.nextPlayer();
                 } catch (RemoteException e) {
@@ -95,57 +97,27 @@ public class ServerOne implements ServerListener {
 
             }
         }else{    // one player left
-            System.out.println("waiting for more players to continue...");
-            if(serverRMI.getRMIClients().size() == 1) {  // one RMI client remaining
-                try {
-                    getLastRMIClient().warning(Warnings.WAITING_FOR_MORE_PLAYERS);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {    // one SOCKET client remaining
-                //TODO notify SOCKET client that he needs to wait for clients
-            }
+            System.out.println("SERVERONE: waiting for more players to continue...");
             startTimer();
         }
     }
 
-    private Client getLastRMIClient() {
-        Iterator<Map.Entry<Client, String>> iterator = serverRMI.getRMIClients().entrySet().iterator();
-        if (iterator.hasNext()) {
-            Map.Entry<Client, String> firstEntry = iterator.next();
-            return firstEntry.getKey();
-        }
-        return null;
-    }
-
-    // TODO getLastSOCKETClient
 
     private void startTimer() {
-        if (timerExecutor != null && !timerExecutor.isShutdown()) {
-            // Timer is already running, no need to start a new one
-            return;
-        }
 
         // Schedule a timer task to be executed after a specified timeout
         timerExecutor = Executors.newSingleThreadScheduledExecutor();
+        System.out.println("timer has started. TIK TOK TIK TOK");
         // Code to be executed when the timer expires
+
         timerTask = timerExecutor.schedule(this::handleTimeout, TIMEOUT_DURATION, TimeUnit.SECONDS);
     }
 
     private void handleTimeout() {
         // Code to be executed when the timeout occurs
         System.out.println("Timeout! No other players!\nClosing the game...");
-        if(serverRMI.getRMIClients().size() == 1){   // one rmi client remained
-            try {
-                getLastRMIClient().warning(Warnings.NO_PLAYERS_LEFT);
-            } catch (RemoteException e) {
-
-            }
-
-        } else{   // one socket client remained
-
-        }
-        System.exit(2);
+        model.setErrorType(Warnings.NO_PLAYERS_LEFT);
+        System.exit(1);
     }
 
     public int getConnectedClients() {

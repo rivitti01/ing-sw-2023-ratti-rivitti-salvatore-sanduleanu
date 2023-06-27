@@ -48,8 +48,8 @@ public class Game {
         DeckPersonal deckPersonal = new DeckPersonal();
         for (int i=0; i<this.players.size(); i++)
             this.players.get(i).setPrivateCard(deckPersonal.popPersonalCard());
-        listener.forEach(ModelListener::printGame);//listener.printGame();
         listener.forEach(x->x.gameStarted(currentPlayer));//listener.newTurn(currentPlayer);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
     }
 
     public List<ModelListener> getListener() {
@@ -159,8 +159,8 @@ public class Game {
             listener.forEach(ModelListener::askOrder);//listener.askOrder();
     }
     public void newTurn(){
-        listener.forEach(ModelListener::printGame);//listener.printGame();
         listener.forEach(x->x.newTurn(this.currentPlayer));//listener.newTurn(this.currentPlayer);
+        listener.forEach(ModelListener::printGame);//listener.printGame();
     }
 
     ////////////////////////////////////////////////////

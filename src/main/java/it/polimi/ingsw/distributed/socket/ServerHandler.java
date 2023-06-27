@@ -173,7 +173,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         waitAndSetNickname();
                         return;
                     }
-                }else {
+                } else {
                     serverOne.clientDisconnected(this.nickname);//TODO: stai implementando la disconnessione e riconnessione con serverone
                     out.writeObject(Warnings.GAME_ALREADY_STARTED);
                     out.reset();
@@ -182,34 +182,40 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                     socket.close();
                     Thread.currentThread().interrupt();
                 }
-            }
-            if (controller.setPlayerNickname(nickname)) {
-                this.nickname = nickname;
-                out.writeObject(Warnings.OK_JOINER);
-                out.reset();
-                out.flush();
-                if (controller.getNumberPlayers() > 1 && controller.getNumberPlayers() < 5 && controller.getNumberPlayers() == controller.getPlayers().size() && !model.isStart()) {//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
-                    synchronized (this.lock){
-                        controller.initializeModel();
-                        this.lock.notifyAll();
-                    }
-                    System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
-                    return;
-                }else {
-                    out.writeObject(Warnings.WAIT);
+            } else {
+                if (controller.setPlayerNickname(nickname)) {
+                    this.nickname = nickname;
+                    out.writeObject(Warnings.OK_JOINER);
                     out.reset();
                     out.flush();
-                    while (controller.getPlayers().size() != controller.getNumberPlayers()){
+                    if (controller.getPlayers().size() == controller.getNumberPlayers()) {//TODO: correggere il controllo da parte del controller e poi cancellare il superfluo in questo if
                         synchronized (this.lock) {
-                            this.lock.wait();
+                            controller.checkGameInitialization();
+                            this.lock.notifyAll();
+                        }
+                        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+                        return;
+                    } else {
+                        out.writeObject(Warnings.WAIT);
+                        out.reset();
+                        out.flush();
+                        while (true) {
+                            synchronized (this.lock) {
+                                if (controller.getPlayers().size() < controller.getNumberPlayers())
+                                    this.lock.wait();
+                                else {
+                                    lock.notifyAll();
+                                    break;
+                                }
+                            }
                         }
                     }
+                } else {
+                    out.writeObject(Warnings.INVALID_NICKNAME);
+                    out.reset();
+                    out.flush();
+                    waitAndSetNickname();
                 }
-            } else {
-                out.writeObject(Warnings.INVALID_NICKNAME);
-                out.reset();
-                out.flush();
-                waitAndSetNickname();
             }
         }
         System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
@@ -243,16 +249,8 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
     }
     private void disconnectedClient() throws RemoteException {
+        model.removeModelListener(this);
         serverOne.clientDisconnected(this.nickname);
-        for (Player player : controller.getPlayers()){
-            if (player.getNickname().equals(nickname)){
-                model.removeModelListener(this);
-                controller.disconnectedPlayer(player); //player.setConnected(false);
-                if (model.getCurrentPlayer().getNickname().equals(nickname)){
-                    controller.nextPlayer();
-                }
-            }
-        }
     }
 
     @Override
@@ -455,7 +453,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -474,8 +471,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     @Override
