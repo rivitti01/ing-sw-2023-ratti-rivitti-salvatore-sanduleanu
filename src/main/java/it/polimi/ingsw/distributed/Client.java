@@ -30,4 +30,6 @@ public interface Client extends Remote {
     void setNickname(String nickname) throws RemoteException;
 
     void gameStarted(boolean youTurn) throws RemoteException;
+    void setID(int id) throws RemoteException;
+    int getID() throws RemoteException;
 }

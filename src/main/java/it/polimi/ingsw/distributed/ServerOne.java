@@ -11,14 +11,16 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static it.polimi.ingsw.util.Costants.TIMEOUT_DURATION;
+import static it.polimi.ingsw.util.Costants.*;
 import static it.polimi.ingsw.view.Colors.*;
 
 public class ServerOne implements ServerListener {
@@ -32,20 +34,23 @@ public class ServerOne implements ServerListener {
     private ScheduledExecutorService timerExecutor;
     private ScheduledFuture<?> timerTask;
     private boolean interruptedTimer = false;
+    private List<Integer> connectedClientsID;
+    private int lastID = 0;
 
     public ServerOne() throws RemoteException {
         first = new First();
         model = new Game();
         controller = new GameController(model);
-        serverSocket = new ServerSocketImpl(2000,model,controller,first);
+        serverSocket = new ServerSocketImpl(SOCKET_PORT,model,controller,first);
         serverSocket.addServerListener(this);
         serverRMI = new ServerImpl(model,controller,first);
         serverRMI.addServerListener(this);
+        connectedClientsID = new ArrayList<>();
     }
     public void start() throws IOException {
         Thread rmi = new Thread(() -> {
             try {
-                registry = LocateRegistry.createRegistry(1099);
+                registry = LocateRegistry.createRegistry(RMI_PORT);
                 registry.rebind("server", serverRMI);
                 System.out.println("ServerRMI is running");
             } catch (RemoteException e) {
@@ -65,8 +70,9 @@ public class ServerOne implements ServerListener {
     }
 
     @Override
-    public void clientConnected() {
+    public int clientConnected() {
         this.connectedClients++;
+        connectedClientsID.add(lastID++);
         if(timerTask != null) {
             System.out.println("ServerONE: timer has been stopped!");
             interruptedTimer = true;
@@ -74,27 +80,31 @@ public class ServerOne implements ServerListener {
             timerTask = null;
         }
         System.out.println("SERVERONE: number of clients connected = " + connectedClients);
-
+        return lastID-1;
     }
 
     @Override
-    public void clientDisconnected(String nickname) {
+    public void clientDisconnected(String nickname, int ID) {
         System.out.println("SERVERONE: " + ANSI_RED_BACKGROUND + "client " + nickname + " has disconnected" + ANSI_RESET);
         this.connectedClients--;
+        connectedClientsID.remove((Integer) ID);
         System.out.println("SERVERONE: number of clients connected = " + connectedClients);
 
         Player disconnectedPlayer = null;
-        for(Player player : model.getPlayers()){
-            if(player.getNickname().equals(nickname)) {
-                disconnectedPlayer = player;
-                break;
+        if (model != null && model.getPlayers()!=null) {
+            for (Player player : model.getPlayers()) {
+                if (nickname != null && player.getNickname().equals(nickname)) {
+                    disconnectedPlayer = player;
+                    break;
+                }
+
             }
-
         }
-        controller.disconnectedPlayer(disconnectedPlayer);
-
+        if (disconnectedPlayer != null) {
+            controller.disconnectedPlayer(disconnectedPlayer);
+        }
         if(this.connectedClients > 1) {   // multiple players left
-            if (nickname.equals(model.getCurrentPlayer().getNickname())) {    // currentPlayer Disconnected
+            if (nickname!= null && nickname.equals(model.getCurrentPlayer().getNickname())) {    // currentPlayer Disconnected
                 disconnectedPlayer.reset(model.getCommonGoals());
                 try {
                     this.controller.nextPlayer();
@@ -103,7 +113,7 @@ public class ServerOne implements ServerListener {
                 }
 
             }
-        }else{    // one player left
+        }else if(nickname!= null && !nickname.equals(model.getCurrentPlayer().getNickname())){    // one player left
             System.out.println("SERVERONE: waiting for more players to continue...");
             interruptedTimer = false;
             startTimer();
@@ -147,5 +157,9 @@ public class ServerOne implements ServerListener {
 
     public int getConnectedClients() {
         return connectedClients;
+    }
+
+    public List<Integer> getConnectedClientsID() {
+        return connectedClientsID;
     }
 }

@@ -21,6 +21,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     private Server stub;
     private String nickname = null;
     private static final int PONG_PERIOD = 1000;  // milliseconds
+    private int id = -1;
 
 
     public ClientImpl(Server s, boolean gui) throws RemoteException {
@@ -207,5 +208,16 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void gameStarted(boolean yourTurn) {
         this.view.gameStarted(yourTurn);
+    }
+
+    @Override
+    public void setID(int id) throws RemoteException {
+        this.id = id;
+        System.out.println("CLIENT RMI: ID SETTED: " + id);
+    }
+
+    @Override
+    public int getID() throws RemoteException {
+        return this.id;
     }
 }
