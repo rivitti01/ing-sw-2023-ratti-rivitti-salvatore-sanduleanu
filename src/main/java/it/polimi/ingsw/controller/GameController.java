@@ -152,7 +152,7 @@ public class GameController  {
             }
         }
     }
-    public void setChosenColumn(int c){
+    public void setChosenColumn(int c) {
         //controllo sulla colonna
         if(c<0 || c>=SHELF_COLUMN)
             this.model.setErrorType(Warnings.INVALID_COLUMN);
@@ -162,6 +162,7 @@ public class GameController  {
                 this.model.setErrorType(Warnings.INVALID_COLUMN);
             }else
                 this.model.setChosenColumnByPlayer(c);
+
         }
 
     }

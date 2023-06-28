@@ -117,12 +117,17 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                         first.setFirst(false);
                         try {
                             c.askNumberParticipants();
+                            while (this.controller.getNumberPlayers() == 0) {
+                                Thread.sleep(100);
+                            }
                         } catch (RemoteException e) {
                             System.err.println("Unable to ask the number of participants the client: "
                                     + e.getMessage() + ". Skipping the update...");
                             first.setFirst(true);
                             serverONE.clientDisconnected(null,c.getID());
                             return;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                     ID = c.getID();
@@ -136,8 +141,15 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 if (canPlay) {
                     addClientToGame(c);
                     c.askNickname();
+                    while (this.connectedClients.get(c) == null) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                     try {
-                        c.warning(Warnings.WAIT);
+                        c.warning(Warnings.OK_JOINER);
                     } catch (RemoteException e) {
                         System.err.println("Unable to advice the client about the loading:" +
                                 e.getMessage() + ". Skipping the update...");

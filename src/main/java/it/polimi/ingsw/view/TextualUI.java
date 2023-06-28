@@ -178,7 +178,7 @@ public class TextualUI implements UI {
                 askOrder();
             }
             case WAIT -> System.out.println("Loading. Wait...");
-            case OK_JOINER -> {}
+            case OK_JOINER -> {System.out.println("Loading. Wait...");}
             case INVALID_CHAT_MESSAGE -> {
                 System.err.println("messaggio invalido! scrivere un messaggio da mandare a tutti\n" +
                         "oppure scrivere |@nickname| |messaggio da inviare|");
