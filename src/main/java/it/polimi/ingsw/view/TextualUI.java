@@ -384,7 +384,7 @@ public class TextualUI implements UI {
         printPersonalGoalShelf(gameView.getPersonal());
 
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
-        System.out.println("E' il turno di: "+gameView.getNickName());
+        System.out.println("E' il turno di: " + gameView.getNickName());
         if(!gameView.isYourTurn())
             System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
         else {
@@ -461,7 +461,6 @@ public class TextualUI implements UI {
                             case CHOOSING_COLUMN -> {
                                 try {
                                     int column = Integer.parseInt(input);
-                                    this.currentState = CurrentState.CHOOSING_ORDER;
                                     this.listener.columnSetting(column);
                                 } catch (NumberFormatException e) {
                                     System.err.println("inserire una colonna!");

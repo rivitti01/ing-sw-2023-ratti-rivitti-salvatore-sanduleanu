@@ -139,6 +139,9 @@ public class Game {
     }
     public void setChosenColumnByPlayer(int c){
         this.currentPlayer.setChosenColumn(c);
+    }
+
+    public void askOrder(){
         listener.forEach(ModelListener::askOrder);//listener.askOrder();
     }
     public Warnings getErrorType() {
@@ -155,6 +158,9 @@ public class Game {
     public void droppedTile(Tile tile, int column){
         this.currentPlayer.getShelf().dropTile(tile, column);
         listener.forEach(ModelListener::printGame);//listener.printGame();
+        if (this.currentPlayer.getChosenTiles().size()>1){
+            return;
+        }
         if(!this.currentPlayer.getChosenTiles().isEmpty())
             listener.forEach(ModelListener::askOrder);//listener.askOrder();
     }

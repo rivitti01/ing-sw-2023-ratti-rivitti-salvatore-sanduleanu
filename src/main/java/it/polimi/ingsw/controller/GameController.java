@@ -160,8 +160,19 @@ public class GameController  {
             int emptyCells = this.model.getCurrentPlayer().getShelf().checkColumnEmptiness(c);
             if(this.model.getCurrentPlayer().getChosenTiles().size() > emptyCells){
                 this.model.setErrorType(Warnings.INVALID_COLUMN);
-            }else
+            }else{
                 this.model.setChosenColumnByPlayer(c);
+                if (this.model.getCurrentPlayer().getChosenTiles().size()==1){
+                    try {
+                        dropTile(1);
+                    } catch (RemoteException e) {
+                        System.err.println("Error in dropTile(1)");
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    this.model.askOrder();
+                }
+            }
 
         }
 
@@ -185,6 +196,10 @@ public class GameController  {
             Tile chosenTile = model.getCurrentPlayer().getChosenTiles().remove(tilePosition - 1);
             int column = model.getCurrentPlayer().getChosenColumn();
             model.droppedTile(chosenTile, column);
+            if (this.model.getCurrentPlayer().getChosenTiles().size()==1){
+                Tile lastTile = this.model.getCurrentPlayer().getChosenTiles().remove(0);
+                model.droppedTile(lastTile, column);
+            }
             if(this.model.getCurrentPlayer().getChosenTiles().isEmpty() && !this.model.isEnd())
                 nextPlayer();
         }
