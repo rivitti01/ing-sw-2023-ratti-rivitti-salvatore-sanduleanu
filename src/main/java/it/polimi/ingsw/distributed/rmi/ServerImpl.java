@@ -88,13 +88,19 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 c.ping();
             } catch (RemoteException e) {
                 System.err.println("A client has exited the game");
-                serverONE.clientDisconnected(this.connectedClients.remove(c));
+                try {
+                    serverONE.clientDisconnected(this.connectedClients.remove(c), c.getID());
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
                 executorService.shutdown();
             }
         }, 0, PING_PERIOD, TimeUnit.MILLISECONDS);
     }
     @Override
     public void clientConnection(Client c) throws RemoteException {
+        int ID = this.serverONE.clientConnected();
+        c.setID(ID);
         boolean canPlay = false;
         try {
             c.warning(Warnings.WAIT);
@@ -105,24 +111,26 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
         if (!controller.isGameAlreadystarted()) {
             synchronized (connectionLock){
-            this.serverONE.clientConnected();
-            canPlay = true;
-            synchronized (first) {
-                if (first.getFirst()) {
-                    first.setFirst(false);
-                    try {
-                        c.askNumberParticipants();
-                    } catch (RemoteException e) {
-                        System.err.println("Unable to ask the number of participants the client: "
-                                + e.getMessage() + ". Skipping the update...");
-                        first.setFirst(true);
-                        serverONE.clientDisconnected(null);
-                        return;
+                canPlay = true;
+                synchronized (first) {
+                    if (first.getFirst()) {
+                        first.setFirst(false);
+                        try {
+                            c.askNumberParticipants();
+                        } catch (RemoteException e) {
+                            System.err.println("Unable to ask the number of participants the client: "
+                                    + e.getMessage() + ". Skipping the update...");
+                            first.setFirst(true);
+                            serverONE.clientDisconnected(null,c.getID());
+                            return;
+                        }
                     }
-                } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
-                    canPlay = false;
-                first.notifyAll();
-            }
+                    ID = c.getID();
+                    if (((ServerOne)serverONE).getConnectedClientsID().indexOf(ID)+1 > controller.getNumberPlayers()) { //((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers()
+                        canPlay = false;
+                    }
+                    first.notifyAll();
+                }
             connectionLock.notifyAll();
         }
                 if (canPlay) {

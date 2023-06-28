@@ -40,21 +40,23 @@ public class ServerSocketImpl {
     public void start() throws IOException {
         clients = new HashMap<>();
         serverSocket = new ServerSocket(port);
-        int i = 0;
+        int lastID;
 
 
         while (true){
             System.out.println("Socket: Aspetto connessione");
             Socket socket = serverSocket.accept();
 
-            this.serverONE.clientConnected();
+            lastID = this.serverONE.clientConnected();
             ServerHandler serverHandler;
 
             if (clients.size() == 0 && first.getFirst()){
                 first.setFirst(false);
                 serverHandler = new ServerHandler(socket,model,controller,true,first,serverONE);
+                serverHandler.setClientID(lastID);
             }else {
                 serverHandler = new ServerHandler(socket, model, controller, false, first,serverONE);
+                serverHandler.setClientID(lastID);
             }
             clients.put(clients.size(), serverHandler);
             Thread thread = new Thread(serverHandler);

@@ -144,6 +144,17 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
     @Override
+    public void setID(int id) throws RemoteException {
+
+    }
+
+    @Override
+    public int getID() throws RemoteException {
+        return 0;
+    }
+
+
+    @Override
     public void checkingExistingNickname(String nickname) throws RemoteException {
 
         try {

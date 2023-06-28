@@ -30,6 +30,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private state currentState;
     private final First lock;
     private ServerListener serverOne;
+    private int clientID;
     public enum state{
         COORD, COLUMN, ORDER
     }
@@ -45,7 +46,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     @Override
     public void run() {
-        System.out.println("accepted connection: "+ socket.getPort());
+        System.out.println("SOCKET: "+"accepted connection: "+ socket.getPort());
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -60,7 +61,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 analyzeMessage(in.readObject());
             }
         } catch (IOException e) {
-            System.err.println("Client "+ this.socket.getPort()+" disconnected");
+            System.err.println("SOCKET: "+"Client "+ this.socket.getPort()+" disconnected");
             try {
                 disconnectedClient();
             } catch (RemoteException ex) {
@@ -69,7 +70,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             Thread.currentThread().interrupt();
         }
         catch (ClassNotFoundException  e) {
-            System.err.println("Class not found");
+            System.err.println("SOCKET: "+"Class not found");
         }
     }
     private void analyzeMessage(Object response) throws IOException {
@@ -117,9 +118,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             out.reset();
             out.flush();
             if (controller.getNumberPlayers() == 0) {
-                System.out.println(Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
+                System.out.println("SOCKET: "+Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
                 synchronized (this.lock) {
-                    System.out.println(Thread.currentThread().getName() + " is not waiting anymore");
+                    System.out.println("SOCKET: "+Thread.currentThread().getName() + " is not waiting anymore");
+                    if (((ServerOne)serverOne).getConnectedClientsID().indexOf(clientID)+1 > controller.getNumberPlayers()){
+                        disconnectedClient();
+                        socket.close();
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
@@ -152,14 +158,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private void waitAndSetNickname() throws IOException, ClassNotFoundException, InterruptedException {
 
         String nickname = (String) in.readObject();
-        System.out.println(socket.getPort() + ": Nickname = " + nickname);
+        System.out.println("SOCKET: "+socket.getPort() + ": Nickname = " + nickname);
         if (nickname != null) {
             if (model.isStart()) {
                 if (controller.playerOffline()) {
                     if (controller.checkingExistingNickname(nickname)) { //playerIsBack(nickname)
 
                         controller.reconnectedPlayer(nickname); //setta a true il connected del player e comunica a tutti i thread che un player si è riconesso
-                        System.out.println("Client" + socket.getPort() + " " + nickname + " is back");
+                        System.out.println("SOCKET: "+"Client" + socket.getPort() + " " + nickname + " is back");
                         this.nickname = nickname;
                         out.writeObject(Warnings.RECONNECTION);
                         out.reset();
@@ -174,7 +180,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         return;
                     }
                 } else {
-                    serverOne.clientDisconnected(this.nickname);
+                    serverOne.clientDisconnected(this.nickname, this.clientID);
                     out.writeObject(Warnings.GAME_ALREADY_STARTED);
                     out.reset();
                     out.flush();
@@ -193,7 +199,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                             controller.checkGameInitialization();
                             this.lock.notifyAll();
                         }
-                        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+                        System.out.println("SOCKET: "+"Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
                         return;
                     } else {
                         out.writeObject(Warnings.WAIT);
@@ -218,7 +224,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 }
             }
         }
-        System.out.println("Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+        System.out.println("SOCKET: "+"Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
     }
     private void waitAndSetNumberPlayers() throws IOException, ClassNotFoundException {
         int numberPlayers = (int) in.readObject();
@@ -250,7 +256,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     private void disconnectedClient() throws RemoteException {
         model.removeModelListener(this);
-        serverOne.clientDisconnected(this.nickname);
+        serverOne.clientDisconnected(this.nickname, this.clientID);
     }
 
     @Override
@@ -495,6 +501,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public int getClientID() {
+        return clientID;
+    }
+
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
     }
 
     @Override
