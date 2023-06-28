@@ -51,7 +51,8 @@ public class CommonGoalCard10 implements CardStrategy {
 
 
     public String toString() {
-        return "Due righe formate ciascuna da 5 diversi tipi di tessere.";
+        return "Two lines each formed by 5 different types of tiles. " +
+                "One line can show the same or a different combination of the other line.";
     }
 
 

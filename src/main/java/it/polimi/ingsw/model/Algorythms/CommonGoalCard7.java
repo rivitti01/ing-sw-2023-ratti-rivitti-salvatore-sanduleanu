@@ -31,7 +31,7 @@ public class CommonGoalCard7 implements CardStrategy {
 
 
     public String toString() {
-        return "Cinque tessere dello stesso tipo che formano una diagonale.";
+        return "Five tiles of the same type forming a diagonal.";
     }
     public String getCardName(){return "7common";}
 }

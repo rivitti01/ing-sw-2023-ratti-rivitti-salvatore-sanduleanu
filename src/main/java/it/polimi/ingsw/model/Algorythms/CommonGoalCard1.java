@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Shelf;
 
 public class CommonGoalCard1 implements CardStrategy {
 
-    public boolean algorythm(Shelf myShelf) { //potrebbe essere più efficiente
+    public boolean algorythm(Shelf myShelf) {
         if (myShelf == null){
             return false;
         }
@@ -39,9 +39,9 @@ public class CommonGoalCard1 implements CardStrategy {
 
     @Override
     public String toString() {
-        return "Sei gruppi separati formati ciascuno da due tessere adiacenti " +
-                "dello stesso tipo (non necessariamente come mostrato in figura). " +
-                "Le tessere di un gruppo possono essere diverse da quelle di un altro gruppo.";
+        return "Six groups each containing at least\n" +
+                "2 tiles of the same type (not necessarily in the depicted shape).\n" +
+                "The tiles of one group can be different from those of another group.";
     }
 
     public String getCardName(){return "1common";}

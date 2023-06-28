@@ -50,7 +50,7 @@ public class CommonGoalCard9 implements CardStrategy {
 
 
     public String toString() {
-        return "Due colonne formate ciascuna da 6 diversi tipi di tessere.";
+        return "Two columns each formed by 6 different types of tiles.";
     }
 
 

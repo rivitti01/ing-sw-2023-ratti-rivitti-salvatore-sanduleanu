@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Shelf;
 
 public class CommonGoalCard11 implements CardStrategy{
     public String toString(){
-        return "Cinque tessere dello stesso tipo che formano una X.";
+        return "Five tiles of the same type forming an X.";
     }
     public String getCardName(){return "11common";}
 

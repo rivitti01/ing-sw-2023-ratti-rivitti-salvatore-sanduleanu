@@ -41,9 +41,9 @@ public class CommonGoalCard3 implements CardStrategy {
         return 3;
     }
     public String toString(){
-        return "Quattro gruppi separati formati ciascuno da quattro tessere adiacenti dello stesso tipo" +
-                " (non necessariamente come mostrato in figura)." +
-                " Le tessere di un gruppo possono essere diverse da quelle di un altro gruppo.";
+        return "Four groups each containing at least\n" +
+                "4 tiles of the same type (not necessarily in the depicted shape).\n" +
+                "The tiles of one group can be different from those of another group.";
     }
 
     public String getCardName(){return "3common";}

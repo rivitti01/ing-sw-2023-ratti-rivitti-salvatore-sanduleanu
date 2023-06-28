@@ -24,8 +24,7 @@ public class CommonGoalCard2 implements CardStrategy {
 
     @Override
     public String toString() {
-        return "Quattro tessere dello stesso tipo" +
-                " ai quattro angoli della Libreria.";
+        return "Four tiles of the same type in the four corners of the bookshelf.";
     }
 
     public String getCardName(){return "2common";}

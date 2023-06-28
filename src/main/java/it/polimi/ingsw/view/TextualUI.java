@@ -23,7 +23,7 @@ public class TextualUI implements UI {
     public void newTurn(boolean playing) throws RemoteException {
         if(playing) {
             this.currentState = CurrentState.CHOOSING_ACTION;
-            System.out.println("È IL TUO TURNO");
+            System.out.println("IT'S YOUR TURN");
             chooseAction();
         }else {
             this.currentState = CurrentState.WAITING_TURN;
@@ -31,9 +31,18 @@ public class TextualUI implements UI {
         }
     }
 
+    public void resumingTurn(boolean playing)   {
+        if(playing)
+            this.currentState = this.previousState;
+        else
+            waitingTurn();
+
+
+    }
+
     @Override
     public void askOrder() {
-        System.out.println("seleziona la tile da inserire prima: ");
+        System.out.println("choose the tile to drop first: ");
         this.currentState = CurrentState.CHOOSING_ORDER;
     }
 
@@ -41,7 +50,7 @@ public class TextualUI implements UI {
         try {
             if(playing) {
                 this.currentState = CurrentState.CHOOSING_ACTION;
-                System.out.println("È IL TUO *** ULTIMO *** TURNO");
+                System.out.println("IT'S YOUR LAST TURN!");
                 chooseAction();
             }else {
                 waitingTurn();
@@ -55,12 +64,12 @@ public class TextualUI implements UI {
 
     public void chat(){
         this.currentState = CurrentState.CHATTING;
-        System.out.println("scrivi qualcosa a qualcuno! (Inizia con @nickname per mandarlo in privato)");
+        System.out.println("Send a message to someone (begin with @nickname to send it privately)");
     }
 
     public void askColumn() {
         this.currentState = CurrentState.CHOOSING_COLUMN;
-        System.out.println("Selezionare una colonna valida dove inserire la/e tessera/e scelta/e");
+        System.out.println("Select a valid column to drop your tiles");
     }
     public void chooseAction() throws RemoteException {
         this.currentState = CurrentState.CHOOSING_ACTION;
@@ -74,13 +83,13 @@ public class TextualUI implements UI {
             }
             case "S" -> {
                 this.currentState = CurrentState.CHOOSING_TILE;
-                System.out.println("seleziona una tessera:");
+                System.out.println("Select a tile :");
             }
             case "CHAT" -> {
                 this.currentState = CurrentState.CHATTING;
                 chat();
             }
-            default -> System.err.println("Non conosco questo comando.\nRiprova");
+            default -> System.err.println("I don'know this command.\nTry again...");
         }
     }
     public void askNumber() throws RemoteException {
@@ -141,7 +150,7 @@ public class TextualUI implements UI {
     public void warning(Warnings e) throws RemoteException {
         switch (e){
             case INVALID_TILE -> {
-                System.out.println("La tile selezionata non può essere scelta. Sceglierne un'altra:");
+                System.out.println("The selected tile cannot be chosen. Choose another one: ");
                 try {
                     chooseAction();
                 } catch (RemoteException ex) {
@@ -149,16 +158,16 @@ public class TextualUI implements UI {
                 }
             }
             case INVALID_NICKNAME -> {
-                System.err.println("Il nome scelto è già in uso, sceglierne un altro:");
+                System.err.println("This nickname is already taken, choose another one: ");
                 askNickName();
             }
             case INVALID_COLUMN -> {
-                System.err.println("Errore nella scelta della colonna, scegline un'altra:");
+                System.err.println("Wrong column selected, please try again:");
                 this.currentState = CurrentState.CHOOSING_COLUMN;
                 askColumn();
             }
             case INVALID_ACTION -> {
-                System.err.println("Scegliere almeno una tile prima di procedere:");
+                System.err.println("Please choose at least one tile:");
                 this.currentState = CurrentState.CHOOSING_ACTION;
                 try {
                     chooseAction();
@@ -169,41 +178,26 @@ public class TextualUI implements UI {
             case GAME_ALREADY_STARTED -> System.err.println("A game has already started, you cannot play. Sorry :(");
             case MAX_TILES_CHOSEN -> {
                 this.currentState = CurrentState.CHOOSING_COLUMN;
-                System.out.println("Hai raggiunto il numero massimo di tessere prendibili.");
+                System.out.println("You reached the max number of chosen tiles");
                 askColumn();
             }
             case INVALID_ORDER -> {
-                System.err.println("Questa tile non può essere scelta per essere droppata. Sceglierne una valida:");
+                System.err.println("This tile cannot be chosen to be dropped. Please try again...");
                 this.currentState = CurrentState.CHOOSING_ORDER;
                 askOrder();
             }
-            case WAIT -> System.out.println("Loading. Wait...");
-            case OK_JOINER -> {System.out.println("Loading. Wait...");}
-            case INVALID_CHAT_MESSAGE -> {
-                System.err.println("messaggio invalido! scrivere un messaggio da mandare a tutti\n" +
-                        "oppure scrivere |@nickname| |messaggio da inviare|");
-            }
-            case IVALID_RECEIVER -> {
-                System.err.println("Are you sure this nickname exist? Maybe you misspelled it :(");
-            }
-            case YOUR_TURN -> {
-                //chooseAction();
-                newTurn(true);
-            }//newTurn();
-            case NOT_YOUR_TURN -> {
-                //waitingTurn();
-                newTurn(false);
-            }
+            case WAIT, OK_JOINER -> System.out.println("Loading. Wait...");
+            case INVALID_CHAT_MESSAGE -> System.err.println("""
+                    Invalid message!
+                    Type a public message
+                    or type |@nickname| |message to send privately|""");
+            case IVALID_RECEIVER -> System.err.println("Are you sure this nickname exist? Maybe you misspelled it :(");
+            case YOUR_TURN -> newTurn(true);
+            case NOT_YOUR_TURN -> newTurn(false);
             case CORRECT_CORD -> {}
-            case CONTINUE_TO_CHOOSE -> {
-                chooseAction();
-            }//chooseAction();
-            case ASK_COLUMN -> {
-                askColumn();
-            }//askColumn();
-            case ASK_ORDER -> {
-                askOrder();
-            }//askOrder();
+            case CONTINUE_TO_CHOOSE -> chooseAction();
+            case ASK_COLUMN -> askColumn();
+            case ASK_ORDER -> askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
             case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game");
@@ -218,16 +212,13 @@ public class TextualUI implements UI {
                 System.out.println("You have been disconnected. Please wait for your turn");
                 openScanner();
             }
-            case INVALID_RECONNECTION_NICKNAME -> {
-                //System.err.println("ERROR: nickname may be already used or there wasn't a player with this nickname");
+            case INVALID_RECONNECTION_NICKNAME ->
                 askExistingNickname();
-            }
-
         }
     }
 
     public void lastTurnReached(String nickname){
-        System.out.println(nickname + " ha riempito la shelf\nInizia l'ultimo giro");
+        System.out.println(nickname + " completed their shelf\nBeginning last turn...");
     }
     public void printBoard(Board b) {
         System.out.print("   ");
@@ -261,8 +252,8 @@ public class TextualUI implements UI {
 
         }
         System.out.println();
-        System.out.println("\t\t\t\t\t\t\t\t 3 adiacency: 2 POINTS;\t\t\t 5 adiacency: 5 POINTS");
-        System.out.println("\t\t\t\t\t\t\t\t 4 adiacency: 3 POINTS;\t\t\t 5+ adiacency: 8 POINTS");
+        System.out.println("\t\t\t\t\t\t\t\t 3 adjacency: 2 POINTS;\t\t\t 5 adjacency: 5 POINTS");
+        System.out.println("\t\t\t\t\t\t\t\t 4 adjacency: 3 POINTS;\t\t\t 5+ adjacency: 8 POINTS");
         System.out.println();
         System.out.println();
     }
@@ -384,9 +375,9 @@ public class TextualUI implements UI {
         printPersonalGoalShelf(gameView.getPersonal());
 
         printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
-        System.out.println("E' il turno di: " + gameView.getNickName());
+        System.out.println("It's " + gameView.getNickName() + "'s turn");
         if(!gameView.isYourTurn())
-            System.out.println("It's not your turn.\nYou can type [chat] to write in the chat.");
+            System.out.println("It's not your turn.\nYou can type [chat] to write something in the chat.");
         else {
             try {
                 options();
@@ -410,7 +401,6 @@ public class TextualUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        //System.out.println("Game has started:");
         if(yourTurn) {
             try {
                 chooseAction();
@@ -431,13 +421,11 @@ public class TextualUI implements UI {
                 if (this.currentState!=CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
                     oldState = this.currentState;
                     this.currentState = CurrentState.CHATTING;
-                    System.out.println("scrivi qualcosa a qualcuno! (Inizia con @nickname per mandarlo in privato)");
+                    System.out.println("Send a message to someone (begin with @nickname to send it privately)");
                 } else {
                     try {
                         switch (this.currentState) {
-                            case CHOOSING_ACTION -> {
-                                checkAction(input);
-                            }
+                            case CHOOSING_ACTION -> checkAction(input);
                             case WAITING_TURN -> System.err.println("It's not your turn.\nYou can type [chat] to write in the chat.");
                             case CHATTING -> {
                                 this.currentState = oldState;
@@ -455,7 +443,7 @@ public class TextualUI implements UI {
                                     this.currentState = CurrentState.CHOOSING_ACTION;
                                     this.listener.checkingCoordinates(coordinates);
                                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                                    System.err.println("hai inserito delle coordinate invalide\nRiprova");
+                                    System.err.println("You chose invalid coordinates\nPlease try again...");
                                 }
                             }
                             case CHOOSING_COLUMN -> {
@@ -463,7 +451,7 @@ public class TextualUI implements UI {
                                     int column = Integer.parseInt(input);
                                     this.listener.columnSetting(column);
                                 } catch (NumberFormatException e) {
-                                    System.err.println("inserire una colonna!");
+                                    System.err.println("You must insert a column. Please try again...");
                                 }
                             }
                             case CHOOSING_ORDER -> {
@@ -471,13 +459,10 @@ public class TextualUI implements UI {
                                     int tilePosition = Integer.parseInt(input);
                                     listener.tileToDrop(tilePosition);
                                 } catch (NumberFormatException e) {
-                                    System.err.println("inserire una posizione sensata!");
+                                    System.err.println("You must insert a position. Please try again...");
                                 }
                             }
-                            case WAITING_FOR_CLIENTS -> {
-                                System.err.println("Waiting for more players to continue the game...");
-                            }
-
+                            case WAITING_FOR_CLIENTS -> System.err.println("Waiting for more players to continue the game...");
                         }
                     }catch (RemoteException e){
                         handleRemoteException();
@@ -497,14 +482,14 @@ public class TextualUI implements UI {
         if(this.currentState != null) {
             switch (this.currentState) {
                 case CHOOSING_ACTION -> System.out.println("""
-                [S] : seleziona una tessera disponibile
-                [Q] : passa alla selezione della colonna
-                [chat] scrivi qualcosa nella chat""");
+                [S] : Select an available tile
+                [Q] : Quit selecting tiles
+                [chat] Chat with the connected players""");
                 case CHOOSING_ORDER -> askOrder();
                 case CHOOSING_COLUMN -> askColumn();
                 case WAITING_TURN -> waitingTurn();
                 case CHATTING -> chat();
-                case CHOOSING_TILE -> System.out.println("Scegli una tessera");
+                case CHOOSING_TILE -> System.out.println("Choose the tile's coordinates (format: x y)");
             }
         }
     }
