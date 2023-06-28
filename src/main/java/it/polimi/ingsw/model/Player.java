@@ -20,6 +20,11 @@ public class Player {
     private int adjacencyPoints;
     private boolean connected;
 
+    /**
+     * Constructs a new player with the specified nickname.
+     *
+     * @param nickname The player's nickname
+     */
     public Player(String nickname){
         this.nickname = nickname;
         shelf = new Shelf();
@@ -32,31 +37,68 @@ public class Player {
         chosenColumn = -1;
         this.connected = true;
     }
+
+    /**
+     * Gets the player's nickname.
+     *
+     * @return The player's nickname
+     */
     public String getNickname(){return this.nickname;}
     public void setSeat(boolean seat) {
-        boolean oldValue = this.seat;
         this.seat = seat;
     }
 
+    /**
+     * Sets the connected status of the player.
+     *
+     * @param connected The connected status
+     */
     public void setConnected(boolean connected){
         this.connected = connected;
     }
+
+    /**
+     * Checks if the player is connected.
+     *
+     * @return {@code true} if the player is connected, {@code false} otherwise
+     */
     public boolean isConnected(){
         return this.connected;
     }
+
+    /**
+     * Sets the private goal card for the player.
+     *
+     * @param personalGoalCard the personal goal card to be set
+     */
     public void setPrivateCard(PersonalGoalCard personalGoalCard){
         this.personalGoalCard = personalGoalCard;
     }
+
+
+    /**
+     * Adds points to the player's total points.
+     *
+     * @param points the points to be added
+     */
     public void addPoints(int points){
         this.points += points;
     }
-    public void addPoints(CommonGoalCard card){
-        this.points += card.getPoint();
-    }
 
+    /**
+     * Returns the personal goal points earned by the player.
+     *
+     * @return the personal goal points earned
+     */
     public int getPersonalGoalPoints(){
         return this.personalGoalPoints;
     }
+
+    /**
+     * Checks and calculates the personal goal points earned by the player.
+     *
+     * @return the personal goal points earned
+     */
     public int checkPersonalPoints(){
         int count = 0;
         for (int i=0; i<SHELF_ROWS; i++){
@@ -76,19 +118,60 @@ public class Player {
             default -> personalGoalPoints = 0;
         };
     }
+
+    /**
+     * Returns the shelf of the player.
+     *
+     * @return the shelf of the player
+     */
     public Shelf getShelf(){return this.shelf;}
+
+    /**
+     * Returns the total points earned by the player.
+     *
+     * @return the total points earned by the player
+     */
     public int getPoints(){return this.points;}
+
+    /**
+     * Returns the list of chosen coordinates by the player.
+     *
+     * @return the list of chosen coordinates by the player
+     */
     public List<int[]> getChosenCoordinates(){return this.chosenCoordinates;}
+
+    /**
+     * Adds the specified coordinates to the list of chosen coordinates.
+     *
+     * @param coordinates the coordinates to be added
+     */
     public void addChosenCoordinate(int[] coordinates){
         this.chosenCoordinates.add(coordinates);
     }
+
+    /**
+     * Adds the specified tile to the list of chosen tiles.
+     *
+     * @param tile the tile to be added
+     */
     public void addChosenTile(Tile tile){
         this.chosenTiles.add(tile);
-
     }
+
+    /**
+     * Returns the personal goal card of the player.
+     *
+     * @return the personal goal card of the player
+     */
     public PersonalGoalCard getPersonalGoalCard(){
         return this.personalGoalCard;
     }
+
+    /**
+     * Resets the player's state and calculates points based on the completed goals.
+     *
+     * @param cards the array of common goal cards in the game
+     */
     public void reset(CommonGoalCard[] cards){
         chosenTiles = new ArrayList<>();
         chosenCoordinates = new ArrayList<>(2);
@@ -102,18 +185,38 @@ public class Player {
         this.personalGoalPoints = checkPersonalPoints();
     }
 
+    /**
+     * Returns the list of tiles chosen by the player.
+     *
+     * @return the list of chosen tiles
+     */
     public List<Tile> getChosenTiles() {
         return chosenTiles;
     }
 
-    ////////////////////////////////////////////
+    /**
+     * Returns the column chosen by the player.
+     *
+     * @return the column chosen
+     */
     public int getChosenColumn() {
         return chosenColumn;
     }
+
+    /**
+     * Sets the chosen column for the player.
+     *
+     * @param chosenColumn the chosen column index
+     */
     public void setChosenColumn(int chosenColumn) {
         this.chosenColumn = chosenColumn;
     }
 
+    /**
+     * Returns the adjacency points of the player.
+     *
+     * @return the adjacency points
+     */
     public int getAdjacencyPoints() {
         return adjacencyPoints;
     }

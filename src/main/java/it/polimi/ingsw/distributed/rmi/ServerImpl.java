@@ -206,7 +206,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
-        if(model.getPlayers()==null || !this.controller.checkReconnection(nickName)) {
+        if(model.getPlayers()==null) {
             // if there is no reconnection
             if (this.controller.setPlayerNickname(nickName)) {
                 System.out.println("RMI: " + ANSI_GREEN_BACKGROUND  + nickName + " connected" + ANSI_RESET);

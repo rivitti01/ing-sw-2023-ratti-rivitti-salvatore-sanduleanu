@@ -368,8 +368,8 @@ public class TextualUI implements UI {
             System.out.print("[ " + gameView.getCommonGoal1().get(j) + " ]" + "    ");
         System.out.println("\n");
         System.out.println(2 + ") " + gameView.getCommonGoals()[1]);
-        for(int j=gameView.getCommonGoal1().size()-1; j>=0; j--)
-            System.out.print("[ " + gameView.getCommonGoal1().get(j) + " ]" + "    ");
+        for(int j=gameView.getCommonGoal2().size()-1; j>=0; j--)
+            System.out.print("[ " + gameView.getCommonGoal2().get(j) + " ]" + "    ");
         System.out.println();
         System.out.println();
 

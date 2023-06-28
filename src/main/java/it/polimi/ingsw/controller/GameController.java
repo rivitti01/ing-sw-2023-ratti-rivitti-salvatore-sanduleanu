@@ -1,6 +1,5 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.distributed.socket.ServerHandler;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.ModelListener;
 import it.polimi.ingsw.util.Warnings;
@@ -12,32 +11,64 @@ import java.util.*;
 import static it.polimi.ingsw.util.Costants.END_GAME_POINT;
 import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
 
+/**
+ * The GameController class handles the game logic and interacts with the Game model.
+ */
+
 public class GameController  {
-    //attributo a Model per poterlo modificare
     private Game model;
     private boolean gameAlreadystarted = false;
     private int numberPlayers;
     private List<Player> players;
     private boolean endPointGiven = false;
 
-
+    /**
+     * Constructs a GameController object with the specified Game model.
+     *
+     * @param model the Game model
+     */
     public GameController (Game model){
         this.model = model;
         this.players = new ArrayList<>();
         this.numberPlayers = 0;
     }
 
+    /**
+     * Sets the number of players for the game.
+     *
+     * @param numberPlayers the number of players
+     */
+
     public void setNumberPlayers(int numberPlayers) {
         this.numberPlayers = numberPlayers;
     }
 
+    /**
+     * Returns the number of players for the game.
+     *
+     * @return the number of players
+     */
     public int getNumberPlayers() {
         return numberPlayers;
     }
 
+
+    /**
+     * Returns the list of players in the game.
+     *
+     * @return the list of players
+     */
     public List<Player> getPlayers() {
         return players;
     }
+
+    /**
+     * Checks if the game has been initialized and starts the game if the conditions are met.
+     * <p>
+     * If the game has not already started and the number of players is equal to the expected number of players,
+     * the model is initialized and the game is marked as started.
+     * </p>
+     */
     public void checkGameInitialization(){
         if(!gameAlreadystarted) {
             if (this.players.size() == this.numberPlayers) {
@@ -47,26 +78,50 @@ public class GameController  {
         }
     }
 
-    //crea il Model in base a numberPlayers e alla List di players
+    /**
+     * Initializes the game model by starting the game with the specified number of players and player list.
+     * It also sets the 'start' flag to true and updates the 'gameAlreadyStarted' flag.
+     *
+     * @see Game#startGame(int, List)
+     */
     public void initializeModel(){
         model.startGame(this.numberPlayers, this.players);
         model.setStart(true);
         this.gameAlreadystarted = true;
     }
 
-    public boolean setPlayerNickname(String s){
+    /**
+     * Sets the nickname for a player and adds them to the list of players.
+     *
+     * @param nickname the nickname to set for the player
+     * @return {@code true} if the nickname is unique and added successfully, {@code false} otherwise
+     */
+    public boolean setPlayerNickname(String nickname){
         for (Player player : this.players) {
-            if (player.getNickname().equals(s)) return false;
+            if (player.getNickname().equals(nickname)) return false;
         }
-        this.players.add(new Player(s));
+        this.players.add(new Player(nickname));
         return true;
     }
+
+    /**
+     * Checks if a nickname already exists among the disconnected players in the model.
+     *
+     * @param nickname the nickname to check
+     * @return {@code true} if the nickname already exists among disconnected players, {@code false} otherwise
+     */
     public boolean checkingExistingNickname(String nickname){
         for (Player player : this.model.getPlayers()) {
             if (player.getNickname().equals(nickname) && !player.isConnected()) return true;
         }
         return false;
     }
+
+    /**
+     * Checks if there is at least one player who is offline (not connected).
+     *
+     * @return {@code true} if there is at least one player who is offline, {@code false} otherwise
+     */
     public boolean playerOffline(){//controlla se c'è almeno un player offline
         for (Player player : this.model.getPlayers()) {
             if (!player.isConnected()) return true;
@@ -75,21 +130,13 @@ public class GameController  {
     }
 
 
-    /*
-     * I need this method to check if a client is reconnecting to the game
-     * or is connecting for the first time.
-     * ( setPlayerNickname tells the server only if the nickname was set correctly )
+
+
+
+
+    /**
+     * Proceeds to the next player's turn in the game.
      */
-    public boolean checkReconnection(String nickname) {
-        for (Player player : this.model.getPlayers()) {
-            if (player.getNickname().equals(nickname))
-                return true;
-        }
-        return false;
-    }
-
-
-
     public void nextPlayer() throws RemoteException {
         model.getCurrentPlayer().reset(model.getCommonGoals());
         //checks if board is empty or tiles are "alone" on board
@@ -152,6 +199,12 @@ public class GameController  {
             }
         }
     }
+
+    /**
+     * Sets the chosen column for the current player's turn.
+     *
+     * @param c the chosen column
+     */
     public void setChosenColumn(int c) {
         //controllo sulla colonna
         if(c<0 || c>=SHELF_COLUMN)
@@ -177,6 +230,12 @@ public class GameController  {
         }
 
     }
+
+    /**
+     * Checks if the input coordinates are correct and valid for the current player's turn.
+     *
+     * @param inputCoordinates the input coordinates to check
+     */
     public void checkCorrectCoordinates(int[] inputCoordinates){
         for (int[] availableCoordinate : this.model.getAvailableTilesForCurrentPlayer()) {
             if (Arrays.equals(availableCoordinate, inputCoordinates)) {
@@ -189,6 +248,12 @@ public class GameController  {
         }
         this.model.setErrorType(Warnings.INVALID_TILE);
     }
+
+    /**
+     * Drops the tile at the specified position from the current player's chosen tiles and places it on the shelf.
+     *
+     * @param tilePosition the position of the tile to drop
+     */
     public void dropTile(int tilePosition) throws RemoteException {
         if( tilePosition-1 < 0  ||  tilePosition > model.getCurrentPlayer().getChosenTiles().size() )
             this.model.setErrorType(Warnings.INVALID_ORDER);
@@ -204,23 +269,37 @@ public class GameController  {
                 nextPlayer();
         }
     }
+
+    /**
+     * Calculates the winner of the game and ends the game.
+     */
     public void calculateWinner() {
         this.model.endGame();
-        //this.model.findWinner();
     }
-    public void reconnectedPlayer(String nickname){
 
+
+    /**
+     * Reconnects a player with the specified nickname.
+     *
+     * @param nickname The nickname of the player to be reconnected.
+     */
+    public void reconnectedPlayer(String nickname){
         for (Player player : model.getPlayers()) {
             if (player.getNickname().equals(nickname)) {
                 player.setConnected(true);
             }
         }
-
         for (ModelListener listener: model.getListener()){
             listener.playerReconnected(nickname);
         }
-
     }
+
+    /**
+     * Puts back the chosen tiles of the specified player on the board.
+     * Used if the player disconnected while choosing tiles.
+     *
+     * @param player The player whose chosen tiles are to be put back.
+     */
 
     private void putBackTiles(Player player){
         if(!player.getChosenTiles().isEmpty()){
@@ -232,6 +311,13 @@ public class GameController  {
             }
         }
     }
+
+    /**
+     * Handles the disconnection of a player.
+     *
+     * @param player The player who got disconnected.
+     */
+
     public void disconnectedPlayer(Player player){
         player.setConnected(false);
         putBackTiles(player);
@@ -245,17 +331,14 @@ public class GameController  {
         for (ModelListener listener: model.getListener()){
             listener.playerDisconnected(player.getNickname());
         }
-        /*if(model.getListener().size() == 1){
-            //Player lastPlayer = model.getPlayers().stream().filter(Player::isConnected).findFirst().get();
-            for (Player p : model.getPlayers()){
-                if (p.isConnected()){
-                    model.getListener().get(model.getPlayers().indexOf(p)).onePlayerLeft(p,10000);
-                    break;
-                }
-            }
-        }*/
     }
 
+    /**
+     * Adds a chat message to the game.
+     *
+     * @param sender  The nickname of the sender.
+     * @param message The content of the message.
+     */
     public void addChatMessage(String sender, String message){
         String receiver;
         String content;
@@ -272,7 +355,6 @@ public class GameController  {
                         return;
                     }
                 }
-                //this.model.newMessage(sender, receiver, content);
                 this.model.setErrorType(Warnings.IVALID_RECEIVER, sender);
             } else {
                this.model.setErrorType(Warnings.INVALID_CHAT_MESSAGE, sender);   //@leo
@@ -282,14 +364,16 @@ public class GameController  {
             content = message;
             this.model.newMessage(sender, receiver, content);
         }
-
     }
 
+    /**
+     * Checks if the game has already started.
+     *
+     * @return {@code true} if the game has already started, {@code false} otherwise.
+     *
+     */
     public boolean isGameAlreadystarted() {
-        return gameAlreadystarted;
+            return gameAlreadystarted;
     }
 
-    public void setGameAlreadystarted(boolean gameAlreadystarted) {
-        this.gameAlreadystarted = gameAlreadystarted;
-    }
 }
