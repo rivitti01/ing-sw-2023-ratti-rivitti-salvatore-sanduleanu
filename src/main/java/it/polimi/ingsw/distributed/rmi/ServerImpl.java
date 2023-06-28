@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -89,7 +90,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             try {
                 c.ping();
             } catch (RemoteException e) {
-                System.err.println("A client has exited the game");
+                System.err.println(getTime()+" RMI: A client has exited the game");
                 serverONE.clientDisconnected(this.connectedClients.remove(c), connectedClientsID.remove(c));
                 executorService.shutdown();
             }
@@ -185,7 +186,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             //c.setID(ID);
             //connectedClientsID.put(c, ID);
             // if client is reconnecting I need to open the scanner thread again in the TUI
-            System.out.println("RMI: " + ANSI_GREEN_BACKGROUND + nickName + " RE-connected" + ANSI_RESET);
+            System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" RMI: " +  nickName + " RE-connected" + ANSI_RESET);
             c.warning(Warnings.RECONNECTION);
 
             for (Player player : this.model.getPlayers()) {
@@ -214,7 +215,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if(model.getPlayers()==null) {
             // if there is no reconnection
             if (this.controller.setPlayerNickname(nickName)) {
-                System.out.println("RMI: " + ANSI_GREEN_BACKGROUND  + nickName + " connected" + ANSI_RESET);
+                System.out.println(getTime()+ANSI_GREEN_BACKGROUND  +" RMI: " +  nickName + " connected" + ANSI_RESET);
                 connectedClients.put(c, nickName);
                 c.setNickname(nickName);
             } else {
@@ -495,6 +496,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
             }
         }
 
+    }
+    public String getTime(){
+        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 
 }

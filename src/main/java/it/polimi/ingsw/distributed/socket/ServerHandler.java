@@ -13,11 +13,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import static it.polimi.ingsw.view.Colors.*;
 
 public class ServerHandler implements Server,Runnable, ModelListener {
     private String nickname;
@@ -46,7 +46,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     }
     @Override
     public void run() {
-        System.out.println("SOCKET: "+"accepted connection: "+ socket.getPort());
+        //System.out.println("SOCKET: "+"accepted connection: "+ socket.getPort());
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -61,7 +61,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 analyzeMessage(in.readObject());
             }
         } catch (IOException e) {
-            System.err.println("SOCKET: "+"Client "+ this.socket.getPort()+" disconnected");
+            System.err.println(getTime()+" SOCKET: "+ nickname+" disconnected");
             disconnectedClient();
             Thread.currentThread().interrupt();
         }
@@ -114,9 +114,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             out.reset();
             out.flush();
             if (controller.getNumberPlayers() == 0) {
-                System.out.println("SOCKET: "+Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
+                //System.out.println("SOCKET: "+Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
                 synchronized (this.lock) {
-                    System.out.println("SOCKET: "+Thread.currentThread().getName() + " is not waiting anymore");
+                    //System.out.println("SOCKET: "+Thread.currentThread().getName() + " is not waiting anymore");
                     if (((ServerOne)serverOne).getConnectedClientsID().indexOf(clientID)+1 > controller.getNumberPlayers()){
                         disconnectedClient();
                         socket.close();
@@ -155,14 +155,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     private void waitAndSetNickname() throws IOException, ClassNotFoundException, InterruptedException {
 
         String nickname = (String) in.readObject();
-        System.out.println("SOCKET: "+socket.getPort() + ": Nickname = " + nickname);
+        //System.out.println("SOCKET: "+socket.getPort() + ": Nickname = " + nickname);
         if (nickname != null) {
             if (model.isStart()) {
                 if (controller.playerOffline()) {
                     if (controller.checkingExistingNickname(nickname)) { //playerIsBack(nickname)
 
                         controller.reconnectedPlayer(nickname); //setta a true il connected del player e comunica a tutti i thread che un player si è riconesso
-                        System.out.println("SOCKET: "+"Client" + socket.getPort() + " " + nickname + " is back");
+                        System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" SOCKET: "+  nickname + " RE-connected" + ANSI_RESET);
                         this.nickname = nickname;
                         out.writeObject(Warnings.RECONNECTION);
                         out.reset();
@@ -196,7 +196,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                             controller.checkGameInitialization();
                             this.lock.notifyAll();
                         }
-                        System.out.println("SOCKET: "+"Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+                        System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" SOCKET: "+  this.nickname+" connected"+ ANSI_RESET);
                         return;
                     } else {
                         out.writeObject(Warnings.OK_JOINER);//prima era Warnings.OK_WAIT
@@ -221,7 +221,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                 }
             }
         }
-        System.out.println("SOCKET: "+"Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
+        System.out.println(getTime()+" SOCKET: "+ANSI_GREEN_BACKGROUND+this.nickname+ " connected" + ANSI_RESET);
     }
     private void waitAndSetNumberPlayers() throws IOException, ClassNotFoundException {
         int numberPlayers = (int) in.readObject();
@@ -233,7 +233,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     @Override
     public void numberOfParticipantsSetting(int n) throws RemoteException {
-        System.out.println(socket.getPort()+": Number of players = "+n);
+        System.out.println(getTime()+" SOCKET:"+socket.getPort()+": Number of players = "+n);
         if (n > 1 && n < 5){
             controller.setNumberPlayers(n);
             if (controller.getNumberPlayers()==controller.getPlayers().size() && !model.isStart()){
@@ -306,7 +306,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     public void newTurn(Player currentPlayer) {
         if(model.getCurrentPlayer().getNickname().equals(nickname)){// == currentPlayer.getNickname().equals(nickname)
             try {
-                System.out.println("Client "+socket.getPort()+" YOUR TURN "+ "Thread nick : "+nickname+" current player: "+currentPlayer.getNickname());
+                //System.out.println("Client "+socket.getPort()+" YOUR TURN "+ "Thread nick : "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.YOUR_TURN);
                 out.reset();
                 out.flush();
@@ -316,7 +316,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             }
         }else {
             try {
-                System.out.println("Client "+socket.getPort()+" NOT YOUR TURN "+ "Thread nick: "+nickname+" current player: "+currentPlayer.getNickname());
+                //System.out.println("Client "+socket.getPort()+" NOT YOUR TURN "+ "Thread nick: "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.NOT_YOUR_TURN);
                 out.reset();
                 out.flush();
@@ -534,6 +534,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     }
 
+    public String getTime(){
+        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
+    }
 
 
 

@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -52,14 +50,14 @@ public class ServerOne implements ServerListener {
             try {
                 registry = LocateRegistry.createRegistry(RMI_PORT);
                 registry.rebind("server", serverRMI);
-                System.out.println("ServerRMI is running");
+                System.out.println(getTime()+" ServerRMI is running");
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });
         Thread socket = new Thread(() -> {
             try {
-                System.out.println("ServerSocket is running");
+                System.out.println(getTime()+" ServerSocket is running");
                 serverSocket.start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -74,21 +72,21 @@ public class ServerOne implements ServerListener {
         this.connectedClients++;
         connectedClientsID.add(lastID++);
         if(timerTask != null) {
-            System.out.println("ServerONE: timer has been stopped!");
+            System.out.println(getTime()+ ANSI_GREEN_BACKGROUND+" ServerONE: timer has been stopped!"+ANSI_RESET);
             interruptedTimer = true;
             timerTask.cancel(true);
             timerTask = null;
         }
-        System.out.println("SERVERONE: number of clients connected = " + connectedClients);
+        System.out.println(getTime()+" SERVERONE: number of clients connected = " + connectedClients);
         return lastID-1;
     }
 
     @Override
     public void clientDisconnected(String nickname, int ID) {
         if (connectedClientsID.remove((Integer) ID)) {
-            System.out.println("SERVERONE: " + ANSI_RED_BACKGROUND + "client " + nickname + " has disconnected" + ANSI_RESET);
+            System.out.println(getTime()+ANSI_RED_BACKGROUND +" SERVERONE: " +  "client " + nickname + " has disconnected" + ANSI_RESET);
             this.connectedClients--;
-            System.out.println("SERVERONE: number of clients connected = " + connectedClients);
+            System.out.println(getTime()+" SERVERONE: number of clients connected = " + connectedClients);
 
             Player disconnectedPlayer = null;
             if (nickname != null && model != null && model.getPlayers() != null) {
@@ -103,8 +101,9 @@ public class ServerOne implements ServerListener {
             if (disconnectedPlayer != null) {
                 controller.disconnectedPlayer(disconnectedPlayer);
             }
-            if (nickname != null && !nickname.equals(model.getCurrentPlayer().getNickname())) {    // one player left
-                System.out.println("SERVERONE: waiting for more players to continue...");
+            if (connectedClients <= 1) {    // one player left
+
+                System.out.println(getTime()+ANSI_PURPLE_BACKGROUND+" SERVERONE: waiting for more players to continue..."+ANSI_RESET);
                 interruptedTimer = false;
                 startTimer();
             }
@@ -116,7 +115,7 @@ public class ServerOne implements ServerListener {
 
         // Schedule a timer task to be executed after a specified timeout
         timerExecutor = Executors.newSingleThreadScheduledExecutor();
-        System.out.println("timer has started. TIK TOK TIK TOK");
+        System.out.println(getTime()+ANSI_RED_BACKGROUND+" SERVERONE: Timer has started. TIK TAK TIK TAK"+ANSI_RESET);
         // Code to be executed when the timer expires
 
         timerTask = timerExecutor.schedule(this::handleTimeout, TIMEOUT_DURATION, TimeUnit.SECONDS);
@@ -127,7 +126,7 @@ public class ServerOne implements ServerListener {
                 System.out.print("\r");
                 System.out.flush();
                 TimeUnit.SECONDS.sleep(1);
-                System.out.print(ANSI_YELLOW_BACKGROUND + "Timer: " + duration + " seconds remaining" + ANSI_RESET);
+                System.out.print(getTime()+ANSI_YELLOW_BACKGROUND + " Timer: " + duration + " seconds remaining" + ANSI_RESET);
                 System.out.flush();
                 duration--;
             } catch (InterruptedException e) {
@@ -141,7 +140,7 @@ public class ServerOne implements ServerListener {
 
     private void handleTimeout() {
         // Code to be executed when the timeout occurs
-        System.out.println("Timeout! No other players!\nClosing the game...");
+        System.out.println(getTime()+ANSI_RED_BACKGROUND+" Timeout! No other players!"+ANSI_RESET+"\nClosing the game...");
         model.setErrorType(Warnings.NO_PLAYERS_LEFT);
         System.exit(1);
     }
@@ -152,5 +151,8 @@ public class ServerOne implements ServerListener {
 
     public List<Integer> getConnectedClientsID() {
         return connectedClientsID;
+    }
+    public String getTime(){
+        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 }

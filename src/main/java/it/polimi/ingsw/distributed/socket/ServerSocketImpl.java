@@ -44,7 +44,7 @@ public class ServerSocketImpl {
 
 
         while (true){
-            System.out.println("Socket: Aspetto connessione");
+            //System.out.println("Socket: Aspetto connessione");
             Socket socket = serverSocket.accept();
 
             lastID = this.serverONE.clientConnected();
