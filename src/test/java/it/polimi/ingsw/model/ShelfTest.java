@@ -86,7 +86,19 @@ class ShelfTest {
         assertArrayEquals(shelf, s.getShelf());
     }
 
+    @Test
+    void checkAdjacents1() {
+        s.putTile(0,0, new Tile(Color.GREEN));  s.putTile(0,1, new Tile(Color.YELLOW));  s.putTile(0,2, new Tile(Color.BLUE));  s.putTile(0,3, new Tile(Color.CYAN));   s.putTile(0,4, new Tile(Color.CYAN));
+        s.putTile(1,0, new Tile(Color.PINK));  s.putTile(1,1, new Tile(Color.GREEN));  s.putTile(1,2, new Tile(Color.PINK));  s.putTile(1,3, new Tile(Color.BLUE));   s.putTile(1,4, new Tile(Color.CYAN));
+        s.putTile(2,0, new Tile(Color.GREEN));  s.putTile(2,1, new Tile(Color.PINK));  s.putTile(2,2, new Tile(Color.GREEN));  s.putTile(2,3, new Tile(Color.GREEN));   s.putTile(2,4, new Tile(Color.WHITE));
+        s.putTile(3,0, new Tile(Color.CYAN));  s.putTile(3,1, new Tile(Color.GREEN));  s.putTile(3,2, new Tile(Color.BLUE));  s.putTile(3,3, new Tile(Color.BLUE));   s.putTile(3,4, new Tile(Color.GREEN));
+        s.putTile(4,0, new Tile(Color.BLUE));  s.putTile(4,1, new Tile(Color.PINK));  s.putTile(4,2, new Tile(Color.BLUE));  s.putTile(4,3, new Tile(Color.WHITE));   s.putTile(4,4, new Tile(Color.YELLOW));
+        s.putTile(5,0, new Tile(Color.BLUE));  s.putTile(5,1, new Tile(Color.WHITE));  s.putTile(5,2, new Tile(Color.WHITE));  s.putTile(5,3, new Tile(Color.WHITE));   s.putTile(5,4, new Tile(Color.CYAN));
 
+        int expectedPoints = 7;
+        int actualPoints = s.checkAdjacents();
+        assertEquals(expectedPoints, actualPoints);
+    }
     @Test
     void checkAdjacents() {
         s.putTile(5,0, new Tile(Color.GREEN));

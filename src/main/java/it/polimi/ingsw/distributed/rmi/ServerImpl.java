@@ -351,19 +351,21 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
     }
     @Override
-    public void finalPoints(){
+    public void finalPoints() {
         Map<String, Integer> finalPoints = new HashMap<>();
-        for(Player p: this.model.getPlayers()) {
-            if(isMine()) {
-                finalPoints.put(p.getNickname(), p.getPoints());
-                try {
-                    Objects.requireNonNull(getKeyByValue(p)).finalPoints(finalPoints);
-                } catch (RemoteException e) {
-                    System.err.println("Unable to advice the client about the final points:" +
-                            e.getMessage() + ". Skipping the update...");
-                }
-            }
+        for (Player p : this.model.getPlayers()) {
+            finalPoints.put(p.getNickname(), p.getPoints());
         }
+        try {
+            for (Client client : this.connectedClients.keySet()) {
+                client.finalPoints(finalPoints);
+            }
+        } catch (RemoteException e) {
+            System.err.println("Unable to advice the client about the final points:" +
+                    e.getMessage() + ". Skipping the update...");
+        }
+
+
     }
     private boolean isMine(){
         for(Client c : connectedClients.keySet()){

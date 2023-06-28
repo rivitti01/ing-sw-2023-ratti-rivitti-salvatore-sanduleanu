@@ -261,6 +261,8 @@ public class TextualUI implements UI {
 
         }
         System.out.println();
+        System.out.println("\t\t\t\t\t\t\t\t 3 adiacency: 2 POINTS;\t\t\t 5 adiacency: 5 POINTS");
+        System.out.println("\t\t\t\t\t\t\t\t 4 adiacency: 3 POINTS;\t\t\t 5+ adiacency: 8 POINTS");
         System.out.println();
         System.out.println();
     }

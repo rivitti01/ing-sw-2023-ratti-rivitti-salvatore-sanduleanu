@@ -105,30 +105,7 @@ public class Player {
     public List<Tile> getChosenTiles() {
         return chosenTiles;
     }
-    public void setChosenTiles(List<Tile> chosenTiles) {
-        this.chosenTiles = chosenTiles;
-    }
-    /*
-    private List<Tile> chooseOrder(List<Tile> chosenTiles){
-        System.out.println("Selezionare l'ordine di inserimento,\ndalla posizione PIU BASSA alla PIU ALTA:\n");
-        List<Tile> tmp = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
-        do{
-            for (int i = 0; i < chosenTiles.size(); i++) {
-                System.out.println("[" + i + "]" + " " + chosenTiles.get(i).getColor());
-            }
-            try {
-                int pos = Integer.parseInt(scanner.nextLine());
-                if (pos < 0 || pos >= chosenTiles.size())
-                    System.out.println("posizione non valida!\nRiprovare");
-                else tmp.add(chosenTiles.remove(pos));
-            }catch(NumberFormatException e){
-                System.out.println("ERRORE! Non hai inserito un numero.\nRiprova");
-            }
-        }while (chosenTiles.size()!=0);
-        return tmp;
-    }
-    */
+
     ////////////////////////////////////////////
     public int getChosenColumn() {
         return chosenColumn;
@@ -141,7 +118,4 @@ public class Player {
         return adjacencyPoints;
     }
 
-    public void setAdjacencyPoints(int adjacencyPoints) {
-        this.adjacencyPoints = adjacencyPoints;
-    }
 }

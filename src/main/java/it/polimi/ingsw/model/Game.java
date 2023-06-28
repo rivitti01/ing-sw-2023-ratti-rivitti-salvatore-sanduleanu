@@ -165,17 +165,17 @@ public class Game {
 
     ////////////////////////////////////////////////////
     public void endGame() {
+        this.listener.forEach(ModelListener::printGame);
         setEnd(true);
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
-
-            listener.forEach(ModelListener::finalPoints);//this.listener.finalPoints();
             //punti dai gruppi sulla shelf aggiunti qui
             //punti personalGoalCard aggiunti qui
             //punti delle commonGoals gia eventualmente aggiunti
             //punto della fine della partita gia assegnato
         }
+
         this.listener.forEach(ModelListener::finalPoints);//finalPoints();
 
     }
