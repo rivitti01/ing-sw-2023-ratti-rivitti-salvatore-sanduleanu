@@ -19,6 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static it.polimi.ingsw.util.Costants.PING_PERIOD;
 import static it.polimi.ingsw.util.Costants.TIMEOUT_DURATION;
+import static it.polimi.ingsw.view.Colors.ANSI_GREEN_BACKGROUND;
+import static it.polimi.ingsw.view.Colors.ANSI_RESET;
 
 public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
     private final Game model;
@@ -113,11 +115,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                     } catch (RemoteException e) {
                         System.err.println("Unable to ask the number of participants the client: "
                                 + e.getMessage() + ". Skipping the update...");
+                        first.setFirst(true);
+                        serverONE.clientDisconnected(null);
+                        return;
                     }
                 } else if (((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers())
                     canPlay = false;
                 first.notifyAll();
-
             }
             connectionLock.notifyAll();
         }
@@ -139,7 +143,6 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         } else {
             if(((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()){
                 addClientToGame(c);
-                System.out.println("RMI: A client has RE-connected.");
                 c.askExistingNickname();
             } else {
                 try {
@@ -157,7 +160,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if (controller.checkingExistingNickname(nickName)) {
             serverONE.clientConnected();
             // if client is reconnecting I need to open the scanner thread again in the TUI
-            System.out.println(" RECONNECTION ");
+            System.out.println("RMI: " + ANSI_GREEN_BACKGROUND + nickName + " RE-connected" + ANSI_RESET);
             c.warning(Warnings.RECONNECTION);
 
             for (Player player : this.model.getPlayers()) {
@@ -186,11 +189,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if(model.getPlayers()==null || !this.controller.checkReconnection(nickName)) {
             // if there is no reconnection
             if (this.controller.setPlayerNickname(nickName)) {
-                System.out.println("client: " + nickName + " connected");
+                System.out.println("RMI: " + ANSI_GREEN_BACKGROUND  + nickName + " connected" + ANSI_RESET);
                 connectedClients.put(c, nickName);
-                for (Client client : connectedClients.keySet())
-                    System.out.print(connectedClients.get(client) + " - ");
-                System.out.println();
                 c.setNickname(nickName);
             } else {
                 try {

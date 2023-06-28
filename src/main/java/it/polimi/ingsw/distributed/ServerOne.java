@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static it.polimi.ingsw.util.Costants.TIMEOUT_DURATION;
+import static it.polimi.ingsw.view.Colors.*;
 
 public class ServerOne implements ServerListener {
     private ServerSocketImpl serverSocket;
@@ -30,6 +31,7 @@ public class ServerOne implements ServerListener {
     private First first;
     private ScheduledExecutorService timerExecutor;
     private ScheduledFuture<?> timerTask;
+    private boolean interruptedTimer = false;
 
     public ServerOne() throws RemoteException {
         first = new First();
@@ -67,15 +69,20 @@ public class ServerOne implements ServerListener {
         this.connectedClients++;
         if(timerTask != null) {
             System.out.println("ServerONE: timer has been stopped!");
+            interruptedTimer = true;
             timerTask.cancel(true);
             timerTask = null;
         }
+        System.out.println("SERVERONE: number of clients connected = " + connectedClients);
+
     }
 
     @Override
     public void clientDisconnected(String nickname) {
-        System.err.println("SERVERONE: client " + nickname + " has disconnected");
+        System.out.println("SERVERONE: " + ANSI_RED_BACKGROUND + "client " + nickname + " has disconnected" + ANSI_RESET);
         this.connectedClients--;
+        System.out.println("SERVERONE: number of clients connected = " + connectedClients);
+
         Player disconnectedPlayer = null;
         for(Player player : model.getPlayers()){
             if(player.getNickname().equals(nickname)) {
@@ -98,6 +105,7 @@ public class ServerOne implements ServerListener {
             }
         }else{    // one player left
             System.out.println("SERVERONE: waiting for more players to continue...");
+            interruptedTimer = false;
             startTimer();
         }
     }
@@ -111,7 +119,24 @@ public class ServerOne implements ServerListener {
         // Code to be executed when the timer expires
 
         timerTask = timerExecutor.schedule(this::handleTimeout, TIMEOUT_DURATION, TimeUnit.SECONDS);
+        // Countdown loop
+        int duration = TIMEOUT_DURATION;
+        while (duration > 0 && !interruptedTimer) {
+            try {
+                System.out.print("\r");
+                System.out.flush();
+                TimeUnit.SECONDS.sleep(1);
+                System.out.print(ANSI_YELLOW_BACKGROUND + "Timer: " + duration + " seconds remaining" + ANSI_RESET);
+                System.out.flush();
+                duration--;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        System.out.println();
     }
+
 
     private void handleTimeout() {
         // Code to be executed when the timeout occurs
