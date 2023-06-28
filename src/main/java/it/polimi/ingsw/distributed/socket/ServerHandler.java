@@ -62,11 +62,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             }
         } catch (IOException e) {
             System.err.println("SOCKET: "+"Client "+ this.socket.getPort()+" disconnected");
-            try {
-                disconnectedClient();
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            disconnectedClient();
             Thread.currentThread().interrupt();
         }
         catch (ClassNotFoundException  e) {
@@ -126,6 +122,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         socket.close();
                         Thread.currentThread().interrupt();
                     }
+                    this.lock.notifyAll();
                 }
             }
         }
@@ -191,9 +188,9 @@ public class ServerHandler implements Server,Runnable, ModelListener {
             } else {
                 if (controller.setPlayerNickname(nickname)) {
                     this.nickname = nickname;
-                    out.writeObject(Warnings.OK_JOINER);
+                    /*out.writeObject(Warnings.OK_JOINER);
                     out.reset();
-                    out.flush();
+                    out.flush();*/
                     if (controller.getPlayers().size() == controller.getNumberPlayers()) {
                         synchronized (this.lock) {
                             controller.checkGameInitialization();
@@ -202,7 +199,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
                         System.out.println("SOCKET: "+"Client" + socket.getPort() + ": nome assegnato -> " + this.nickname);
                         return;
                     } else {
-                        out.writeObject(Warnings.WAIT);
+                        out.writeObject(Warnings.OK_JOINER);//prima era Warnings.OK_WAIT
                         out.reset();
                         out.flush();
                         while (true) {
@@ -254,7 +251,14 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }
         System.out.println("Client"+socket.getPort()+ ": numero giocatori assegnato -> "+n);
     }
-    private void disconnectedClient() throws RemoteException {
+    private void disconnectedClient() {
+        try {
+            out.writeObject(Warnings.GAME_ALREADY_STARTED);
+            out.reset();
+            out.flush();
+        } catch (IOException e) {
+
+        }
         model.removeModelListener(this);
         serverOne.clientDisconnected(this.nickname, this.clientID);
     }

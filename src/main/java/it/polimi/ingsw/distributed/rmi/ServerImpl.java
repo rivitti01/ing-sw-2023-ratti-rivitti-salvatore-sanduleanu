@@ -26,6 +26,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     private final Game model;
     private final GameController controller;
     private final LinkedHashMap<Client, String> connectedClients;
+    private Map<Client,Integer> connectedClientsID;
     private final ReentrantLock connectionLock;
     private final ReentrantLock lock = new ReentrantLock();
     private First first;
@@ -38,6 +39,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         super();
         this.first = first;
         connectedClients = new LinkedHashMap<>();
+        connectedClientsID = new HashMap<>();
         this.model = model;
         this.model.addModelListener(this);
         this.controller = controller;
@@ -80,7 +82,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     //**********************        SERVER METHODS         ************************************************
 
-    private void addClientToGame(Client c) {
+    private void addClientToGame(Client c, int ID) {
         connectedClients.put(c, null);
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
@@ -88,19 +90,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 c.ping();
             } catch (RemoteException e) {
                 System.err.println("A client has exited the game");
-                try {
-                    serverONE.clientDisconnected(this.connectedClients.remove(c), c.getID());
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
+                serverONE.clientDisconnected(this.connectedClients.remove(c), connectedClientsID.remove(c));
                 executorService.shutdown();
             }
         }, 0, PING_PERIOD, TimeUnit.MILLISECONDS);
     }
     @Override
     public void clientConnection(Client c) throws RemoteException {
-        int ID = this.serverONE.clientConnected();
-        c.setID(ID);
+        synchronized (connectionLock) {
+            int ID = this.serverONE.clientConnected();
+            c.setID(ID);
+            connectedClientsID.put(c, ID);
+            addClientToGame(c, ID);
+            connectionLock.notifyAll();
+        }
         boolean canPlay = false;
         try {
             c.warning(Warnings.WAIT);
@@ -110,7 +113,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         }
 
         if (!controller.isGameAlreadystarted()) {
-            synchronized (connectionLock){
+            //synchronized (connectionLock){
                 canPlay = true;
                 synchronized (first) {
                     if (first.getFirst()) {
@@ -124,22 +127,22 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                             System.err.println("Unable to ask the number of participants the client: "
                                     + e.getMessage() + ". Skipping the update...");
                             first.setFirst(true);
-                            serverONE.clientDisconnected(null,c.getID());
+                            serverONE.clientDisconnected(null,connectedClientsID.get(c));
                             return;
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                     }
-                    ID = c.getID();
-                    if (((ServerOne)serverONE).getConnectedClientsID().indexOf(ID)+1 > controller.getNumberPlayers()) { //((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers()
+                    //ID = c.getID();
+                    if (((ServerOne)serverONE).getConnectedClientsID().indexOf(connectedClientsID.get(c))+1 > controller.getNumberPlayers()) { //((ServerOne) serverONE).getConnectedClients() > controller.getNumberPlayers()
                         canPlay = false;
                     }
                     first.notifyAll();
                 }
-            connectionLock.notifyAll();
-        }
+            //connectionLock.notifyAll();
+        //}
                 if (canPlay) {
-                    addClientToGame(c);
+                    //addClientToGame(c, connectedClientsID.get(c));
                     c.askNickname();
                     while (this.connectedClients.get(c) == null) {
                         try {
@@ -161,8 +164,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
                 } else
                     c.warning(Warnings.GAME_ALREADY_STARTED);
         } else {
-            if(((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()){
-                addClientToGame(c);
+            if(((ServerOne)serverONE).getConnectedClientsID().indexOf(connectedClientsID.get(c))+1 <= controller.getNumberPlayers()){ //((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()
+                addClientToGame(c, connectedClientsID.get(c));
                 c.askExistingNickname();
             } else {
                 try {
@@ -178,7 +181,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
         if (controller.checkingExistingNickname(nickName)) {
-            serverONE.clientConnected();
+            //int ID = serverONE.clientConnected();
+            //c.setID(ID);
+            //connectedClientsID.put(c, ID);
             // if client is reconnecting I need to open the scanner thread again in the TUI
             System.out.println("RMI: " + ANSI_GREEN_BACKGROUND + nickName + " RE-connected" + ANSI_RESET);
             c.warning(Warnings.RECONNECTION);

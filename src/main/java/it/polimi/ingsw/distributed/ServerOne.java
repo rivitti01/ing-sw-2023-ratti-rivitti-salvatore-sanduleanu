@@ -85,38 +85,29 @@ public class ServerOne implements ServerListener {
 
     @Override
     public void clientDisconnected(String nickname, int ID) {
-        System.out.println("SERVERONE: " + ANSI_RED_BACKGROUND + "client " + nickname + " has disconnected" + ANSI_RESET);
-        this.connectedClients--;
-        connectedClientsID.remove((Integer) ID);
-        System.out.println("SERVERONE: number of clients connected = " + connectedClients);
+        if (connectedClientsID.remove((Integer) ID)) {
+            System.out.println("SERVERONE: " + ANSI_RED_BACKGROUND + "client " + nickname + " has disconnected" + ANSI_RESET);
+            this.connectedClients--;
+            System.out.println("SERVERONE: number of clients connected = " + connectedClients);
 
-        Player disconnectedPlayer = null;
-        if (model != null && model.getPlayers()!=null) {
-            for (Player player : model.getPlayers()) {
-                if (nickname != null && player.getNickname().equals(nickname)) {
-                    disconnectedPlayer = player;
-                    break;
+            Player disconnectedPlayer = null;
+            if (nickname != null && model != null && model.getPlayers() != null) {
+                for (Player player : model.getPlayers()) {
+                    if (player.getNickname().equals(nickname)) {
+                        disconnectedPlayer = player;
+                        break;
+                    }
+
                 }
-
             }
-        }
-        if (disconnectedPlayer != null) {
-            controller.disconnectedPlayer(disconnectedPlayer);
-        }
-        if(this.connectedClients > 1) {   // multiple players left
-            if (nickname!= null && nickname.equals(model.getCurrentPlayer().getNickname())) {    // currentPlayer Disconnected
-                disconnectedPlayer.reset(model.getCommonGoals());
-                try {
-                    this.controller.nextPlayer();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-
+            if (disconnectedPlayer != null) {
+                controller.disconnectedPlayer(disconnectedPlayer);
             }
-        }else if(nickname!= null && !nickname.equals(model.getCurrentPlayer().getNickname())){    // one player left
-            System.out.println("SERVERONE: waiting for more players to continue...");
-            interruptedTimer = false;
-            startTimer();
+            if (nickname != null && !nickname.equals(model.getCurrentPlayer().getNickname())) {    // one player left
+                System.out.println("SERVERONE: waiting for more players to continue...");
+                interruptedTimer = false;
+                startTimer();
+            }
         }
     }
 

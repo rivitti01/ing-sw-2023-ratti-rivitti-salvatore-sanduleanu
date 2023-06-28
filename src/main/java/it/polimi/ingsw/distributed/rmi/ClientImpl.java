@@ -213,7 +213,6 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     @Override
     public void setID(int id) throws RemoteException {
         this.id = id;
-        System.out.println("CLIENT RMI: ID SETTED: " + id);
     }
 
     @Override

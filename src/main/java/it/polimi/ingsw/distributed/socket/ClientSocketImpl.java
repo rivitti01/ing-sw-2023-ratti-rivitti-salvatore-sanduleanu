@@ -25,6 +25,7 @@ public class ClientSocketImpl implements Client, ViewListener {
     private ObjectInputStream in;
     boolean lastTurn = false;
     boolean gameStarted = false;
+    boolean canPlay = true;
 
     public ClientSocketImpl(String ip, int port,boolean gui){
         this.ip = ip;
@@ -49,7 +50,7 @@ public class ClientSocketImpl implements Client, ViewListener {
                 object = in.readObject();
                 analyzeMessage(object);
             }catch (IOException | ClassNotFoundException e){
-                System.err.println("Something went wrong with the connection to the server!");
+                if(canPlay) System.err.println("Something went wrong with the connection to the server!");
                 System.exit(1);
             }
         }
@@ -95,6 +96,9 @@ public class ClientSocketImpl implements Client, ViewListener {
                         this.nickname = null;
                         view.warning(Warnings.INVALID_NICKNAME);
                         return;
+                    }
+                    case GAME_ALREADY_STARTED -> {
+                        canPlay = false;
                     }
                 }
                 view.warning(warnings);
