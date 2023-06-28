@@ -14,7 +14,7 @@ public class CommonGoalCard8 implements CardStrategy {
         ArrayList<Tile[]> fullRows = new ArrayList<>();
 
         for (i=0; i<SHELF_ROWS-1; i++){
-            if(myShelf.checkRowFulness(i)) {
+            if(myShelf.checkRowFullness(i)) {
                 fullRows.add(myShelf.getRow(i));
             }
         }

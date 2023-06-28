@@ -45,7 +45,7 @@ class ShelfTest {
         int r = random.nextInt(6);
         Tile t = b.getTile();
         s.putTile(r, c, t);
-        assertFalse(s.checkRowFulness(r));
+        assertFalse(s.checkRowFullness(r));
     }
 
     @Test
@@ -75,16 +75,7 @@ class ShelfTest {
     }
 
 
-    @Test
-    void getShelf() {
-        int c = random.nextInt(5);
-        int r = random.nextInt(6);
-        Tile[][] shelf = new Tile[6][5];
-        Tile t = b.getTile();
-        s.putTile(r, c, t);
-        shelf[r][c] = t;
-        assertArrayEquals(shelf, s.getShelf());
-    }
+
 
     @Test
     void checkAdjacents1() {

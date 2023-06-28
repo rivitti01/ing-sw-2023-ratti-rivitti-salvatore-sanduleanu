@@ -10,14 +10,13 @@ public class CommonGoalCardTest {
     CommonGoalCard card1;
     CommonGoalCard card2;
     CommonGoalCard card3;
-    DeckCommon deck;
+
 
     @BeforeEach
     void setup(){
-        this.deck = new DeckCommon();
-        this.card1 = new CommonGoalCard(4, this.deck);
-        this.card2 = new CommonGoalCard(3, this.deck);
-        this.card3 = new CommonGoalCard(2, this.deck);
+        this.card1 = new CommonGoalCard(4,"CommonGoalCard2");
+        this.card2 = new CommonGoalCard(3, "CommonGoalCard2");
+        this.card3 = new CommonGoalCard(2, "CommonGoalCard2");
     }
     @Test
     void fillStack(){
