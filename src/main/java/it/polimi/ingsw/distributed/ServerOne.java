@@ -4,7 +4,6 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.rmi.ServerImpl;
 import it.polimi.ingsw.distributed.socket.ServerSocketImpl;
 import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.util.Warnings;
 
@@ -36,6 +35,11 @@ public class ServerOne implements ServerListener {
     private List<Integer> connectedClientsID;
     private int lastID = 0;
 
+    /**
+     * Constructs a new instance of the ServerOne class.
+     *
+     * @throws RemoteException if a remote communication error occurs.
+     */
     public ServerOne() throws RemoteException {
         first = new First();
         model = new Game();
@@ -46,6 +50,12 @@ public class ServerOne implements ServerListener {
         serverRMI.addServerListener(this);
         connectedClientsID = new ArrayList<>();
     }
+
+    /**
+     * Starts the server by creating and starting the RMI and socket threads.
+     *
+     * @throws IOException if an I/O error occurs while creating the server socket.
+     */
     public void start() throws IOException {
         Thread rmi = new Thread(() -> {
             try {
@@ -68,6 +78,13 @@ public class ServerOne implements ServerListener {
         socket.start();
     }
 
+    /**
+     * Increments the count of connected clients and returns the ID assigned to the new client.
+     * If the timer task is running, it is stopped and the timer is interrupted.
+     * If there are at least 2 connected clients, the game state is resumed and the current game view is printed.
+     *
+     * @return The ID assigned to the new client.
+     */
     @Override
     public int clientConnected() {
         this.connectedClients++;
@@ -88,6 +105,12 @@ public class ServerOne implements ServerListener {
         return lastID-1;
     }
 
+    /**
+     * Handles the disconnection of a client with the specified nickname and ID.
+     *
+     * @param nickname The nickname of the disconnected client.
+     * @param ID       The ID of the disconnected client.
+     */
     @Override
     public void clientDisconnected(String nickname, int ID) {
         if (connectedClientsID.remove((Integer) ID)) {
@@ -152,14 +175,24 @@ public class ServerOne implements ServerListener {
         System.exit(1);
     }
 
+    /**
+     * Returns the number of currently connected clients.
+     *
+     * @return The number of connected clients.
+     */
     public int getConnectedClients() {
         return connectedClients;
     }
 
+    /**
+     * Returns a list of IDs of the connected clients.
+     *
+     * @return A list of client IDs.
+     */
     public List<Integer> getConnectedClientsID() {
         return connectedClientsID;
     }
-    public String getTime(){
+    private String getTime(){
         return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 }

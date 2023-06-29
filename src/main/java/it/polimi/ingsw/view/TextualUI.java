@@ -20,6 +20,12 @@ public class TextualUI implements UI {
     private CurrentState previousState = null;
     private CurrentState currentState = null;
 
+    /**
+     * Notifies the player that a new turn has started.
+     *
+     * @param playing A boolean indicating if it's the player's turn to play.
+     * @throws RemoteException If a remote communication error occurs.
+     */
     public void newTurn(boolean playing) throws RemoteException {
         if(playing) {
             this.currentState = CurrentState.CHOOSING_ACTION;
@@ -31,21 +37,37 @@ public class TextualUI implements UI {
         }
     }
 
+    /**
+     * Resumes the player's turn or continues waiting for the turn.
+     *
+     * @param playing A boolean indicating if it's the player's turn to play.
+     */
     public void resumingTurn(boolean playing)   {
         if(playing)
             this.currentState = this.previousState;
         else
             waitingTurn();
-
-
     }
 
+    /**
+     * Asks the player to choose the order of dropping tiles.
+     * This method sets the current state to choosing order.
+     */
     @Override
     public void askOrder() {
         System.out.println("choose the tile to drop first: ");
         this.currentState = CurrentState.CHOOSING_ORDER;
     }
 
+    /**
+     * Handles the last turn of the game for the player.
+     * If the player is currently playing, it sets the current state to choosing action
+     * and prompts the player to choose an action.
+     * If the player is not playing, it sets the current state to waiting turn.
+     *
+     * @param playing true if the player is currently playing, false otherwise.
+     * @throws RuntimeException if an error occurs during the method execution.
+     */
     public void lastTurn(boolean playing){
         try {
             if(playing) {
@@ -61,20 +83,41 @@ public class TextualUI implements UI {
         }
     }
 
-
+    /**
+     * Enters the chat mode for the player.
+     * Sets the current state to chatting and prompts the player to send a message.
+     * Messages can be sent to all players or privately by starting the message with "@nickname".
+     */
     public void chat(){
         this.currentState = CurrentState.CHATTING;
         System.out.println("Send a message to someone (begin with @nickname to send it privately)");
     }
 
+    /**
+     * Prompts the player to choose a column to drop their tiles.
+     * Sets the current state to choosing column and provides a message with instructions.
+     */
     public void askColumn() {
         this.currentState = CurrentState.CHOOSING_COLUMN;
         System.out.println("Select a valid column to drop your tiles");
     }
+
+    /**
+     * Sets the current state to choosing action.
+     * Allows the player to choose an action to perform during their turn.
+     */
     public void chooseAction() throws RemoteException {
         this.currentState = CurrentState.CHOOSING_ACTION;
 
     }
+
+    /**
+     * Checks the player's input and updates the current state accordingly.
+     * Performs different actions based on the input provided by the player.
+     *
+     * @param input the player's input
+     * @throws RemoteException if a remote communication error occurs
+     */
     public void checkAction(String input) throws RemoteException {
         switch (input.toUpperCase()) {
             case "Q" -> {
@@ -92,13 +135,23 @@ public class TextualUI implements UI {
             default -> System.err.println("I don'know this command.\nTry again...");
         }
     }
+
+    /**
+     * Prompts the user to enter the number of players that will take part in the game.
+     * Reads the input from the user and validates it.
+     * If the input is a valid number of players (between 2 and 4), it calls the listener's
+     * {@code numberPartecipantsSetting()} method to handle the setting of the number of players.
+     * If the input is invalid, error messages are displayed and the user is prompted again.
+     *
+     * @throws RemoteException if a remote communication error occurs
+     */
     public void askNumber() throws RemoteException {
         System.out.println("Type in the number of players that will take part in this game:");
         int input;
         while (true) {
             if (scanner.hasNextInt()) {
                 input = scanner.nextInt();
-                if (input < 2 || input > 4){
+                if (input < MIN_NUMBER_PLAYERS || input > MAX_NUMBER_PLAYERS){
                     System.err.println("Sorry you cannot play with this much players :(");
                     System.err.println("Please enter a number in between 2 and 4:");
                 }else {
@@ -111,6 +164,16 @@ public class TextualUI implements UI {
         }
         this.listener.numberPartecipantsSetting(input);
     }
+
+    /**
+     * Prompts the user to choose a nickname for the game.
+     * Reads the input from the user and validates it.
+     * If the input is a valid nickname (not empty), it calls the listener's
+     * {@code clientNickNameSetting()} method to handle the setting of the nickname.
+     * If the input is invalid (empty), error messages are displayed and the user is prompted again.
+     *
+     * @throws RemoteException if a remote communication error occurs
+     */
     public void askNickName() throws RemoteException {
         boolean validName = false;
         String nickName = null;
@@ -127,6 +190,16 @@ public class TextualUI implements UI {
         }
         listener.clientNickNameSetting(nickName);
     }
+
+    /**
+     * Prompts the user who was disconnected from a game to enter their old nickname.
+     * Reads the input from the user and validates it.
+     * If the input is a valid nickname (not empty), it calls the listener's
+     * {@code checkingExistingNickname()} method to handle the validation of the nickname.
+     * If the input is invalid (empty), error messages are displayed and the user is prompted to enter a valid nickname.
+     *
+     * @throws RuntimeException if a runtime exception occurs while handling the existing nickname check
+     */
     public void askExistingNickname(){
         boolean validName = false;
         String nickName = null;
@@ -147,6 +220,15 @@ public class TextualUI implements UI {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Handles different types of warnings received from the server.
+     * Based on the type of warning, appropriate actions are taken.
+     * The method throws a {@code RemoteException} if a remote exception occurs while handling the warning.
+     *
+     * @param e the type of warning received from the server
+     * @throws RemoteException if a remote exception occurs while handling the warning
+     */
     public void warning(Warnings e) throws RemoteException {
         switch (e){
             case INVALID_TILE -> {
@@ -217,9 +299,20 @@ public class TextualUI implements UI {
         }
     }
 
+    /**
+     * Notifies that the last turn has been reached for a player.
+     *
+     * @param nickname the nickname of the player who completed their shelf
+     */
     public void lastTurnReached(String nickname){
         System.out.println(nickname + " completed their shelf\nBeginning last turn...");
     }
+
+    /**
+     * Prints the game board with the given Board object.
+     *
+     * @param b the Board object representing the game board
+     */
     public void printBoard(Board b) {
         System.out.print("   ");
         for (int i = 0; i < b.getSize(); i++)
@@ -257,6 +350,7 @@ public class TextualUI implements UI {
         System.out.println();
         System.out.println();
     }
+
     private void printTile(Tile t) {
         if (t == null || t.getColor() == null)
             System.out.print("  " + "|");
@@ -275,6 +369,12 @@ public class TextualUI implements UI {
                 System.out.print(ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET + "|");
         }
     }
+
+    /**
+     * Prints the shelves of players with their corresponding tiles.
+     *
+     * @param playerShelves a map containing the player names as keys and their Shelf objects as values
+     */
     public void printShelves(Map<String, Shelf> playerShelves) {
         for(String s : playerShelves.keySet()) {
             System.out.print(s + "'s shelf:\t\t\t\t");
@@ -294,6 +394,12 @@ public class TextualUI implements UI {
         System.out.println();
         System.out.println();
     }
+
+    /**
+     * Prints the personal goal shelf of a player.
+     *
+     * @param personalGoalCard the personal goal card of the player
+     */
     public void printPersonalGoalShelf(PersonalGoalCard personalGoalCard){
         System.out.println("This is your personal goal card:");
         for (int i = 0; i < SHELF_ROWS; i++) {
@@ -315,6 +421,13 @@ public class TextualUI implements UI {
         System.out.println("X  | 1 | 2 | 4 | 6 | 9 | 12 |");
         System.out.println();
     }
+
+    /**
+     * Prints the chosen tiles by a player.
+     *
+     * @param chosenTiles the list of chosen tiles
+     * @param nickname    the nickname of the player
+     */
     public void printChosenTiles(List<Tile> chosenTiles, String nickname) {
         if (!chosenTiles.isEmpty()) {
             System.out.println("******************* CHOSEN TILES BY " + nickname + " **************************************");
@@ -333,6 +446,12 @@ public class TextualUI implements UI {
                     System.out.println(i + 1 + ") " + ANSI_CYAN_BACKGROUND + "  " + ANSI_RESET);
         }
     }
+
+    /**
+     * Prints the final points chart at the end of the game.
+     *
+     * @param chart a map containing player names as keys and their corresponding points as values
+     */
     public void printFinalPoints(Map<String, Integer> chart){
         System.out.println("******************** GAME ENDED ***************************************");
         System.out.println();
@@ -344,9 +463,23 @@ public class TextualUI implements UI {
         }
         System.out.println("--------------------------------------------------");
     }
+
+    /**
+     * Sets the listener for the view.
+     *
+     * @param l the ViewListener to be set as the listener for the view
+     */
     public void addListener (ViewListener l){
         this.listener = l;
     }
+
+    /**
+     * Prints the game view, including the chat, common goal cards, board, shelves, personal goal shelf,
+     * chosen tiles, and current turn information.
+     *
+     * @param gameView the GameView object representing the game state to be printed
+     * @throws RuntimeException if there is a remote exception when accessing the chat view or handling options
+     */
     public void printGame(GameView gameView){
         try {
             this.printChat(gameView.getChatView());
@@ -387,6 +520,12 @@ public class TextualUI implements UI {
         }
     }
 
+    /**
+     * Prints the chat messages from the provided ChatView.
+     *
+     * @param chatView the ChatView object representing the chat messages to be printed
+     * @throws RemoteException if there is a remote exception while accessing the chat messages
+     */
     public void printChat(ChatView chatView) throws RemoteException {
         System.out.println("******************* CHAT **************************************");
         List<String> chat = chatView.getChat();
@@ -394,10 +533,20 @@ public class TextualUI implements UI {
             System.out.println(message);
     }
 
+    /**
+     * Sets the current state to waiting for the player's turn.
+     */
+
     public void waitingTurn() {
         this.currentState = CurrentState.WAITING_TURN;
     }
 
+
+    /**
+     * Notifies the client that the game has started.
+     *
+     * @param yourTurn a boolean indicating whether it is the client's turn or not
+     */
 
     @Override
     public void gameStarted(boolean yourTurn) {
@@ -412,7 +561,7 @@ public class TextualUI implements UI {
         openScanner();
     }
 
-    public void openScanner(){
+    private void openScanner(){
         Thread inputThread = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
             CurrentState oldState = null;
@@ -494,10 +643,20 @@ public class TextualUI implements UI {
         }
     }
 
+    /**
+     * Notifies the client that a player has reconnected to the game.
+     *
+     * @param nickname the nickname of the player who reconnected
+     */
     public void clientReconnected(String nickname){
         System.out.println(nickname + " RE-connected to the game.");
     }
 
+    /**
+     * Notifies the client that a player has disconnected from the game.
+     *
+     * @param nickname the nickname of the player who disconnected
+     */
     public void clientDisconnected(String nickname){
         System.out.println(nickname + " disconnected from the game.");
     }

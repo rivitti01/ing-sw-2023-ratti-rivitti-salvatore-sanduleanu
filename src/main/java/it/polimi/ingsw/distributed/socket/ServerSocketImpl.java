@@ -5,16 +5,12 @@ import it.polimi.ingsw.distributed.First;
 import it.polimi.ingsw.distributed.ServerListener;
 import it.polimi.ingsw.model.Game;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerSocketImpl {
     private Game model;
@@ -27,6 +23,14 @@ public class ServerSocketImpl {
     private ServerListener serverONE;
 
 
+    /**
+     * Constructs a new ServerSocketImpl with the specified port, game model, game controller, and first player indicator.
+     *
+     * @param port       the port number on which the server socket will listen for incoming connections
+     * @param model      the game model representing the state of the game
+     * @param controller the game controller responsible for handling game logic
+     * @param first      the indicator for the first player in the game
+     */
     public ServerSocketImpl(int port, Game model, GameController controller, First first) {
         this.port = port;
         this.model = model;
@@ -34,17 +38,26 @@ public class ServerSocketImpl {
         this.lock = new Object();
         this.first = first;
     }
+
+    /**
+     * Adds a server listener to receive server-related events and updates.
+     *
+     * @param serverListener the server listener to be added
+     */
     public void addServerListener(ServerListener serverListener){
         this.serverONE = serverListener;
     }
+
+    /**
+     * Starts the server and listens for incoming client connections.
+     *
+     * @throws IOException if an I/O error occurs when accepting client connections
+     */
     public void start() throws IOException {
         clients = new HashMap<>();
         serverSocket = new ServerSocket(port);
         int lastID;
-
-
         while (true){
-            //System.out.println("Socket: Aspetto connessione");
             Socket socket = serverSocket.accept();
 
             lastID = this.serverONE.clientConnected();

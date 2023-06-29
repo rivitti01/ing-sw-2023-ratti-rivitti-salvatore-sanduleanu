@@ -27,6 +27,14 @@ public class ClientSocketImpl implements ViewListener {
     boolean gameStarted = false;
     boolean canPlay = true;
 
+    /**
+     * Constructs a new instance of the ClientSocketImpl class with the specified IP address, port number,
+     * and GUI option.
+     *
+     * @param ip   the IP address of the server
+     * @param port the port number of the server
+     * @param gui  true if a graphical user interface (GUI) should be used, false for a textual user interface (TUI)
+     */
     public ClientSocketImpl(String ip, int port,boolean gui){
         this.ip = ip;
         this.port = port;
@@ -39,6 +47,17 @@ public class ClientSocketImpl implements ViewListener {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Starts the client socket communication with the server.
+     * It establishes a socket connection with the specified IP address and port number.
+     * It sets up input and output streams for communication with the server.
+     * It continuously reads objects from the input stream (Server) and analyzes them.
+     *
+     * @throws IOException if an I/O error occurs while establishing the socket connection
+     * @throws ClassNotFoundException if the class of a serialized object received from the server
+     *                                  cannot be found or loaded
+     */
     public void start() throws IOException {
         socket = new Socket(ip,port);
         out = new ObjectOutputStream(socket.getOutputStream());
@@ -54,7 +73,6 @@ public class ClientSocketImpl implements ViewListener {
                 System.exit(1);
             }
         }
-
     }
     private void analyzeMessage(Object object) throws RemoteException {
         switch (object.getClass().getSimpleName()) {
@@ -81,10 +99,6 @@ public class ClientSocketImpl implements ViewListener {
                     case ASK_RECONNECTION_NICKNAME -> {
                         view.askExistingNickname();
                         return;
-                    }
-                    case OK_JOINER -> {
-
-                       // return;
                     }
                     case OK_CREATOR -> {
                         view.askNumber();
@@ -115,8 +129,6 @@ public class ClientSocketImpl implements ViewListener {
                 if (lastTurn){
                     view.lastTurnReached(string);
                 }
-
-
             }
             case "HashMap" -> {
                 if(lastTurn) {
@@ -131,9 +143,14 @@ public class ClientSocketImpl implements ViewListener {
     }
 
 
+    /**
+     * Sends the provided nickname to the server for checking its existence.
+     *
+     * @param nickname the nickname to be checked for existence
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void checkingExistingNickname(String nickname) throws RemoteException {
-
         try {
             out.writeObject(nickname);
             out.reset();
@@ -142,8 +159,14 @@ public class ClientSocketImpl implements ViewListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
+
+    /**
+     * Sets the nickname for the client and sends it to the server for further processing.
+     *
+     * @param nickName the nickname to be set for the client
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void clientNickNameSetting(String nickName) throws RemoteException {
         try {
@@ -151,32 +174,18 @@ public class ClientSocketImpl implements ViewListener {
             out.writeObject(nickName);
             out.reset();
             out.flush();
-            /*Object object = in.readObject();
-            Warnings response = null;
-            if (object instanceof Warnings){
-                response = (Warnings) object;
-            }
-            //Warnings response = (Warnings) in.readObject();
-
-            if (response != null && response.equals(Warnings.INVALID_NICKNAME)) {
-                //view.askNickName();
-                view.warning(response);
-            }
-            else if(response != null && response.equals(Warnings.OK_CREATOR)){
-                nickname = nickName;
-                view.askNumber();
-            }
-            else if( response != null && response.equals(Warnings.OK_JOINER)){
-                nickname = nickName;
-            }*/
-
-
-        } catch (IOException /*| ClassNotFoundException*/ e) {
+        } catch (IOException e) {
             throw new RuntimeException("Cannot create client connection",e);
         }
     }
 
 
+    /**
+     * Sends the provided coordinates to the server for checking.
+     *
+     * @param coordinates the array of coordinates to be checked
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void checkingCoordinates(int[] coordinates) throws RemoteException {
         try {
@@ -188,6 +197,13 @@ public class ClientSocketImpl implements ViewListener {
         }
     }
 
+
+    /**
+     * Sends the position of a tile to drop in the player's shelf.
+     *
+     * @param tilePosition the position of the tile to be dropped
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void tileToDrop(int tilePosition) throws RemoteException {
         try{
@@ -199,6 +215,12 @@ public class ClientSocketImpl implements ViewListener {
         }
     }
 
+    /**
+     * Sends the selected column number to the server for column setting.
+     *
+     * @param i the selected column number for setting
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void columnSetting(int i) throws RemoteException {
         try {
@@ -211,6 +233,12 @@ public class ClientSocketImpl implements ViewListener {
 
     }
 
+    /**
+     * Sends the number of participants to the server for setting.
+     *
+     * @param n the number of participants to be set
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void numberPartecipantsSetting(int n) throws RemoteException {
         try {
@@ -223,6 +251,11 @@ public class ClientSocketImpl implements ViewListener {
 
     }
 
+    /**
+     * Notifies the server that the selection process has ended.
+     *
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void endsSelection() throws RemoteException {
         try {
@@ -236,6 +269,12 @@ public class ClientSocketImpl implements ViewListener {
 
     }
 
+    /**
+     * Sends a new message to the server.
+     *
+     * @param message the message to be sent
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     @Override
     public void newMessage(String message) throws RemoteException {
         try {
@@ -249,7 +288,13 @@ public class ClientSocketImpl implements ViewListener {
 
 
 
-    public void printGame(GameView gameView) throws RemoteException { //CLIENT
+    /**
+     * Prints the provided game view.
+     *
+     * @param gameView the game view to be printed
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
+    public void printGame(GameView gameView) throws RemoteException {
         view.printGame(gameView);
     }
 

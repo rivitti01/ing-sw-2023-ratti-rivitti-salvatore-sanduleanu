@@ -34,6 +34,17 @@ public class ServerHandler implements Runnable, ModelListener {
     public enum state{
         COORD, COLUMN, ORDER
     }
+
+    /**
+     * Constructs a new ServerHandler object with the provided parameters.
+     *
+     * @param socket the socket representing the connection with the client
+     * @param model the game model
+     * @param controller the game controller
+     * @param creator indicates whether the ServerHandler is for the creator of the game
+     * @param lock the lock object used for synchronization
+     * @param serverOne the server listener for communication with the server
+     */
     public ServerHandler(Socket socket, Game model, GameController controller, boolean creator, First lock, ServerListener serverOne){
         this.socket = socket;
         this.model = model;
@@ -44,15 +55,21 @@ public class ServerHandler implements Runnable, ModelListener {
         this.lock = lock;
         this.serverOne = serverOne;
     }
+
+    /**
+     * Starts the execution of the ServerHandler in a separate thread.
+     * This method is called when the thread is started.
+     * It reads incoming objects from the client and analyzes them.
+     * If a communication or class not found error occurs, appropriate actions are taken.
+     */
     @Override
     public void run() {
-        //System.out.println("SOCKET: "+"accepted connection: "+ socket.getPort());
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
             try {
-                setUp();//TODO: sconnettere il client prima di chiedergli il nickname
+                setUp();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -114,9 +131,7 @@ public class ServerHandler implements Runnable, ModelListener {
             out.reset();
             out.flush();
             if (controller.getNumberPlayers() == 0) {
-                //System.out.println("SOCKET: "+Thread.currentThread().getName() + " is waiting for the creator to set the number of players");
                 synchronized (this.lock) {
-                    //System.out.println("SOCKET: "+Thread.currentThread().getName() + " is not waiting anymore");
                     if (((ServerOne)serverOne).getConnectedClientsID().indexOf(clientID)+1 > controller.getNumberPlayers()){
                         disconnectedClient();
                         socket.close();
@@ -137,7 +152,6 @@ public class ServerHandler implements Runnable, ModelListener {
                     break;
                 }
             }
-            //se tutti i giocatori sono connessi e la partita è iniziata allora saluto il giocatore e chiudo la connessione
             if (!playerOffline){
                 out.writeObject(Warnings.GAME_ALREADY_STARTED);
                 out.reset();
@@ -155,13 +169,12 @@ public class ServerHandler implements Runnable, ModelListener {
     private void waitAndSetNickname() throws IOException, ClassNotFoundException, InterruptedException {
 
         String nickname = (String) in.readObject();
-        //System.out.println("SOCKET: "+socket.getPort() + ": Nickname = " + nickname);
         if (nickname != null) {
             if (model.isStart()) {
                 if (controller.playerOffline()) {
-                    if (controller.checkingExistingNickname(nickname)) { //playerIsBack(nickname)
+                    if (controller.checkingExistingNickname(nickname)) {
 
-                        controller.reconnectedPlayer(nickname); //setta a true il connected del player e comunica a tutti i thread che un player si è riconesso
+                        controller.reconnectedPlayer(nickname);
                         System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" SOCKET: "+  nickname + " RE-connected" + ANSI_RESET);
                         this.nickname = nickname;
                         out.writeObject(Warnings.RECONNECTION);
@@ -188,9 +201,7 @@ public class ServerHandler implements Runnable, ModelListener {
             } else {
                 if (controller.setPlayerNickname(nickname)) {
                     this.nickname = nickname;
-                    /*out.writeObject(Warnings.OK_JOINER);
-                    out.reset();
-                    out.flush();*/
+
                     if (controller.getPlayers().size() == controller.getNumberPlayers()) {
                         synchronized (this.lock) {
                             controller.checkGameInitialization();
@@ -199,7 +210,7 @@ public class ServerHandler implements Runnable, ModelListener {
                         System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" SOCKET: "+  this.nickname+" connected"+ ANSI_RESET);
                         return;
                     } else {
-                        out.writeObject(Warnings.OK_JOINER);//prima era Warnings.OK_WAIT
+                        out.writeObject(Warnings.OK_JOINER);
                         out.reset();
                         out.flush();
                         while (true) {
@@ -227,11 +238,23 @@ public class ServerHandler implements Runnable, ModelListener {
         int numberPlayers = (int) in.readObject();
         numberOfParticipantsSetting(numberPlayers);
     }
+
+    /**
+     * Returns the nickname associated with this ServerHandler.
+     *
+     * @return the nickname associated with this ServerHandler
+     */
     public String getNickname(){
         return nickname;
     }
 
 
+    /**
+     * Sets the number of participants for the game and performs the necessary actions based on the number of players.
+     *
+     * @param n the number of participants to be set
+     * @throws RemoteException if a remote communication error occurs during the method execution
+     */
     public void numberOfParticipantsSetting(int n) throws RemoteException {
         System.out.println(getTime()+" SOCKET:"+socket.getPort()+": Number of players = "+n);
         if (n > 1 && n < 5){
@@ -257,12 +280,17 @@ public class ServerHandler implements Runnable, ModelListener {
             out.reset();
             out.flush();
         } catch (IOException e) {
-
         }
         model.removeModelListener(this);
         serverOne.clientDisconnected(this.nickname, this.clientID);
     }
 
+    /**
+     * Sends the game view of the current player to the client.
+     * The game view contains the current state of the game for the player.
+     * The game view is sent through the output stream to the client.
+     * If an IOException occurs during the communication, the stack trace is printed.
+     */
     @Override
     public void printGame() {
         for (Player p : model.getPlayers()){
@@ -280,6 +308,13 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
 
+
+    /**
+     * Sends a warning message to the client player.
+     *
+     * @param e             the warning type to be sent
+     * @param currentPlayer the current player object associated with the warning
+     */
     @Override
     public void warning(Warnings e, Player currentPlayer) {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
@@ -296,11 +331,15 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
 
+    /**
+     * Notifies the client player about a new turn.
+     *
+     * @param currentPlayer the current player object associated with the new turn
+     */
     @Override
     public void newTurn(Player currentPlayer) {
         if(model.getCurrentPlayer().getNickname().equals(nickname)){// == currentPlayer.getNickname().equals(nickname)
             try {
-                //System.out.println("Client "+socket.getPort()+" YOUR TURN "+ "Thread nick : "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.YOUR_TURN);
                 out.reset();
                 out.flush();
@@ -310,7 +349,6 @@ public class ServerHandler implements Runnable, ModelListener {
             }
         }else {
             try {
-                //System.out.println("Client "+socket.getPort()+" NOT YOUR TURN "+ "Thread nick: "+nickname+" current player: "+currentPlayer.getNickname());
                 out.writeObject(Warnings.NOT_YOUR_TURN);
                 out.reset();
                 out.flush();
@@ -322,6 +360,14 @@ public class ServerHandler implements Runnable, ModelListener {
 
     }
 
+    /**
+     * Asks the client player to choose the order tiles to drop in the shelf.
+     * This method is called when it is the client player's turn.
+     * It sends a request to the client player to choose the order of play.
+     * The client player should respond with the chosen order.
+     *
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void askOrder() {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
@@ -337,6 +383,11 @@ public class ServerHandler implements Runnable, ModelListener {
 
     }
 
+    /**
+     * Notifies the client player that it is the last turn of the game.
+     * This method sends a notification to the client player indicating that the current turn is the last turn of the game.
+     * The client player is also provided with the nickname of the current player.
+     */
     @Override
     public void isLastTurn() {
         try {
@@ -351,6 +402,12 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
 
+    /**
+     * Asks the client player to choose a column for placing a tile.
+     * This method is called when it is the client player's turn.
+     * It sends a request to the client player to choose a column for placing a tile.
+     * The client player should respond with the chosen column.
+     */
     @Override
     public void askColumn() {
         if (model.getCurrentPlayer().getNickname().equals(nickname)) {
@@ -366,6 +423,14 @@ public class ServerHandler implements Runnable, ModelListener {
 
     }
 
+    /**
+     * Asks the client player to choose their next action.
+     * This method is called when it is the client player's turn.
+     * It sends a request to the client player to choose their next action.
+     * The client player should respond with their chosen action.
+     *
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void askAction() {
         if (model.getCurrentPlayer().getNickname().equals(nickname)){
@@ -378,11 +443,27 @@ public class ServerHandler implements Runnable, ModelListener {
             }
         }
     }
+
+    /**
+     * Notifies the client player that the game has started.
+     * This method is called when the game starts. It sends a notification to the client player indicating that the game has started.
+     * It invokes the `newTurn()` method to inform the client player that it is their turn.
+     *
+     * @param currentPlayer the player whose turn it is
+     */
     @Override
     public void gameStarted(Player currentPlayer) {
         newTurn(currentPlayer);
     }
 
+    /**
+     * Sends a warning message to the client player.
+     * This method is called to notify the client player about a specific warning.
+     *
+     * @param errorType the type of warning to send
+     * @param nickname  the nickname of the client player
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void warning(Warnings errorType, String nickname) {
         if (nickname.equals(this.nickname)){
@@ -397,25 +478,15 @@ public class ServerHandler implements Runnable, ModelListener {
 
     }
 
-    @Override
-    public void onePlayerLeft(Player theOnlyPlayerLeft, int countdownToEnd) {
-        if (theOnlyPlayerLeft.getNickname().equals(nickname)){
-            if (countdownToEnd != 0){
-                try {
-                    System.out.println("One player left");
-                    out.writeObject(Warnings.WAITING_FOR_MORE_PLAYERS);
-                    out.reset();
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-        }
-
-
-    }
-
+    /**
+     * Notifies the client players that a player has disconnected from the game.
+     * This method is called when a player disconnects, and it sends a message to all client players
+     * to inform them about the disconnection. If there is only one player remaining in the game,
+     * it sends a message to the remaining player to wait for more players to join.
+     *
+     * @param nickname the nickname of the disconnected player
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void playerDisconnected(String nickname) {
         try {
@@ -438,6 +509,14 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
 
+    /**
+     * Notifies the client players that a player has reconnected to the game.
+     * This method is called when a player reconnects, and it sends a message to all client players
+     * to inform them about the reconnection.
+     *
+     * @param nickname the nickname of the reconnected player
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void playerReconnected(String nickname) {
         try {
@@ -449,6 +528,13 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
 
+    /**
+     * Notifies the client player that their turn is being resumed.
+     * This method is called when a player's turn is being resumed after a reconnection,
+     * and it sends a message to the client player to inform them about the resumption of their turn.
+     *
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void resumingTurn() {
         try {
@@ -460,12 +546,17 @@ public class ServerHandler implements Runnable, ModelListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
 
 
+    /**
+     * Sends the final points to the client player.
+     * This method is called at the end of the game to send the final points of all players to the client player.
+     * The final points are represented as a map with player nicknames as keys and their corresponding points as values.
+     *
+     * @throws RuntimeException if an IOException occurs during the communication
+     */
     @Override
     public void finalPoints() throws RuntimeException {
         Map<String, Integer> finalPoints = new HashMap<>();
@@ -485,15 +576,17 @@ public class ServerHandler implements Runnable, ModelListener {
 
     }
 
-    public int getClientID() {
-        return clientID;
-    }
 
+    /**
+     * Sets the ID of the client.
+     *
+     * @param clientID the ID of the client to be set
+     */
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
 
-    public String getTime(){
+    private String getTime(){
         return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 
