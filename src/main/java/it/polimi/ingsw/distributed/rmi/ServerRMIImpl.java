@@ -141,13 +141,7 @@ public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelL
      */
     @Override
     public void clientConnection(Client c) throws RemoteException {
-        synchronized (connectionLock) {
-            int ID = this.serverONE.clientConnected();
-            c.setID(ID);
-            connectedClientsID.put(c, ID);
-            addClientToGame(c);
-            connectionLock.notifyAll();
-        }
+
         boolean canPlay;
         try {
             c.warning(Warnings.WAIT);
@@ -204,7 +198,6 @@ public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelL
                     c.warning(Warnings.GAME_ALREADY_STARTED);
         } else {
             if(((ServerOne)serverONE).getConnectedClientsID().indexOf(connectedClientsID.get(c))+1 <= controller.getNumberPlayers()){ //((ServerOne) serverONE).getConnectedClients() < this.controller.getNumberPlayers()
-                addClientToGame(c);
                 c.askExistingNickname();
             } else {
                 try {
@@ -234,6 +227,14 @@ public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelL
             System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" RMI: " +  nickName + " RE-connected" + ANSI_RESET);
             c.warning(Warnings.RECONNECTION);
 
+            synchronized (connectionLock) {
+                int ID = this.serverONE.clientConnected();
+                c.setID(ID);
+                connectedClientsID.put(c, ID);
+                addClientToGame(c);
+                connectionLock.notifyAll();
+            }
+
             controller.reconnectedPlayer(nickName);
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
@@ -260,6 +261,15 @@ public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelL
     public void clientNickNameSetting(Client c, String nickName) throws RemoteException {
         if(model.getPlayers()==null) {
             if (this.controller.setPlayerNickname(nickName)) {
+
+                synchronized (connectionLock) {
+                    int ID = this.serverONE.clientConnected();
+                    c.setID(ID);
+                    connectedClientsID.put(c, ID);
+                    addClientToGame(c);
+                    connectionLock.notifyAll();
+                }
+
                 System.out.println(getTime()+ANSI_GREEN_BACKGROUND  +" RMI: " +  nickName + " connected" + ANSI_RESET);
                 connectedClients.put(c, nickName);
                 c.setNickname(nickName);

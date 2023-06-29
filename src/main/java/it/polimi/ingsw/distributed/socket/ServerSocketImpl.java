@@ -60,16 +60,16 @@ public class ServerSocketImpl {
         while (true){
             Socket socket = serverSocket.accept();
 
-            lastID = this.serverONE.clientConnected();
+            //lastID = this.serverONE.clientConnected();
             ServerHandler serverHandler;
 
             if (clients.size() == 0 && first.getFirst()){
                 first.setFirst(false);
                 serverHandler = new ServerHandler(socket,model,controller,true,first,serverONE);
-                serverHandler.setClientID(lastID);
+                //serverHandler.setClientID(lastID);
             }else {
                 serverHandler = new ServerHandler(socket, model, controller, false, first,serverONE);
-                serverHandler.setClientID(lastID);
+                //serverHandler.setClientID(lastID);
             }
             clients.put(clients.size(), serverHandler);
             Thread thread = new Thread(serverHandler);

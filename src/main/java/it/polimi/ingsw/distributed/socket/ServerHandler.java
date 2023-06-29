@@ -238,6 +238,7 @@ public class ServerHandler implements Runnable, ModelListener {
                         controller.reconnectedPlayer(nickname);
                         System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" SOCKET: "+  nickname + " RE-connected" + ANSI_RESET);
                         this.nickname = nickname;
+                        setClientID(serverOne.clientConnected());
                         out.writeObject(Warnings.RECONNECTION);
                         out.reset();
                         out.flush();
@@ -262,6 +263,7 @@ public class ServerHandler implements Runnable, ModelListener {
             } else {
                 if (controller.setPlayerNickname(nickname)) {
                     this.nickname = nickname;
+                    setClientID(serverOne.clientConnected());
 
                     if (controller.getPlayers().size() == controller.getNumberPlayers()) {
                         synchronized (this.lock) {
