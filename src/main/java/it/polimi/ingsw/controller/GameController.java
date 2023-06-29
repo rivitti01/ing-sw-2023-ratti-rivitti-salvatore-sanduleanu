@@ -166,7 +166,7 @@ public class GameController  {
             }
         }
     }
-    private void switchCurrentPlayer(int indexCurrentPlayer){
+    protected void switchCurrentPlayer(int indexCurrentPlayer){
         int connectedPlayers = 0;
         for (int i = 0; i < this.model.getPlayers().size(); i++) {
             if (this.model.getPlayers().get(i).isConnected()) {

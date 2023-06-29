@@ -87,12 +87,14 @@ public class ClientSocketImpl implements ViewListener {
                         if (!gameStarted) {
                             view.gameStarted(true);
                             gameStarted = true;
+                            return;
                         }
                     }
                     case NOT_YOUR_TURN, RECONNECTION -> {
                         if (!gameStarted){
                             view.gameStarted(false);
                             gameStarted = true;
+                            return;
                         }
                     }
                     case LAST_TURN_NOTIFICATION -> lastTurn = true;

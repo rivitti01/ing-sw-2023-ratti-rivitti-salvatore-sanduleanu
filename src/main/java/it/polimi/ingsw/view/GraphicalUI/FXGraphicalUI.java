@@ -5,6 +5,8 @@ import it.polimi.ingsw.util.CurrentState;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
+
+import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -187,8 +189,13 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        //System.out.println("DDDDD");
+        try {
+            newTurn(yourTurn);
+        } catch (RemoteException e) {
+            System.err.println("Error in gameStarted GUI side");
+            throw new RuntimeException(e);
         }
+    }
 
     public void askNumber() throws RemoteException{
             while(gameController==null) {
