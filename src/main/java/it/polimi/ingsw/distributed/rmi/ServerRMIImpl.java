@@ -23,7 +23,7 @@ import static it.polimi.ingsw.view.Colors.ANSI_RESET;
 
 
 /**
- * The `ServerImpl` class represents the server-side implementation for the RMI communication protocol.
+ * The `ServerRMIImpl` class represents the server-side implementation for the RMI communication protocol.
  * It implements the `Server` interface and extends the `UnicastRemoteObject` class.
  */
 public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelListener {
