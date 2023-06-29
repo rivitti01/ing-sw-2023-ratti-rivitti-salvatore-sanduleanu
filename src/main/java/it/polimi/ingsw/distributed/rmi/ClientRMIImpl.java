@@ -16,7 +16,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 
 
-public class ClientImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
+public class ClientRMIImpl extends UnicastRemoteObject implements Client, ViewListener, Runnable {
     private UI view;
     private Server stub;
     private String nickname = null;
@@ -24,7 +24,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     private int id = -1;
 
 
-    public ClientImpl(Server s, boolean gui) throws RemoteException {
+    public ClientRMIImpl(Server s, boolean gui) throws RemoteException {
         super();
         this.stub = s;
         checkServer();
@@ -39,7 +39,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
             e.printStackTrace();
         }
     }
-    public ClientImpl(Server s, int port) throws RemoteException {
+    public ClientRMIImpl(Server s, int port) throws RemoteException {
         super(port);
         this.stub = s;
         this.view.addListener(this);
@@ -49,7 +49,7 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
             e.printStackTrace();
         }
     }
-    public ClientImpl(Server s, int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+    public ClientRMIImpl(Server s, int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         this.stub = s;
         this.view.addListener(this);

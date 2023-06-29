@@ -1,13 +1,15 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.distributed.Server;
-import it.polimi.ingsw.distributed.rmi.ClientImpl;
+import it.polimi.ingsw.distributed.rmi.ClientRMIImpl;
 import it.polimi.ingsw.distributed.socket.ClientSocketImpl;
 
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
+
+import static it.polimi.ingsw.util.Costants.SERVER_IP;
 
 public class AppClientOne {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -42,7 +44,7 @@ public class AppClientOne {
                     // Obtain a reference to the remote object
                     Registry registry = LocateRegistry.getRegistry();
                     Server server = (Server) registry.lookup("server");
-                    ClientImpl client = new ClientImpl(server, true);
+                    ClientRMIImpl client = new ClientRMIImpl(server, true);
                     client.run();
                 } catch (Exception e) {
                     System.err.println("Client exception: " + e);
@@ -53,7 +55,7 @@ public class AppClientOne {
                     // Obtain a reference to the remote object
                     Registry registry = LocateRegistry.getRegistry();
                     Server server = (Server) registry.lookup("server");
-                    ClientImpl client = new ClientImpl(server, false);
+                    ClientRMIImpl client = new ClientRMIImpl(server, false);
                     client.run();
                 } catch (Exception e) {
                     System.err.println("Client exception: " + e);
@@ -63,9 +65,9 @@ public class AppClientOne {
         }else {
             ClientSocketImpl client;
             if (uiType.equalsIgnoreCase("G")) {   // SOCKET GUI
-                client = new ClientSocketImpl("127.0.0.1", 2000, true);
+                client = new ClientSocketImpl(SERVER_IP, 2000, true);
             } else {                    // SOCKET TUI
-                client = new ClientSocketImpl("127.0.0.1", 2000, false);
+                client = new ClientSocketImpl(SERVER_IP, 2000, false);
             }
             client.start();
         }

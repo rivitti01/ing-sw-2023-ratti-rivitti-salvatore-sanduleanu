@@ -14,6 +14,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static it.polimi.ingsw.util.Costants.PING_PERIOD;
 
 public class ClientSocketImpl implements ViewListener {
     private UI view;
@@ -62,6 +67,21 @@ public class ClientSocketImpl implements ViewListener {
         socket = new Socket(ip,port);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
+
+        new Thread(() ->{
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.scheduleAtFixedRate(() -> {
+                try {
+                    out.writeObject("PONG");
+                    out.reset();
+                    out.flush();
+                } catch (IOException e) {
+                    System.err.println("Connection with the server lost!");
+                    executorService.shutdown();
+                    throw new RuntimeException(e);
+                }
+            }, 10000, PING_PERIOD, TimeUnit.MILLISECONDS);
+        }).start();
 
         while (true) {
             try {

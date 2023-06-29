@@ -111,6 +111,10 @@ public class ServerHandler implements Runnable, ModelListener {
                 }
             }
             case "String" ->{
+                String message = (String) response;
+                if (message.equals("PONG")){
+                    break;
+                }
                 controller.addChatMessage(nickname,(String) response);
             }
         }
@@ -235,8 +239,11 @@ public class ServerHandler implements Runnable, ModelListener {
         System.out.println(getTime()+" SOCKET: "+ANSI_GREEN_BACKGROUND+this.nickname+ " connected" + ANSI_RESET);
     }
     private void waitAndSetNumberPlayers() throws IOException, ClassNotFoundException {
-        int numberPlayers = (int) in.readObject();
-        numberOfParticipantsSetting(numberPlayers);
+        Object response = in.readObject();
+        if (response instanceof Integer) {
+            int numberPlayers = (int) response;
+            numberOfParticipantsSetting(numberPlayers);
+        }
     }
 
     /**

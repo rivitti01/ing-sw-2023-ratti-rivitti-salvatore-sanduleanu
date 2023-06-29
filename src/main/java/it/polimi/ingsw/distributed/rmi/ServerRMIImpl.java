@@ -26,7 +26,7 @@ import static it.polimi.ingsw.view.Colors.ANSI_RESET;
  * The `ServerImpl` class represents the server-side implementation for the RMI communication protocol.
  * It implements the `Server` interface and extends the `UnicastRemoteObject` class.
  */
-public class ServerImpl extends UnicastRemoteObject implements Server, ModelListener {
+public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelListener {
     private final Game model;
     private final GameController controller;
     private final LinkedHashMap<Client, String> connectedClients;
@@ -44,7 +44,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
      *                   the number of players in the game.
      * @throws RemoteException if there is a communication-related issue.
      */
-    public ServerImpl(Game model, GameController controller, First first) throws RemoteException {
+    public ServerRMIImpl(Game model, GameController controller, First first) throws RemoteException {
         super();
         this.first = first;
         connectedClients = new LinkedHashMap<>();
@@ -61,7 +61,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
      * @param port The port number for the server.
      * @throws RemoteException if there is a communication-related issue.
      */
-    public ServerImpl(int port) throws RemoteException {
+    public ServerRMIImpl(int port) throws RemoteException {
         super(port);
         connectedClients = new LinkedHashMap<>();
         this.model = new Game();
@@ -78,7 +78,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
      * @param ssf The RMIServerSocketFactory to be used for creating server sockets.
      * @throws RemoteException if there is a communication-related issue.
      */
-    public ServerImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+    public ServerRMIImpl(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
         super(port, csf, ssf);
         connectedClients = new LinkedHashMap<>();
         this.model = new Game();

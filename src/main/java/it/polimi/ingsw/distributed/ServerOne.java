@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.distributed.rmi.ServerImpl;
+import it.polimi.ingsw.distributed.rmi.ServerRMIImpl;
 import it.polimi.ingsw.distributed.socket.ServerSocketImpl;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
@@ -23,7 +23,7 @@ import static it.polimi.ingsw.view.Colors.*;
 
 public class ServerOne implements ServerListener {
     private ServerSocketImpl serverSocket;
-    private ServerImpl serverRMI;
+    private ServerRMIImpl serverRMI;
     private Game model;
     private GameController controller;
     private int connectedClients = 0;
@@ -46,7 +46,7 @@ public class ServerOne implements ServerListener {
         controller = new GameController(model);
         serverSocket = new ServerSocketImpl(SOCKET_PORT,model,controller,first);
         serverSocket.addServerListener(this);
-        serverRMI = new ServerImpl(model,controller,first);
+        serverRMI = new ServerRMIImpl(model,controller,first);
         serverRMI.addServerListener(this);
         connectedClientsID = new ArrayList<>();
     }

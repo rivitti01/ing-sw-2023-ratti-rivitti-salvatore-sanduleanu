@@ -132,7 +132,7 @@ public class TextualUI implements UI {
                 this.currentState = CurrentState.CHATTING;
                 chat();
             }
-            default -> System.err.println("I don'know this command.\nTry again...");
+            default -> System.out.println(ANSI_RED_BACKGROUND + "I don'know this command.\nTry again..." + ANSI_RESET);
         }
     }
 
@@ -152,13 +152,13 @@ public class TextualUI implements UI {
             if (scanner.hasNextInt()) {
                 input = scanner.nextInt();
                 if (input < MIN_NUMBER_PLAYERS || input > MAX_NUMBER_PLAYERS){
-                    System.err.println("Sorry you cannot play with this much players :(");
-                    System.err.println("Please enter a number in between 2 and 4:");
+                    System.out.println(ANSI_RED_BACKGROUND + "Sorry you cannot play with this much players :(" + ANSI_RESET);
+                    System.out.println(ANSI_RED_BACKGROUND + "Please enter a number in between 2 and 4:" + ANSI_RESET);
                 }else {
                     break;
                 }
             } else {
-                System.err.println("Enter a valid value");
+                System.out.println(ANSI_RED_BACKGROUND + "Enter a valid value" + ANSI_RESET);
                 scanner.nextLine(); // Consuma il valore non intero inserito
             }
         }
@@ -182,8 +182,8 @@ public class TextualUI implements UI {
             nickName = scanner.next();
             scanner.nextLine();
             if (nickName.length() == 0){
-                System.err.println("Sorry there was something wrong with your nickname :(");
-                System.err.println("Please try again:");
+                System.out.println(ANSI_RED_BACKGROUND + "Sorry there was something wrong with your nickname :(" + ANSI_RESET);
+                System.out.println(ANSI_RED_BACKGROUND + "Please try again:" + ANSI_RESET);
             } else {
                 validName=true;
             }
@@ -208,8 +208,8 @@ public class TextualUI implements UI {
             nickName = scanner.next();
             scanner.nextLine();
             if (nickName.length() == 0){
-                System.err.println("nickname cannot be empty!");
-                System.err.println("Please try again:");
+                System.out.println(ANSI_RED_BACKGROUND + "nickname cannot be empty!" + ANSI_RESET);
+                System.out.println(ANSI_RED_BACKGROUND + "Please try again:" + ANSI_RESET);
             } else {
                 validName=true;
             }
@@ -240,16 +240,16 @@ public class TextualUI implements UI {
                 }
             }
             case INVALID_NICKNAME -> {
-                System.err.println("This nickname is already taken, choose another one: ");
+                System.out.println(ANSI_RED_BACKGROUND + "This nickname is already taken, choose another one: " + ANSI_RESET);
                 askNickName();
             }
             case INVALID_COLUMN -> {
-                System.err.println("Wrong column selected, please try again:");
+                System.out.println(ANSI_RED_BACKGROUND + "Wrong column selected, please try again:" + ANSI_RESET);
                 this.currentState = CurrentState.CHOOSING_COLUMN;
                 askColumn();
             }
             case INVALID_ACTION -> {
-                System.err.println("Please choose at least one tile:");
+                System.out.println(ANSI_RED_BACKGROUND + "Please choose at least one tile:" + ANSI_RESET);
                 this.currentState = CurrentState.CHOOSING_ACTION;
                 try {
                     chooseAction();
@@ -257,23 +257,23 @@ public class TextualUI implements UI {
                     throw new RuntimeException(ex);
                 }
             }
-            case GAME_ALREADY_STARTED -> System.err.println("A game has already started, you cannot play. Sorry :(");
+            case GAME_ALREADY_STARTED -> System.out.println(ANSI_RED_BACKGROUND + "A game has already started, you cannot play. Sorry :(" + ANSI_RESET);
             case MAX_TILES_CHOSEN -> {
                 this.currentState = CurrentState.CHOOSING_COLUMN;
                 System.out.println("You reached the max number of chosen tiles");
                 askColumn();
             }
             case INVALID_ORDER -> {
-                System.err.println("This tile cannot be chosen to be dropped. Please try again...");
+                System.out.println(ANSI_RED_BACKGROUND + "This tile cannot be chosen to be dropped. Please try again..." + ANSI_RESET);
                 this.currentState = CurrentState.CHOOSING_ORDER;
                 askOrder();
             }
             case WAIT, OK_JOINER -> System.out.println("Loading. Wait...");
-            case INVALID_CHAT_MESSAGE -> System.err.println("""
+            case INVALID_CHAT_MESSAGE -> System.out.println(ANSI_RED_BACKGROUND + """
                     Invalid message!
                     Type a public message
-                    or type |@nickname| |message to send privately|""");
-            case IVALID_RECEIVER -> System.err.println("Are you sure this nickname exist? Maybe you misspelled it :(");
+                    or type |@nickname| |message to send privately|""" + ANSI_RESET);
+            case IVALID_RECEIVER -> System.out.println(ANSI_RED_BACKGROUND + "Are you sure this nickname exist? Maybe you misspelled it :(" + ANSI_RESET);
             case YOUR_TURN -> newTurn(true);
             case NOT_YOUR_TURN -> newTurn(false);
             case CORRECT_CORD -> {}
@@ -282,9 +282,9 @@ public class TextualUI implements UI {
             case ASK_ORDER -> askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
-            case CLIENT_DISCONNECTED -> System.err.println("One player has disconnected from the game");
+            case CLIENT_DISCONNECTED -> System.out.println(ANSI_RED_BACKGROUND + "One player has disconnected from the game" + ANSI_RESET);
             case WAITING_FOR_MORE_PLAYERS -> {
-                System.err.println("Waiting for more players to continue the game...");
+                System.out.println(ANSI_RED_BACKGROUND + "Waiting for more players to continue the game..." + ANSI_RESET);
                 this.previousState = this.currentState;
                 this.currentState = CurrentState.WAITING_FOR_CLIENTS;
             }
@@ -567,63 +567,67 @@ public class TextualUI implements UI {
             CurrentState oldState = null;
             while (true) {
                 String input = scanner.nextLine();
-                if (this.currentState!=CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
-                    oldState = this.currentState;
-                    this.currentState = CurrentState.CHATTING;
-                    System.out.println("Send a message to someone (begin with @nickname to send it privately)");
-                } else {
-                    try {
-                        switch (this.currentState) {
-                            case CHOOSING_ACTION -> checkAction(input);
-                            case WAITING_TURN -> System.err.println("It's not your turn.\nYou can type [chat] to write in the chat.");
-                            case CHATTING -> {
-                                this.currentState = oldState;
-                                this.listener.newMessage(input);
-                            }
-                            case CHOOSING_TILE -> {
-                                try {
-                                    // Split the input string into an array of strings
-                                    String[] parts = input.split(" ");
+                if (input.length() > 0) {
+                    if (this.currentState != CurrentState.WAITING_FOR_CLIENTS && input.equals("chat")) {
+                        oldState = this.currentState;
+                        this.currentState = CurrentState.CHATTING;
+                        System.out.println("Send a message to someone (begin with @nickname to send it privately)");
+                    } else {
+                        try {
+                            switch (this.currentState) {
+                                case CHOOSING_ACTION -> checkAction(input);
+                                case WAITING_TURN -> System.out.println(ANSI_RED_BACKGROUND + "It's not your turn.\nYou can type [chat] to write in the chat." + ANSI_RESET);
+                                case CHATTING -> {
+                                    this.currentState = oldState;
+                                    this.listener.newMessage(input);
+                                }
+                                case CHOOSING_TILE -> {
+                                    try {
+                                        // Split the input string into an array of strings
+                                        String[] parts = input.split(" ");
 
-                                    // Extract the numbers from the array of strings
-                                    int number1 = Integer.parseInt(parts[0]);
-                                    int number2 = Integer.parseInt(parts[1]);
-                                    int[] coordinates = {number1, number2};
-                                    this.currentState = CurrentState.CHOOSING_ACTION;
-                                    this.listener.checkingCoordinates(coordinates);
-                                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                                    System.err.println("You chose invalid coordinates\nPlease try again...");
+                                        // Extract the numbers from the array of strings
+                                        int number1 = Integer.parseInt(parts[0]);
+                                        int number2 = Integer.parseInt(parts[1]);
+                                        int[] coordinates = {number1, number2};
+                                        this.currentState = CurrentState.CHOOSING_ACTION;
+                                        this.listener.checkingCoordinates(coordinates);
+                                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                                        System.out.println(ANSI_RED_BACKGROUND + "You chose invalid coordinates\nPlease try again..." + ANSI_RESET);
+                                    }
                                 }
-                            }
-                            case CHOOSING_COLUMN -> {
-                                try {
-                                    int column = Integer.parseInt(input);
-                                    this.listener.columnSetting(column);
-                                } catch (NumberFormatException e) {
-                                    System.err.println("You must insert a column. Please try again...");
+                                case CHOOSING_COLUMN -> {
+                                    try {
+                                        int column = Integer.parseInt(input);
+                                        this.listener.columnSetting(column);
+                                    } catch (NumberFormatException e) {
+                                        System.out.println(ANSI_RED_BACKGROUND + "You must insert a column. Please try again..." + ANSI_RESET);
+                                    }
                                 }
-                            }
-                            case CHOOSING_ORDER -> {
-                                try {
-                                    int tilePosition = Integer.parseInt(input);
-                                    listener.tileToDrop(tilePosition);
-                                } catch (NumberFormatException e) {
-                                    System.err.println("You must insert a position. Please try again...");
+                                case CHOOSING_ORDER -> {
+                                    try {
+                                        int tilePosition = Integer.parseInt(input);
+                                        listener.tileToDrop(tilePosition);
+                                    } catch (NumberFormatException e) {
+                                        System.out.println(ANSI_RED_BACKGROUND + "You must insert a position. Please try again..." + ANSI_RESET);
+                                    }
                                 }
+                                case WAITING_FOR_CLIENTS -> System.out.println(ANSI_RED_BACKGROUND + "Waiting for more players to continue the game..." + ANSI_RESET);
                             }
-                            case WAITING_FOR_CLIENTS -> System.err.println("Waiting for more players to continue the game...");
+                        } catch (RemoteException e) {
+                            handleRemoteException();
                         }
-                    }catch (RemoteException e){
-                        handleRemoteException();
                     }
-                }
+                } else
+                    System.out.println(ANSI_RED_BACKGROUND + "Empry String! Try again..." + ANSI_RESET);
             }
+
         });
         inputThread.start();
     }
 
     private void handleRemoteException(){
-        System.err.println("Server has crushed! Exiting...");
+        System.out.println(ANSI_RED_BACKGROUND + "Server has crushed! Exiting..." + ANSI_RESET);
         System.exit(1);
     }
 
@@ -662,4 +666,3 @@ public class TextualUI implements UI {
     }
 
 }
-
