@@ -46,6 +46,9 @@ public class FXStageLauncher extends Application {
             listenerClient.notifyAll();
         }
 
+        primaryStage.setOnCloseRequest(e -> {
+            System.exit(-1);
+        });
         primaryStage.show();
     }
 

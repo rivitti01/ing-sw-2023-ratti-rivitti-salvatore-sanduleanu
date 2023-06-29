@@ -39,7 +39,7 @@ public class FXGameController {
     private ViewListener client;
 
     public GameView model;
-    private StringBuilder fieldContent;
+    private StringBuilder fieldContent = new StringBuilder();
     private TurnState turn;
     private CurrentState currentState;
     private String playerNick;
@@ -53,6 +53,7 @@ public class FXGameController {
     private BufferedImage[] tileImages = new BufferedImage[18];
     private Node[][] playerMatrix = new Node[6][5];
     private Node[][] boardMatrix = new Node[9][9];
+    private boolean isEnding = false;
 
     public enum TurnState {
         OPPONENT, PLAYER, LAST_ROUND, LAST_PLAYER
@@ -282,7 +283,7 @@ public class FXGameController {
                 tmpMatrix = playerMatrix;
             else {
                 for (int i = 0; i < playerShelves.size()-1; i++) {
-                    if (playersObjects.get(i).getName().equals(s)) {
+                        if (playersObjects.get(i).getName().equals(s)) {
                         tmpMatrix = playersObjects.get(i).getShelfMatrix();
                     }
                 }
@@ -468,7 +469,8 @@ public class FXGameController {
     }
 
     public void lastTurn(boolean playing) {
-        turn = TurnState.LAST_PLAYER;
+        Platform.runLater(()-> topText.setText("It's your last turn!!!"));
+        newTurn(playing);
     }
 
     public void askOrder(){
@@ -479,9 +481,6 @@ public class FXGameController {
                 bottomText.setText("Continue choosing the next tile to drop into the column");
         });
         currentState=CurrentState.CHOOSING_ORDER;
-    }
-    public void lastTurnReached() {
-        turn = TurnState.LAST_ROUND;
     }
 
     public void printTurnState(String playingPlayer) {
@@ -545,6 +544,7 @@ public class FXGameController {
     private class PlayerObjects {
 
         public PlayerObjects(){
+            nick = new String();
             shelf = new Node[6][5];
             seat = new ImageView();
             labelNick = new Text();
@@ -737,19 +737,21 @@ public class FXGameController {
     }
 
     public void playerDisconnected(String disconnectedPlayer){
-        fieldContent = new StringBuilder("");
         String tempString = ("--- " + disconnectedPlayer + " has disconnected ---\n");
         fieldContent.append(tempString);
         Platform.runLater(() -> chatArea.setText(fieldContent.toString()));
     }
 
     public void playerReconnected(String reconnectedPlayer){
-        fieldContent = new StringBuilder("");
         String tempString = ("--- " + reconnectedPlayer + " has reconnected ---\n");
         fieldContent.append(tempString );
         Platform.runLater(() -> chatArea.setText(fieldContent.toString()));
     }
 
+    public void lastTurnReached(String shelfFiller){
+
+
+    }
     public void resuming(boolean playing){
         if(playing){
             switch(previousState) {
@@ -779,7 +781,7 @@ public class FXGameController {
         try {
             client.columnSetting(this.columnNumber);
         } catch (RemoteException e) {
-            System.err.println("Errore in choosingColumn GUI side");
+            System.err.println("Errore in choosing Column GUI side");
             throw new RuntimeException(e);
         }
     }
@@ -886,8 +888,9 @@ public class FXGameController {
     @FXML
     void joinGame(ActionEvent event) throws RemoteException {
         if(loginState==LoginState.RECONNECTING){
-            client.checkingExistingNickname(nicknameField.getText());
             setPlayerNickname(nicknameField.getText());
+            client.checkingExistingNickname(nicknameField.getText());
+
         }
         else {
             if(nicknameField.getText().equals(""))
