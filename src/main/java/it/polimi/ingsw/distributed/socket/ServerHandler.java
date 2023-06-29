@@ -14,9 +14,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static it.polimi.ingsw.util.Costants.TIMEOUT_DURATION;
 import static it.polimi.ingsw.view.Colors.*;
 
 public class ServerHandler implements Runnable, ModelListener {
@@ -31,6 +35,10 @@ public class ServerHandler implements Runnable, ModelListener {
     private final First lock;
     private ServerListener serverOne;
     private int clientID;
+    private ScheduledFuture<?> timerTask;
+    private ScheduledExecutorService timerExecutor;
+    private boolean interruptedTimer = false;
+    private Timer timer;
     public enum state{
         COORD, COLUMN, ORDER
     }
@@ -87,36 +95,85 @@ public class ServerHandler implements Runnable, ModelListener {
         }
     }
     private void analyzeMessage(Object response) throws IOException {
-        switch (response.getClass().getSimpleName()){
-            case "int[]" -> {
-                if (currentState == state.COORD) {
-                    int[] coordinates = (int[]) response;
-                    controller.checkCorrectCoordinates(coordinates);
+        if (response != null) {
+            switch (response.getClass().getSimpleName()) {
+                case "int[]" -> {
+                    if (currentState == state.COORD) {
+                        int[] coordinates = (int[]) response;
+                        controller.checkCorrectCoordinates(coordinates);
+                    }
                 }
-            }
-            case "Warnings" -> {
-                Warnings warning = (Warnings) response;
-                if (warning.equals(Warnings.END_SELECTION)){
-                    model.selectionControl();
-                }
+                case "Warnings" -> {
+                    Warnings warning = (Warnings) response;
+                    if (warning.equals(Warnings.END_SELECTION)) {
+                        model.selectionControl();
+                    }
 
-            }
-            case "Integer" -> {
-                if(currentState == state.COLUMN) {
-                    int column = (int) response;
-                    controller.setChosenColumn(column);
-                }else if(currentState == state.ORDER) {
-                    int order = (int) response;
-                    controller.dropTile(order);
+                }
+                case "Integer" -> {
+                    if (currentState == state.COLUMN) {
+                        int column = (int) response;
+                        controller.setChosenColumn(column);
+                    } else if (currentState == state.ORDER) {
+                        int order = (int) response;
+                        controller.dropTile(order);
+                    }
+                }
+                case "String" -> {
+                    String message = (String) response;
+                    if (message.equals("PONG")) {
+                        //System.out.println(getTime() + " SOCKET: " + nickname + " PONG");
+                        receivedPong();
+                        break;
+                    }
+                    controller.addChatMessage(nickname, (String) response);
                 }
             }
-            case "String" ->{
-                String message = (String) response;
-                if (message.equals("PONG")){
-                    break;
-                }
-                controller.addChatMessage(nickname,(String) response);
+        }
+    }
+
+    /**
+     * Starts the ping timer.
+     * If a timer is already running, it will be canceled and a new timer will be created.
+     */
+    public void start() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
+        timer = new Timer();
+        //System.out.println("TImer started "+ nickname);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                disconnectedClient();
+                interrupt();
+                Thread.currentThread().interrupt();
             }
+        }, 5000); // 5-seconds timeout
+    }
+
+    /**
+     * Receives a ping from the client and resets the timer.
+     * If a timer is running, it will be canceled and a new timer will be started.
+     */
+    public void receivedPong() {
+        if (timer != null) {
+            timer.cancel();
+            //System.out.println("TImer cancel "+ nickname);
+        }
+        timer = null;
+        start();
+    }
+
+    /**
+     * Interrupts the timer.
+     * If a timer is running, it will be canceled.
+     */
+    public void interrupt() {
+        if (timer != null) {
+            timer.cancel();
         }
     }
 

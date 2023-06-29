@@ -20,7 +20,7 @@ public class ClientRMIImpl extends UnicastRemoteObject implements Client, ViewLi
     private UI view;
     private Server stub;
     private String nickname = null;
-    private static final int PONG_PERIOD = 1000;  // milliseconds
+    private static final int PONG_PERIOD = 5000;  // milliseconds
     private int id = -1;
 
     /**
