@@ -113,7 +113,6 @@ public class FXGraphicalUI implements UI {
             case ASK_ORDER -> gameController.askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
             case ASK_NICKNAME -> askNickName();
-            case CLIENT_DISCONNECTED -> gameController.playerDisconnected();
             case WAITING_FOR_MORE_PLAYERS -> gameController.waitingToContinue();
             case NO_PLAYERS_LEFT -> gameController.noPlayersLeft();
             case RECONNECTION -> {
@@ -145,7 +144,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void resumingTurn(boolean playing) throws RemoteException {
-
+        gameController.resuming(playing);
     }
 
     @Override
@@ -235,12 +234,13 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void clientReconnected(String nickname) {
-
+        gameController.playerReconnected(nickname);
     }
+
 
     @Override
     public void clientDisconnected(String nickname) {
-
+        gameController.playerDisconnected(nickname);
     }
 
     public static void setController(FXGameController controller2){

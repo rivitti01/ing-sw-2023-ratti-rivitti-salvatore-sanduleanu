@@ -33,7 +33,7 @@ public class FXGameController {
         this.tempClient = listener;
     }
 
-
+    private int columnNumber;
 
     private final ViewListener tempClient;
     private ViewListener client;
@@ -43,7 +43,9 @@ public class FXGameController {
     private TurnState turn;
     private CurrentState currentState;
     private String playerNick;
-    boolean started;
+
+    private CurrentState previousState;
+    private boolean started;
 
 
     private Node[][] tmpMatrix = new Node[6][5];
@@ -84,7 +86,7 @@ public class FXGameController {
     private ImageView firstCommonView;
 
     @FXML
-    private Label firstOpponentName;
+    private Text firstOpponentName;
 
     @FXML
     private GridPane firstOpponentShelf;
@@ -99,7 +101,7 @@ public class FXGameController {
     private ImageView personalGoal;
 
     @FXML
-    private Label playerName;
+    private Text playerName;
 
     @FXML
     private GridPane playerShelf;
@@ -111,7 +113,7 @@ public class FXGameController {
     private ImageView secondCommonView;
 
     @FXML
-    private Label secondOpponentName;
+    private Text secondOpponentName;
 
     @FXML
     private GridPane secondOpponentShelf;
@@ -125,16 +127,18 @@ public class FXGameController {
     @FXML
     private ImageView thirdOpponentToken;
     @FXML
-    private Label thirdOpponentName;
+    private Text thirdOpponentName;
 
     @FXML
     private Text topText;
     @FXML
-    private Label firstPoints;
+    private Label playerPoints;
     @FXML
-    private Label secondPoints;
+    private Text firstPoints;
     @FXML
-    private Label thirdPoints;
+    private Text secondPoints;
+    @FXML
+    private Text thirdPoints;
 
     @FXML
     private ImageView firstChosenTile;
@@ -179,7 +183,8 @@ public class FXGameController {
         if (turn == TurnState.PLAYER && (currentState == CurrentState.CHOOSING_COLUMN || currentState == CurrentState.CHOOSING_ACTION)) {
             try {
                 int offsetX = (GridPane.getColumnIndex((Node) event.getSource()) - 1) / 2;
-                client.columnSetting(GridPane.getColumnIndex((Node) event.getSource()) - offsetX - 1);
+                this.columnNumber = GridPane.getColumnIndex((Node) event.getSource()) - offsetX - 1;
+                client.endsSelection();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -244,7 +249,8 @@ public class FXGameController {
         if(currentState==CurrentState.WAITING_TURN)
             Platform.runLater(()-> bottomText.setText(""));
 
-
+        if (gameView.getPoints() != 0)
+            printPlayerPoints(gameView.getPoints());
         if (model == null || model.getNameGoals() != gameView.getNameGoals())
             printCommonGoals(gameView.getNameGoals());
         if (model == null ||  model.getBoard() != gameView.getBoard())
@@ -356,6 +362,17 @@ public class FXGameController {
         if(chosenTiles.size() > 0 && currentState==CurrentState.WAITING_TURN)
             Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
 
+        if (chosenTiles.size() == 0){
+            Platform.runLater(() -> {
+                firstChosenTile.setImage(null);
+                firstChosenTile.setVisible(true);
+                secondChosenTile.setVisible(false);
+                secondChosenTile.setImage(null);
+                thirdChosenTile.setVisible(false);
+                thirdChosenTile.setImage(null);
+            });
+        }
+
         if (chosenTiles.size() == 1) {
             Platform.runLater(() -> {
                 firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
@@ -367,7 +384,7 @@ public class FXGameController {
             });
         }
 
-        if (chosenTiles.size() >= 2) {
+        if (chosenTiles.size() == 2) {
             Platform.runLater(() -> {
                 firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
                 firstChosenTile.setVisible(true);
@@ -378,7 +395,7 @@ public class FXGameController {
             });
         }
 
-        if (chosenTiles.size() >= 3) {
+        if (chosenTiles.size() == 3) {
             Platform.runLater(() -> {
                 firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
                 firstChosenTile.setVisible(true);
@@ -437,7 +454,11 @@ public class FXGameController {
         if(b) {
             turn = TurnState.PLAYER;
             currentState = CurrentState.CHOOSING_TILE;
-            Platform.runLater(()->topText.setText("It's your turn!"));
+            Platform.runLater(()->{
+                topText.setText("It's your turn!");
+                bottomText.setVisible(true);
+                bottomText.setText("Choose at least 1 tile");
+            });
         }
         else{
             turn = TurnState.OPPONENT;
@@ -517,20 +538,24 @@ public class FXGameController {
         Platform.runLater(() -> topText.setText("Game has ended. " + finalWinner + " won!"));
     }
 
+    private void printPlayerPoints(int pnt){
+        Platform.runLater(()->playerPoints.setText("Earned Points: " + pnt));
+    }
+
     private class PlayerObjects {
 
         public PlayerObjects(){
             shelf = new Node[6][5];
             seat = new ImageView();
-            labelNick = new Label();
-            points = new Label();
+            labelNick = new Text();
+            points = new Text();
             shelfPane = new GridPane();
         }
         private String nick;
         private Node[][] shelf;
         private ImageView seat;
-        private Label labelNick;
-        private Label points;
+        private Text labelNick;
+        private Text points;
         private GridPane shelfPane;
 
         public Node[][] getShelfMatrix() {
@@ -541,11 +566,11 @@ public class FXGameController {
             return this.seat;
         }
 
-        public Label getLabelNick() {
+        public Text getLabelNick() {
             return this.labelNick;
         }
 
-        public Label getLabelPoints() {
+        public Text getLabelPoints() {
             return this.points;
         }
 
@@ -564,7 +589,7 @@ public class FXGameController {
             this.seat = seatToken;
         }
 
-        public void setLabelNick(Label label) {
+        public void setLabelNick(Text label) {
             this.labelNick = label;
         }
 
@@ -572,7 +597,7 @@ public class FXGameController {
             this.shelf = matrix;
         }
 
-        public void setLabelPoints(Label pointsLabel) {
+        public void setLabelPoints(Text pointsLabel) {
             this.points = pointsLabel;
         }
 
@@ -653,8 +678,12 @@ public class FXGameController {
     }
 
     public void chooseNext(){
-        currentState=CurrentState.CHOOSING_ACTION;
-        Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+        if(model.getChosenTiles().size()==0)
+            currentState=CurrentState.CHOOSING_TILE;
+        else {
+            currentState = CurrentState.CHOOSING_ACTION;
+            Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+        }
     }
 
     public void invalidColumn(){
@@ -701,18 +730,58 @@ public class FXGameController {
     }
 
     public void waitingToContinue(){
+        previousState = currentState;
         this.currentState = CurrentState.WAITING_FOR_CLIENTS;
         Platform.runLater(() -> topText.setText("Not enough players"));
         Platform.runLater(() -> bottomText.setText("Waiting for more players to continue the game..."));
     }
 
-    public void playerDisconnected(){
-        Platform.runLater(() -> topText.setText("A player has disconnected."));
+    public void playerDisconnected(String disconnectedPlayer){
+        fieldContent = new StringBuilder("");
+        String tempString = ("--- " + disconnectedPlayer + " has disconnected ---\n");
+        fieldContent.append(tempString);
+        Platform.runLater(() -> chatArea.setText(fieldContent.toString()));
     }
 
+    public void playerReconnected(String reconnectedPlayer){
+        fieldContent = new StringBuilder("");
+        String tempString = ("--- " + reconnectedPlayer + " has reconnected ---\n");
+        fieldContent.append(tempString );
+        Platform.runLater(() -> chatArea.setText(fieldContent.toString()));
+    }
+
+    public void resuming(boolean playing){
+        if(playing){
+            switch(previousState) {
+                case CHOOSING_ACTION -> {
+                    currentState=CurrentState.CHOOSING_ACTION;
+                    chooseNext();
+                }
+                case CHOOSING_COLUMN -> {
+                    currentState=CurrentState.CHOOSING_COLUMN;
+                    choosingColumn();
+                }
+                case CHOOSING_TILE -> {
+                    currentState=CurrentState.CHOOSING_TILE;
+                    Platform.runLater(() -> {
+                        topText.setText("It's your turn!");
+                        bottomText.setText("Choose at least 1 tile");
+                    });
+                }
+                case CHOOSING_ORDER -> choosingOrder();
+            }
+
+        }
+
+
+    }
     public void choosingColumn(){
-        currentState=CurrentState.CHOOSING_COLUMN;
-        Platform.runLater(()->bottomText.setText("Click the column to drop tiles into"));
+        try {
+            client.columnSetting(this.columnNumber);
+        } catch (RemoteException e) {
+            System.err.println("Errore in choosingColumn GUI side");
+            throw new RuntimeException(e);
+        }
     }
 
     public void choosingOrder(){
@@ -763,7 +832,7 @@ public class FXGameController {
     @FXML
     private TextField nicknameField;
     @FXML
-    private Label nickLabel;
+    private Text nickLabel;
     @FXML
     private GridPane nicknamePane;
     @FXML
@@ -818,6 +887,7 @@ public class FXGameController {
     void joinGame(ActionEvent event) throws RemoteException {
         if(loginState==LoginState.RECONNECTING){
             client.checkingExistingNickname(nicknameField.getText());
+            setPlayerNickname(nicknameField.getText());
         }
         else {
             if(nicknameField.getText().equals(""))
@@ -844,6 +914,10 @@ public class FXGameController {
 
     public void askReconnectingNickname(){
         loginState=LoginState.RECONNECTING;
+        Platform.runLater(()->{
+            startPane.setVisible(false);
+            nicknamePane.setVisible(true);
+        });
     }
 
     public void waitForNumber(){

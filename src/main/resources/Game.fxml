@@ -43,7 +43,10 @@
                   </VBox>
                </bottom>
                <center>
-                  <TextArea fx:id="chatArea" editable="false" maxHeight="450.0" maxWidth="260.0" minHeight="341.0" minWidth="260.0" prefHeight="450.0" prefWidth="260.0" wrapText="true" BorderPane.alignment="CENTER" />
+                  <TextArea fx:id="chatArea" editable="false" maxHeight="450.0" maxWidth="260.0" minHeight="341.0" minWidth="260.0" prefHeight="450.0" prefWidth="260.0" wrapText="true" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="Bodoni MT" size="15.0" />
+                     </font></TextArea>
                </center>
                <top>
                   <Label alignment="CENTER" maxHeight="60.0" maxWidth="111.0" minHeight="60.0" minWidth="80.0" prefHeight="60.0" prefWidth="111.0" text="Game Chat" BorderPane.alignment="CENTER">
@@ -126,17 +129,24 @@
                               <Insets top="50.0" />
                            </HBox.margin>
                            <children>
-                              <Label fx:id="firstOpponentName" alignment="CENTER" contentDisplay="CENTER" prefHeight="60.0" prefWidth="130.0" text="Opponent 1" visible="false">
+                              <Text fx:id="firstOpponentName" strokeType="OUTSIDE" strokeWidth="0.0" text="Opponent 1">
                                  <font>
                                     <Font name="Bodoni MT" size="16.0" />
                                  </font>
-                              </Label>
-                              <Label fx:id="firstPoints" alignment="CENTER" contentDisplay="CENTER" prefHeight="60.0" prefWidth="65.0" text="Points:" textAlignment="CENTER" visible="false" />
+                              </Text>
+                              <Text fx:id="firstPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="Points:" visible="false">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Text>
                            </children>
                         </VBox>
-                        <ImageView fx:id="firstOpponentToken" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <ImageView fx:id="firstOpponentToken" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <HBox.margin>
-                              <Insets top="63.0" />
+                              <Insets top="43.0" />
                            </HBox.margin>
                         </ImageView>
                      </children>
@@ -213,17 +223,24 @@
                               <Insets top="50.0" />
                            </HBox.margin>
                            <children>
-                              <Label fx:id="secondOpponentName" alignment="CENTER" contentDisplay="CENTER" prefHeight="46.0" prefWidth="66.0" text="Opponent 2" visible="false">
+                              <Text fx:id="secondOpponentName" strokeType="OUTSIDE" strokeWidth="0.0" text="Opponent 2" visible="false">
                                  <font>
-                                    <Font name="Bodoni MT" size="10.0" />
+                                    <Font name="Bodoni MT" size="16.0" />
                                  </font>
-                              </Label>
-                              <Label fx:id="secondPoints" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="66.0" text="Points:" textAlignment="CENTER" visible="false" />
+                              </Text>
+                              <Text fx:id="secondPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="Points:" visible="false">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Text>
                            </children>
                         </VBox>
-                        <ImageView fx:id="secondOpponentToken" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <ImageView fx:id="secondOpponentToken" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <HBox.margin>
-                              <Insets top="63.0" />
+                              <Insets top="43.0" />
                            </HBox.margin>
                         </ImageView>
                      </children>
@@ -304,17 +321,24 @@
                               <Insets top="50.0" />
                            </HBox.margin>
                            <children>
-                              <Label fx:id="thirdOpponentName" alignment="CENTER" contentDisplay="CENTER" prefHeight="46.0" prefWidth="66.0" text="Opponent 3" visible="false">
+                              <Text fx:id="thirdOpponentName" strokeType="OUTSIDE" strokeWidth="0.0" text="Opponent 3" visible="false">
                                  <font>
-                                    <Font name="Bodoni MT" size="10.0" />
+                                    <Font name="Bodoni MT" size="16.0" />
                                  </font>
-                              </Label>
-                              <Label fx:id="thirdPoints" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="66.0" text="Points:" textAlignment="CENTER" visible="false" />
+                              </Text>
+                              <Text fx:id="thirdPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="Points:" visible="false">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Text>
                            </children>
                         </VBox>
-                        <ImageView fx:id="thirdOpponentToken" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <ImageView fx:id="thirdOpponentToken" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <HBox.margin>
-                              <Insets top="63.0" />
+                              <Insets top="43.0" />
                            </HBox.margin>
                         </ImageView>
                      </children>
@@ -329,18 +353,21 @@
                      <children>
                         <HBox fillHeight="false" minHeight="50.0" prefHeight="50.0" prefWidth="200.0">
                            <children>
-                              <Pane prefHeight="200.0" prefWidth="220.0" />
-                              <Label fx:id="playerName" alignment="CENTER" contentDisplay="CENTER" prefHeight="50.0" prefWidth="126.0" text="Player">
+                              <Pane prefHeight="50.0" prefWidth="215.0" />
+                              <Text fx:id="playerName" strokeType="OUTSIDE" strokeWidth="0.0" text="Player" textAlignment="CENTER" wrappingWidth="85.97559750080109">
                                  <font>
-                                    <Font name="Bodoni MT" size="21.0" />
+                                    <Font name="Bodoni MT" size="20.0" />
                                  </font>
-                              </Label>
-                              <ImageView fx:id="playerToken" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <HBox.margin>
-                                    <Insets top="15.0" />
+                                    <Insets top="11.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <ImageView fx:id="playerToken" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                                 <HBox.margin>
+                                    <Insets left="1.0" top="12.0" />
                                  </HBox.margin>
                               </ImageView>
-                              <Pane nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="205.0" />
+                              <Pane nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="210.0" />
                            </children>
                         </HBox>
                         <HBox prefHeight="300.0" prefWidth="567.2">
@@ -452,7 +479,12 @@
                               </GridPane>
                               <Pane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <ImageView fx:id="personalGoal" fitHeight="155.0" fitWidth="133.0" layoutX="50.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
+                                    <Label fx:id="playerPoints" layoutX="8.0" prefHeight="18.0" prefWidth="179.0" text="Earned Points: 0" textAlignment="CENTER">
+                                       <font>
+                                          <Font name="Bodoni MT" size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fx:id="personalGoal" fitHeight="149.0" fitWidth="133.0" layoutX="30.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </Pane>
                            </children>
@@ -713,11 +745,11 @@
                         <Font name="Bell MT" size="19.0" />
                      </font>
                   </Button>
-                  <Label fx:id="nickLabel" alignment="CENTER" prefHeight="34.0" prefWidth="230.0" text="Enter your Nickname" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <Text fx:id="nickLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter your Nickname" textAlignment="CENTER" wrappingWidth="257.3366584777832" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <font>
-                        <Font name="Bell MT" size="21.0" />
+                        <Font name="Bodoni MT" size="24.0" />
                      </font>
-                  </Label>
+                  </Text>
                   <TextField fx:id="nicknameField" prefHeight="42.0" prefWidth="234.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                   <Button mnemonicParsing="false" onAction="#exit" prefHeight="38.0" prefWidth="150.0" text="Exit My Shelfie" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                      <font>

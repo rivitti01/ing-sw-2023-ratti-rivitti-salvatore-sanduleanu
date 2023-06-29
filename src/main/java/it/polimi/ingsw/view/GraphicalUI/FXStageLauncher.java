@@ -42,6 +42,7 @@ public class FXStageLauncher extends Application {
 
             FXGraphicalUI.setController(gameController);
 
+
             listenerClient.notifyAll();
         }
 
