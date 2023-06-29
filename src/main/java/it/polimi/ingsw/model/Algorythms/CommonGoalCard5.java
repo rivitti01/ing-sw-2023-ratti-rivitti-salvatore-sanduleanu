@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class CommonGoalCard5 implements CardStrategy {
 
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
 
         int i = 0, j = 0, k = 0, colorCounter = 1, columnCounter = 0;
         boolean colorFlag = false;

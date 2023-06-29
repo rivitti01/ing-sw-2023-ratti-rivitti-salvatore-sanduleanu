@@ -9,7 +9,7 @@ public class CommonGoalCard11 implements CardStrategy{
     public String getCardName(){return "11common";}
 
 
-    public boolean algorythm(Shelf myShelf) {  // 5 Tiles of same color placed like a cross
+    public boolean algorithm(Shelf myShelf) {  // 5 Tiles of same color placed like a cross
         for (int r=1; r<5; r++){
             for (int c=1; c<4; c++) {
                 if(myShelf.getTile(r, c)!=null && myShelf.getTile(r-1, c+1)!=null &&

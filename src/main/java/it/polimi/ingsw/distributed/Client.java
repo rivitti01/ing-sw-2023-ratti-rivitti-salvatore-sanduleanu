@@ -21,14 +21,9 @@ public interface Client extends Remote {
     void askColumn() throws RemoteException;
     void askAction() throws RemoteException;
     void askNickname() throws RemoteException;
-
-
     void askExistingNickname() throws RemoteException;
-
     void ping() throws RemoteException;
-
     void setNickname(String nickname) throws RemoteException;
-
     void gameStarted(boolean youTurn) throws RemoteException;
     void setID(int id) throws RemoteException;
     int getID() throws RemoteException;

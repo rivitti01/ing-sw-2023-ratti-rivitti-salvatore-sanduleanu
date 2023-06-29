@@ -14,7 +14,7 @@ public class CommonGoalCard9 implements CardStrategy {
     private boolean[] colorsOccurrence; //array in cui memorizzo se l'i-esimo colore è presente oppure no.
 
 
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
         int tmp=0;                 // in tmp salvo l'indice i (mi serve al di fuori del ciclo in cui è usato come contatore).
         if(myShelf==null) return false;
         int columnCounter=0;           // il numero di colonne che superano il check (dovranno essere 2).

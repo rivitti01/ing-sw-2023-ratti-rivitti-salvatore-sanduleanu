@@ -68,10 +68,10 @@ class CommonGoalCard3Test {
 
     @Test
     void algorythm() {
-        assertTrue(commonGoalCard3.algorythm(test1));
-        assertTrue(commonGoalCard3.algorythm(test2));
-        assertFalse(commonGoalCard3.algorythm(test3));
-        assertFalse(commonGoalCard3.algorythm(test4));
-        assertFalse(commonGoalCard3.algorythm(test5));
+        assertTrue(commonGoalCard3.algorithm(test1));
+        assertTrue(commonGoalCard3.algorithm(test2));
+        assertFalse(commonGoalCard3.algorithm(test3));
+        assertFalse(commonGoalCard3.algorithm(test4));
+        assertFalse(commonGoalCard3.algorithm(test5));
     }
 }

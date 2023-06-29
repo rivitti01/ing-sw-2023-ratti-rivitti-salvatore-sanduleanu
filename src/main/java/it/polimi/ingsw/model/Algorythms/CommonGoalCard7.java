@@ -7,7 +7,7 @@ import static it.polimi.ingsw.util.Costants.SHELF_ROWS;
 
 public class CommonGoalCard7 implements CardStrategy {
 
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
         if(myShelf==null) return false;
         for (int r=0; r<SHELF_ROWS; r++)
             for(int c=0; c<SHELF_COLUMN; c++){   //scorro la shelf

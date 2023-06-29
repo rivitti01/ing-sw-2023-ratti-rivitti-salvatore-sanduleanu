@@ -1,5 +1,8 @@
 package it.polimi.ingsw.util;
 
+/**
+ * Enumerates the possible states of the player in the UI.
+ */
 public enum CurrentState {
     CHOOSING_ACTION,
     CHOOSING_TILE,

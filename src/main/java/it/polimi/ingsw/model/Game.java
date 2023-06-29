@@ -402,6 +402,11 @@ public class Game {
         this.chat.newMessage(sender, receiver, message);
         listener.forEach(ModelListener::printGame);
     }
+
+    /**
+     * Prints the current state of the game.
+     * This method notifies all registered listeners to print the game.
+     */
     public void printGame(){
         listener.forEach(ModelListener::printGame);
     }

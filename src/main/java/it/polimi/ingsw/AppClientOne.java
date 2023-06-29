@@ -15,36 +15,11 @@ public class AppClientOne {
         String uiType = null;
         boolean ok = false;
         Scanner scanner = new Scanner(System.in);
-/*
+
         while (!ok) {
             System.out.println("choose:\n[R] RMI Server\n[S] Socket Server");
             serverType = scanner.nextLine();
-            if (serverType.equals("R")) {
-                ok = true;
-                try {
-                    // Obtain a reference to the remote object
-                    Registry registry = LocateRegistry.getRegistry();
-                    Server server = (Server) registry.lookup("server");
-                    ClientImpl client = new ClientImpl(server);
-                    client.run();
-                } catch (Exception e) {
-                    System.err.println("Client exception: " + e.toString());
-                    e.printStackTrace();
-                }
-
-            } else if (serverType.equals("S")) {
-                ok = true;
-                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1",2000);
-                client.start();
-
-            } else
-                System.out.println("ERRORE: comando sconosciuto!");
-        }
-*/
-        while (!ok) {
-            System.out.println("choose:\n[R] RMI Server\n[S] Socket Server");
-            serverType = scanner.nextLine();
-            if (!serverType.toUpperCase().equals("R") && !serverType.toUpperCase().equals("S"))
+            if (!serverType.equalsIgnoreCase("R") && !serverType.equalsIgnoreCase("S"))
                 System.out.println("ERRORE: comando sconosciuto!");
             else
                 ok = true;
@@ -55,14 +30,14 @@ public class AppClientOne {
         while (!ok) {
             System.out.println("choose:\n[G] GUI\n[T] TUI");
             uiType = scanner.nextLine();
-            if (!uiType.toUpperCase().equals("G") && !uiType.toUpperCase().equals("T"))
+            if (!uiType.equalsIgnoreCase("G") && !uiType.equalsIgnoreCase("T"))
                 System.out.println("ERRORE: comando sconosciuto!");
             else
                 ok = true;
         }
 
-        if (serverType.toUpperCase().equals("R")) {
-            if (uiType.toUpperCase().equals("G")) {     // RMI GUI
+        if (serverType.equalsIgnoreCase("R")) {
+            if (uiType.equalsIgnoreCase("G")) {     // RMI GUI
                 try {
                     // Obtain a reference to the remote object
                     Registry registry = LocateRegistry.getRegistry();
@@ -70,7 +45,7 @@ public class AppClientOne {
                     ClientImpl client = new ClientImpl(server, true);
                     client.run();
                 } catch (Exception e) {
-                    System.err.println("Client exception: " + e.toString());
+                    System.err.println("Client exception: " + e);
                     e.printStackTrace();
                 }
             } else {      // RMI TUI
@@ -81,18 +56,18 @@ public class AppClientOne {
                     ClientImpl client = new ClientImpl(server, false);
                     client.run();
                 } catch (Exception e) {
-                    System.err.println("Client exception: " + e.toString());
+                    System.err.println("Client exception: " + e);
                     e.printStackTrace();
                 }
             }
         }else {
-            if (uiType.toUpperCase().equals("G")) {   // SOCKET GUI
-                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000, true);
-                client.start();
+            ClientSocketImpl client;
+            if (uiType.equalsIgnoreCase("G")) {   // SOCKET GUI
+                client = new ClientSocketImpl("127.0.0.1", 2000, true);
             } else {                    // SOCKET TUI
-                ClientSocketImpl client = new ClientSocketImpl("127.0.0.1", 2000, false);
-                client.start();
+                client = new ClientSocketImpl("127.0.0.1", 2000, false);
             }
+            client.start();
         }
     }
 }

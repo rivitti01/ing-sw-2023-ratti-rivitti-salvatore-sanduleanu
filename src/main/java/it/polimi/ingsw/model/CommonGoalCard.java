@@ -109,7 +109,7 @@ public class CommonGoalCard {
      * @return true if the algorithm succeeds on the given shelf, false otherwise
      */
     public boolean algorythm(Shelf myShelf){
-        return cardStrategy.algorythm(myShelf);
+        return cardStrategy.algorithm(myShelf);
     }
 
     /**

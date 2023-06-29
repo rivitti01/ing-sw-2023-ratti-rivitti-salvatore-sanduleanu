@@ -9,7 +9,7 @@ import static it.polimi.ingsw.util.Costants.SHELF_ROWS;
 
 public class CommonGoalCard4 implements CardStrategy {
 
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
         Shelf copiedShelf = myShelf.copyShelf();
         int squareCounter = 0;
         int r = 0, c = 0;

@@ -23,7 +23,7 @@ class CommonGoalCard5Test {
 
     @Test
     void emptyShelf() {
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
     }
 
     @Test
@@ -43,7 +43,7 @@ class CommonGoalCard5Test {
         s.putTile(1,4, new Tile(Color.GREEN));
         s.putTile(1,4, new Tile(Color.YELLOW));
         s.putTile(0,4, new Tile(Color.YELLOW));
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
 
     }
 
@@ -70,7 +70,7 @@ class CommonGoalCard5Test {
         s.putTile(5,4, new Tile(Color.YELLOW));
         s.putTile(4,4, new Tile(Color.YELLOW));
         s.putTile(3,4, new Tile(Color.YELLOW));
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
 
     }
 
@@ -97,7 +97,7 @@ class CommonGoalCard5Test {
         s.putTile(5,4, new Tile(Color.YELLOW));
         s.putTile(4,4, new Tile(Color.YELLOW));
         s.putTile(3,4, new Tile(Color.YELLOW));
-        assertTrue(card.algorythm(s));
+        assertTrue(card.algorithm(s));
 
     }
 }

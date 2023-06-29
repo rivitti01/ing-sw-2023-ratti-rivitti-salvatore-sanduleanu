@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.Algorythms;
 import it.polimi.ingsw.model.Shelf;
 
 public class CommonGoalCard2 implements CardStrategy {
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
         if (myShelf == null){
             return false;
         }

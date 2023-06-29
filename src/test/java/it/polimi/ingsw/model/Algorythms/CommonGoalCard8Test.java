@@ -20,7 +20,7 @@ class CommonGoalCard8Test {
 
     @Test
     void emptyShelf() {
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
     }
 
     @Test
@@ -40,7 +40,7 @@ class CommonGoalCard8Test {
         s.putTile(3,2, new Tile(Color.GREEN));
         s.putTile(3,3, new Tile(Color.YELLOW));
         s.putTile(3,4, new Tile(Color.YELLOW));
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
 
     }
 
@@ -67,7 +67,7 @@ class CommonGoalCard8Test {
         s.putTile(2,3, new Tile(Color.YELLOW));
         s.putTile(2,4, new Tile(Color.YELLOW));
 
-        assertFalse(card.algorythm(s));
+        assertFalse(card.algorithm(s));
 
     }
 
@@ -98,7 +98,7 @@ class CommonGoalCard8Test {
         s.putTile(1,2, new Tile(Color.YELLOW));
         s.putTile(1,3, new Tile(Color.YELLOW));
         s.putTile(1,4, new Tile(Color.YELLOW));
-        assertTrue(card.algorythm(s));
+        assertTrue(card.algorithm(s));
 
     }
 }

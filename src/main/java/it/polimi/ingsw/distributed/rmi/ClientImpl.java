@@ -60,6 +60,14 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
         }
     }
 
+    /**
+     * Checks the server's connectivity periodically.
+     *
+     * This method creates a separate thread that periodically sends a "pong" signal to the server
+     * to check its connectivity.
+     * If a remote communication error occurs during the ping-pong process,
+     * the client assumes that the server has crashed and exits the game.
+     */
     private void checkServer(){
         Thread pongThread = new Thread(() -> {
             while (true){

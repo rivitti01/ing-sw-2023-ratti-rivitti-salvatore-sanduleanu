@@ -10,7 +10,7 @@ public class CommonGoalCard6 implements CardStrategy{
     public String getCardName(){return "6common";}
 
 
-    public boolean algorythm(Shelf myShelf) {
+    public boolean algorithm(Shelf myShelf) {
         for (int r1=0; r1<6; r1++){
             for (int c1=0; c1<5; c1++) {
                 int count = 0;
