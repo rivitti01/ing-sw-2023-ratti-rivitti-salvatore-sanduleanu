@@ -16,10 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 
 import javax.imageio.ImageIO;
@@ -49,7 +46,7 @@ public class FXGameController {
     boolean started;
 
 
-    Node[][] tmpMatrix;
+    private Node[][] tmpMatrix = new Node[6][5];
     private List <PlayerObjects> playersObjects;
     private BufferedImage[] tileImages = new BufferedImage[18];
     private Node[][] playerMatrix = new Node[6][5];
@@ -72,10 +69,7 @@ public class FXGameController {
     private GridPane waitingPane;
 
     @FXML
-    private Label ThirdOpponentName;
-
-    @FXML
-    private Label bottomText;
+    private Text bottomText;
 
     @FXML
     private TextArea chatArea;
@@ -156,10 +150,28 @@ public class FXGameController {
         if (event.getCode() == KeyCode.ENTER) {
             try {
                 client.newMessage(chatField.getText());
+                chatField.clear();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @FXML
+    void chosenTile(MouseEvent event){
+            if (turn == TurnState.PLAYER && (currentState==CurrentState.CHOOSING_TILE) || (currentState==CurrentState.CHOOSING_ACTION)) {
+                try {
+                    int[] coordinates = new int[2];
+                    int offsetColumn = (GridPane.getColumnIndex((Node) event.getSource()) - 1) / 2;
+                    int offsetRow = (GridPane.getRowIndex((Node) event.getSource()) - 1) / 2;
+                    coordinates[0] = (GridPane.getRowIndex((Node) event.getSource()) - offsetRow - 1);
+                    coordinates[1] = (GridPane.getColumnIndex((Node) event.getSource()) - offsetColumn - 1);
+                    this.client.checkingCoordinates(coordinates);
+                } catch (InputMismatchException | RemoteException e1) {
+                    if (e1 instanceof RemoteException)
+                        ((RemoteException) e1).printStackTrace();
+                }
+            }
     }
 
     @FXML
@@ -174,46 +186,34 @@ public class FXGameController {
         }
     }
 
-    @FXML
-    void chosenTile(MouseEvent event) {
-        if (turn == TurnState.PLAYER && currentState!=CurrentState.CHOOSING_COLUMN) {
-            try {
-                int[] coordinates = new int[2];
-                int offsetX = (GridPane.getRowIndex((Node) event.getSource()) - 1) / 2;
-                int offsetY = (GridPane.getColumnIndex((Node) event.getSource()) - 1) / 2;
-                coordinates[0] = (GridPane.getColumnIndex((Node) event.getSource()) - offsetX - 1);
-                coordinates[1] = (GridPane.getRowIndex((Node) event.getSource()) - offsetY - 1);
-                this.client.checkingCoordinates(coordinates);
-            } catch (InputMismatchException | RemoteException e1) {
-                if (e1 instanceof RemoteException)
-                    ((RemoteException) e1).printStackTrace();
-            }
-        }
-    }
+
 
     @FXML
     void chosenOrder(MouseEvent event){
         ImageView tmp = (ImageView)event.getSource();
-        if(turn == TurnState.PLAYER && currentState!=CurrentState.CHOOSING_ORDER) {
-            if(tmp==firstChosenTile) {
-                try {
-                    client.tileToDrop(0);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            if(tmp == secondChosenTile){
+        if(turn == TurnState.PLAYER && currentState==CurrentState.CHOOSING_ORDER && tmp.getImage()!=null) {
+            if(tmp==firstChosenTile && firstChosenTile.getImage()!=null) {
                 try {
                     client.tileToDrop(1);
+                    Platform.runLater(()-> firstChosenTile.setImage(null));
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
             }
 
-            if(tmp == thirdChosenTile){
+            if(tmp == secondChosenTile && secondChosenTile.getImage()!=null){
                 try {
                     client.tileToDrop(2);
+                    Platform.runLater(()-> secondChosenTile.setImage(null));
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if(tmp == thirdChosenTile && thirdChosenTile.getImage()!=null){
+                try {
+                    client.tileToDrop(3);
+                    Platform.runLater(()-> thirdChosenTile.setImage(null));
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -221,12 +221,12 @@ public class FXGameController {
         }
     }
 
-    private void setMatrix(GridPane grid, Node[][] Matrix) {
+    private void setMatrix(GridPane grid, Node[][] matrix) {
         for (Node node : grid.getChildren()) {
             if (node instanceof ImageView) {
                 int offsetY = (GridPane.getRowIndex(node) - 1) / 2;
                 int offsetX = (GridPane.getColumnIndex(node) - 1) / 2;
-                Matrix[GridPane.getRowIndex(node) - offsetY -1][GridPane.getColumnIndex(node) - offsetX -1] = node;
+                matrix[GridPane.getRowIndex(node) - offsetY -1][GridPane.getColumnIndex(node) - offsetX -1] = node;
             }
         }
     }
@@ -236,9 +236,15 @@ public class FXGameController {
             initializeGraphicObjects();
             startGame();
             setGameScene(gameView);
-            Platform.runLater(()-> waitingPane.setVisible(false));
+            Platform.runLater(()-> {
+                printToken(gameView.getNickName());
+            });
         }
-        printTurnState(gameView.getNickName());
+
+        if(currentState==CurrentState.WAITING_TURN)
+            Platform.runLater(()-> bottomText.setText(""));
+
+
         if (model == null || model.getNameGoals() != gameView.getNameGoals())
             printCommonGoals(gameView.getNameGoals());
         if (model == null ||  model.getBoard() != gameView.getBoard())
@@ -247,8 +253,17 @@ public class FXGameController {
             printShelves(gameView.getPlayersShelves());
         if (model == null ||  model.getPersonal() != gameView.getPersonal())
             printPersonalGoalShelf(gameView.getPersonal());
-        if (model == null ||  model.getChosenTiles()!=gameView.getChosenTiles() || model.getNickName()!=gameView.getNickName())
+        if (model == null ||  model.getChosenTiles()!=gameView.getChosenTiles() || !(model.getNickName().equals(gameView.getNickName())))
             printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+        if (model!=null)
+            printChat(gameView.getChatView());
+
+        if(model==null)
+            Platform.runLater(()->{
+                entireLoginPane.setVisible(false);
+                waitingPane.setVisible(false);
+                gamePane.setVisible(true);
+            });
 
         model = gameView;
 
@@ -256,8 +271,6 @@ public class FXGameController {
 
     public void printShelves(Map<String, Shelf> playerShelves) {
 
-
-        tmpMatrix = new Node[6][5];
         for (String s : playerShelves.keySet()) {
             if (s.equals(playerNick))
                 tmpMatrix = playerMatrix;
@@ -275,7 +288,10 @@ public class FXGameController {
                     if (tmpShelf.getTile(i, j) != null) {
                         int finalI = i;
                         int finalJ = j;
-                        Platform.runLater(() -> ((ImageView) tmpMatrix[finalI][finalJ]).setImage(getTileImage(tmpShelf.getTile(finalI, finalJ))));
+                        final ImageView tmpTileImage = ((ImageView) tmpMatrix[finalI][finalJ]);
+                        Platform.runLater(() -> {
+                            tmpTileImage.setImage(getTileImage(tmpShelf.getTile(finalI, finalJ)));
+                        });
                     }
                 }
             }
@@ -285,10 +301,17 @@ public class FXGameController {
     private void printBoard(Board b) {
         for (int i = 0; i < b.getSize(); i++)
             for (int j = 0; j < b.getSize(); j++) {
-                if (b.getTile(i, j) != null && b.getTile(i, j).getColor() != null && b.getTile(i, j).getColor() != Color.TRANSPARENT) {
+                if (b.getTile(i, j).getColor() != Color.TRANSPARENT) {
                     int finalI = i;
                     int finalJ = j;
-                    Platform.runLater(() -> ((ImageView) boardMatrix[finalI][finalJ]).setImage(getTileImage(b.getTile(finalI, finalJ))));
+                    if (b.getTile(i, j).getColor() != null && b.getTile(i, j) != null) {
+                        Platform.runLater(() -> {
+                            Platform.runLater(() -> ((ImageView) boardMatrix[finalI][finalJ]).setImage(getTileImage(b.getTile(finalI, finalJ))));
+                        });
+                    }
+                    if(b.getTile(i, j).getColor() == null || b.getTile(i, j) == null){
+                        Platform.runLater(() -> ((ImageView) boardMatrix[finalI][finalJ]).setImage(null));
+                    }
                 }
             }
     }
@@ -330,31 +353,41 @@ public class FXGameController {
     }
 
     private void printChosenTiles(List<Tile> chosenTiles, String nickname) {
-        if(!chosenTiles.isEmpty()) {
+        if(chosenTiles.size() > 0 && currentState==CurrentState.WAITING_TURN)
             Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
 
-            if (chosenTiles.size() >= 1) {
-                Platform.runLater(() -> {
-                    firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
-                    firstChosenTile.setVisible(true);
-                });
-            } else Platform.runLater(() -> firstChosenTile.setVisible(false));
-
-            if (chosenTiles.size() >= 2) {
-                Platform.runLater(() -> {
-                    secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
-                    secondChosenTile.setVisible(true);
-                });
-            } else Platform.runLater(() -> secondChosenTile.setVisible(false));
-
-            if (chosenTiles.size() >= 3) {
-                Platform.runLater(() -> {
-                    thirdChosenTile.setImage(getTileImage(chosenTiles.get(2)));
-                    thirdChosenTile.setVisible(true);
-                });
-            } else Platform.runLater(() -> thirdChosenTile.setVisible(false));
+        if (chosenTiles.size() == 1) {
+            Platform.runLater(() -> {
+                firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
+                firstChosenTile.setVisible(true);
+                secondChosenTile.setVisible(false);
+                secondChosenTile.setImage(null);
+                thirdChosenTile.setVisible(false);
+                thirdChosenTile.setImage(null);
+            });
         }
 
+        if (chosenTiles.size() >= 2) {
+            Platform.runLater(() -> {
+                firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
+                firstChosenTile.setVisible(true);
+                secondChosenTile.setVisible(true);
+                secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
+                thirdChosenTile.setVisible(false);
+                thirdChosenTile.setImage(null);
+            });
+        }
+
+        if (chosenTiles.size() >= 3) {
+            Platform.runLater(() -> {
+                firstChosenTile.setImage(getTileImage(chosenTiles.get(0)));
+                firstChosenTile.setVisible(true);
+                secondChosenTile.setVisible(true);
+                secondChosenTile.setImage(getTileImage(chosenTiles.get(1)));
+                thirdChosenTile.setVisible(true);
+                thirdChosenTile.setImage(getTileImage(chosenTiles.get(2)));
+            });
+        }
     }
 
     private Image getTileImage(Tile tile) {
@@ -404,16 +437,13 @@ public class FXGameController {
         if(b) {
             turn = TurnState.PLAYER;
             currentState = CurrentState.CHOOSING_TILE;
+            Platform.runLater(()->topText.setText("It's your turn!"));
         }
-
         else{
             turn = TurnState.OPPONENT;
             currentState = CurrentState.WAITING_TURN;
+            Platform.runLater(()->topText.setText("Wait for your turn"));
         }
-    }
-
-    public void waitingTurn() {
-        turn = TurnState.OPPONENT;
     }
 
     public void lastTurn(boolean playing) {
@@ -421,6 +451,12 @@ public class FXGameController {
     }
 
     public void askOrder(){
+        Platform.runLater(()->{
+            if(currentState==CurrentState.CHOOSING_COLUMN)
+                bottomText.setText("Column chosen correctly, choose the tile to drop now");
+            if(currentState==CurrentState.CHOOSING_ORDER)
+                bottomText.setText("Continue choosing the next tile to drop into the column");
+        });
         currentState=CurrentState.CHOOSING_ORDER;
     }
     public void lastTurnReached() {
@@ -428,15 +464,6 @@ public class FXGameController {
     }
 
     public void printTurnState(String playingPlayer) {
-
-        if(playingPlayer == playerNick)
-            turn=TurnState.PLAYER;
-        else turn=TurnState.OPPONENT;
-
-        if(started)
-            Platform.runLater(() -> printToken(playingPlayer));
-
-
         switch (turn) {
             case PLAYER:
                 Platform.runLater(() -> {
@@ -493,7 +520,7 @@ public class FXGameController {
     private class PlayerObjects {
 
         public PlayerObjects(){
-            shelf = new Node[9][9];
+            shelf = new Node[6][5];
             seat = new ImageView();
             labelNick = new Label();
             points = new Label();
@@ -529,7 +556,6 @@ public class FXGameController {
         public GridPane getGrid(){
             return this.shelfPane;
         }
-
         public void setNick(String nickname) {
             this.nick = nickname;
         }
@@ -562,14 +588,9 @@ public class FXGameController {
 
     public void startGame(){
 
-        System.out.println("fff");
         linkOpponentItems(playersObjects);
         setMatrix(playerShelf, playerMatrix);
         setMatrix(gameBoard, boardMatrix);
-        Platform.runLater(()->{
-            waitingPane.setVisible(false);
-            gamePane.setVisible(true);
-        });
         started=true;
     }
 
@@ -580,7 +601,7 @@ public class FXGameController {
         Set<String> playerNameSet = model.getPlayersShelves().keySet();
         List<String> nickList = playerNameSet.stream().collect(Collectors.toCollection(ArrayList::new));
 
-        for(int i=0; i<model.getPlayersShelves().size()-1; i++){
+        for(int i=0; i<model.getPlayers().size()-1; i++){
             if(nickList.get(i).equals(playerNick)) {
                 nickList.remove(i);
                 i--;
@@ -593,10 +614,11 @@ public class FXGameController {
                     playersObjects.get(finalI).getLabelNick().setText(nickList.get(finalI));
                     playersObjects.get(finalI).getSeat().setVisible(true);
                     playersObjects.get(finalI).getGrid().setVisible(true);
+                    if(playersObjects.get(finalI).getName().equals(model.getPlayers().get(0)))
+                        printToken(model.getPlayers().get(0));
                 });
             }
         }
-
     }
 
     private void printToken(String firstPlayer){
@@ -621,16 +643,18 @@ public class FXGameController {
     }
 
     public void invalidTile(){
-        Platform.runLater(() -> bottomText.setText("Invalid tile, try again then click on the column you want to fill"));
+        currentState=CurrentState.CHOOSING_ACTION;
+        Platform.runLater(() -> bottomText.setText("Invalid tile, choose a proper tile or continue to column"));
     }
 
     public void maxTiles(){
+        Platform.runLater(() -> bottomText.setText("You cannot take more tiles, click a column to drop into"));
         currentState=CurrentState.CHOOSING_COLUMN;
     }
 
-    public void  chooseNext(){
+    public void chooseNext(){
         currentState=CurrentState.CHOOSING_ACTION;
-
+        Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
     }
 
     public void invalidColumn(){
@@ -639,7 +663,27 @@ public class FXGameController {
     }
 
     public void invalidChatMessage(){
-        Platform.runLater(() -> chatErrorLabel.setText("invalid message"));
+        Thread t = new Thread() {
+            public void run() {
+                Platform.runLater(() -> {
+                            chatErrorLabel.setText("invalid message");
+                            chatErrorLabel.setVisible(true);
+                        });
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                Platform.runLater(()-> chatErrorLabel.setVisible(false));
+            }};
+        t.start();
+
+
+
+
+
+
+
     }
 
     public void invalidReceiver(){
@@ -666,6 +710,31 @@ public class FXGameController {
         Platform.runLater(() -> topText.setText("A player has disconnected."));
     }
 
+    public void choosingColumn(){
+        currentState=CurrentState.CHOOSING_COLUMN;
+        Platform.runLater(()->bottomText.setText("Click the column to drop tiles into"));
+    }
+
+    public void choosingOrder(){
+        currentState=CurrentState.CHOOSING_ORDER;
+        Platform.runLater(()->{
+            bottomText.setText("Column Chosen! Choose the tile to drop now");
+        });
+
+    }
+
+    public void invalidOrder(){
+        currentState=CurrentState.CHOOSING_ORDER;
+        Platform.runLater(()->bottomText.setText("Invalid chosen tile clicked, try again"));
+    }
+
+    public void columnWithoutTiles(){
+        currentState=CurrentState.CHOOSING_TILE;
+        Platform.runLater(()->bottomText.setText("No tiles to drop to the column, choose at least 1 tile first"));
+    }
+
+
+
 
     private void initializeGraphicObjects(){
 
@@ -686,6 +755,8 @@ public class FXGameController {
     private final ObservableList<Integer> numberList = FXCollections.observableArrayList(2,3,4);
 
     @FXML
+    private StackPane entireLoginPane;
+    @FXML
     private Button enterButton;
     @FXML
     private Button joinButton;
@@ -700,7 +771,7 @@ public class FXGameController {
     @FXML
     private Label waitingLabel;
     @FXML
-    private AnchorPane rootPane;
+    private Label askNumberLabel;
 
     @FXML
     private ChoiceBox<Integer> numberBox;
@@ -734,9 +805,13 @@ public class FXGameController {
 
     @FXML
     void sendNumber(ActionEvent event) throws RemoteException {
-        numberPane.setVisible(false);
-        nicknamePane.setVisible(true);
-        client.numberPartecipantsSetting(numberBox.getValue());
+
+        if(numberBox.getValue()==2 || numberBox.getValue()==3 || numberBox.getValue()==4) {
+            numberPane.setVisible(false);
+            nicknamePane.setVisible(true);
+            client.numberPartecipantsSetting(numberBox.getValue());
+        }
+        else Platform.runLater(()->askNumberLabel.setText("Choice a number before entering"));
     }
 
     @FXML
@@ -745,9 +820,14 @@ public class FXGameController {
             client.checkingExistingNickname(nicknameField.getText());
         }
         else {
-            client.clientNickNameSetting((nicknameField.getText()));
+            if(nicknameField.getText().equals(""))
+                Platform.runLater(()->nickLabel.setText("Empty nickname, try again."));
+
+            else {
+                client.clientNickNameSetting((nicknameField.getText()));
+                setPlayerNickname(nicknameField.getText());
+            }
         }
-        setPlayerNickname(nicknameField.getText());
     }
 
     public void setPlayerNumber(boolean number) {

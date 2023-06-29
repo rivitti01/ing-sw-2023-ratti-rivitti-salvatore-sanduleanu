@@ -67,7 +67,9 @@ public class FXGraphicalUI implements UI {
                     listener.notifyAll();
                 }
             }
-            case INVALID_ACTION -> {}
+            case INVALID_ACTION -> {
+                gameController.columnWithoutTiles();
+            }
             case GAME_ALREADY_STARTED -> {
                     while (gameController == null) {
                         try {
@@ -81,7 +83,9 @@ public class FXGraphicalUI implements UI {
             case MAX_TILES_CHOSEN -> {
                 gameController.maxTiles();
             }
-            case INVALID_ORDER -> {}
+            case INVALID_ORDER -> {
+                gameController.invalidOrder();
+            }
             case WAIT -> {
                     while (gameController == null) {
                         try {
@@ -92,8 +96,7 @@ public class FXGraphicalUI implements UI {
                     }
                     gameController.waitForNumber();
             }
-            case OK_JOINER -> {System.out.println("NOOO");
-                gameController.setJoiningPane();}
+            case OK_JOINER -> gameController.setJoiningPane();
             case INVALID_CHAT_MESSAGE -> {
                 gameController.invalidChatMessage(); // con un label sotto la chat
             }
@@ -135,7 +138,6 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void newTurn(boolean b) throws RemoteException {
-        System.out.println("E' IL MIO TURNO PORCODIO");
         gameController.newTurn(b);
     }
 
@@ -146,10 +148,12 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void askOrder() {
+        gameController.choosingOrder();
     }
 
     @Override
     public void askColumn() {
+        gameController.choosingColumn();
     }
 
     public void printBoard(Board b){
@@ -183,11 +187,8 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void gameStarted(boolean yourTurn) {
-        System.out.println("DDDDD");}
-
-    public void waitingTurn() throws RemoteException{
-        gameController.waitingTurn();
-    }
+        //System.out.println("DDDDD");
+        }
 
     public void askNumber() throws RemoteException{
             while(gameController==null) {
@@ -197,7 +198,6 @@ public class FXGraphicalUI implements UI {
                     throw new RuntimeException(e);
                 }
             }
-            System.out.println("d");
             gameController.setPlayerNumber(true);
     }
 

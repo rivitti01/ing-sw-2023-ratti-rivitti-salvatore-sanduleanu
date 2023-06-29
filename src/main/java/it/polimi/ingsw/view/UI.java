@@ -55,8 +55,6 @@ public interface UI {
 
     void lastTurn(boolean currentPlayer);
 
-    void waitingTurn() throws RemoteException;
-
     void gameStarted(boolean nickname);
 
     void askExistingNickname();

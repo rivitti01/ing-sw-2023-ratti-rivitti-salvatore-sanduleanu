@@ -22,6 +22,7 @@ public class GameView  implements Serializable {
     private final List<Integer> commonGoal1;
     private final List<Integer> commonGoal2;
     private  boolean yourTurn = false;
+    private List<String> players;
 
 
 
@@ -38,8 +39,10 @@ public class GameView  implements Serializable {
         this.commonName = new String[2];
         this.board = model.getBoard();
         this.nickName = model.getCurrentPlayer().getNickname();
+        players = new ArrayList<>();
         for (Player player: model.getPlayers()){
             this.playersShelves.put(player.getNickname(), player.getShelf());
+            this.players.add(player.getNickname());
         }
         this.personal = p.getPersonalGoalCard();
         for(int i = 0 ; i<2 ; i++){
@@ -85,6 +88,9 @@ public class GameView  implements Serializable {
         return this.playersShelves;
     }
 
+    public List<String> getPlayers() {
+        return players;
+    }
 
     /**
      * Gets the list of chosen tiles by the player.

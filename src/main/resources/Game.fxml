@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="768.0" maxWidth="1366.0" minHeight="768.0" minWidth="1366.0" prefHeight="768.0" prefWidth="1366.0" styleClass="gamebg" stylesheets="@style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="768.0" maxWidth="1366.0" minHeight="768.0" minWidth="1366.0" prefHeight="768.0" prefWidth="1366.0" styleClass="gamebg" stylesheets="@style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GraphicalUI.FXGameController">
    <children>
       <BorderPane fx:id="gamePane" maxHeight="768.0" maxWidth="1366.0" minHeight="768.0" minWidth="1366.0" prefHeight="768.0" prefWidth="1366.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <right>
@@ -27,7 +27,13 @@
                <bottom>
                   <VBox alignment="CENTER" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField fx:id="chatField" maxHeight="25.0" maxWidth="260.0" minHeight="25.0" minWidth="260.0" onKeyPressed="#sendMessage" prefHeight="25.0" prefWidth="260.0" />
+                        <TextField fx:id="chatField" maxHeight="51.0" maxWidth="260.0" minHeight="20.0" minWidth="260.0" onKeyPressed="#sendMessage" prefHeight="26.0" prefWidth="260.0">
+                           <VBox.margin>
+                              <Insets bottom="15.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="Bodoni MT" size="16.0" />
+                           </font></TextField>
                         <Label fx:id="chatErrorLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="22.0" prefWidth="258.0" text="chat error" textAlignment="CENTER" textFill="#f20707" visible="false">
                            <font>
                               <Font size="15.0" />
@@ -37,7 +43,7 @@
                   </VBox>
                </bottom>
                <center>
-                  <TextArea fx:id="chatArea" editable="false" maxHeight="450.0" maxWidth="260.0" minHeight="400.0" minWidth="260.0" prefHeight="450.0" prefWidth="260.0" wrapText="true" BorderPane.alignment="CENTER" />
+                  <TextArea fx:id="chatArea" editable="false" maxHeight="450.0" maxWidth="260.0" minHeight="341.0" minWidth="260.0" prefHeight="450.0" prefWidth="260.0" wrapText="true" BorderPane.alignment="CENTER" />
                </center>
                <top>
                   <Label alignment="CENTER" maxHeight="60.0" maxWidth="111.0" minHeight="60.0" minWidth="80.0" prefHeight="60.0" prefWidth="111.0" text="Game Chat" BorderPane.alignment="CENTER">
@@ -80,7 +86,7 @@
                             <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" percentHeight="14.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" percentHeight="16.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <ImageView fitHeight="21.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -167,7 +173,7 @@
                               <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" percentHeight="14.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" percentHeight="16.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <ImageView fitHeight="21.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -254,7 +260,7 @@
                               <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" percentHeight="14.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" percentHeight="16.8178137651822" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <ImageView fitHeight="21.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -343,35 +349,35 @@
                            </VBox.margin>
                            <children>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
-                              <GridPane fx:id="playerShelf" alignment="CENTER" maxHeight="174.0" maxWidth="174.0" minHeight="174.0" minWidth="174.0" prefHeight="174.0" prefWidth="174.0" styleClass="playershelf" stylesheets="@style.css">
-                                <columnConstraints>
+                              <GridPane fx:id="playerShelf" alignment="CENTER" maxHeight="174.0" maxWidth="174.0" minHeight="174.0" minWidth="174.0" prefHeight="174.0" prefWidth="461.0" styleClass="playershelf" stylesheets="@style.css">
+                                 <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" percentWidth="12.5615763546798" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="16.4000244140625" minWidth="5.200048828124999" percentWidth="11.74055829228243" prefWidth="5.200048828124999" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="17.599951171875" minWidth="10.0" percentWidth="4.0229885057471" prefWidth="17.599951171875" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="11.74055829228243" prefWidth="100.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.86322188449848" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="11.74055829228243" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.86322188449848" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="11.74055829228243" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0229885057471" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="11.74055829228243" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="24.4000244140625" minWidth="10.0" percentWidth="4.86322188449848" prefWidth="24.4000244140625" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="15.39996337890625" minWidth="7.5999755859375" percentWidth="11.74055829228243" prefWidth="7.5999755859375" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" percentWidth="10.6382978723404" prefWidth="100.0" />
-                                </columnConstraints>
-                                <rowConstraints>
+                                 </columnConstraints>
+                                 <rowConstraints>
                                     <RowConstraints maxHeight="20.0" minHeight="10.0" percentHeight="7.044534412955466" prefHeight="20.0" vgrow="SOMETIMES" />
                                     <RowConstraints maxHeight="11.399999999999999" minHeight="6.999975585937499" percentHeight="10.68825910931174" prefHeight="6.999975585937499" vgrow="SOMETIMES" />
                                     <RowConstraints maxHeight="19.8000244140625" minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="19.8000244140625" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" percentHeight="10.68825910931174" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" percentHeight="2.1862348178137654" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints maxHeight="21.800024414062506" minHeight="10.0" percentHeight="10.68825910931174" prefHeight="21.800024414062506" vgrow="SOMETIMES" />
                                     <RowConstraints maxHeight="40.0" minHeight="10.0" percentHeight="14.8178137651822" prefHeight="40.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
+                                 </rowConstraints>
                                  <children>
                                     <ImageView fitHeight="19.0" fitWidth="20.0" onMouseClicked="#chosenColumn" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <ImageView fitHeight="19.0" fitWidth="20.0" onMouseClicked="#chosenColumn" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -407,11 +413,46 @@
                                     <ImageView fitHeight="19.0" fitWidth="20.0" onMouseClicked="#chosenColumn" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="9" GridPane.rowIndex="7" />
                                     <ImageView fitHeight="19.0" fitWidth="20.0" onMouseClicked="#chosenColumn" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="9" GridPane.rowIndex="9" />
                                     <ImageView fitHeight="19.0" fitWidth="20.0" onMouseClicked="#chosenColumn" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="9" GridPane.rowIndex="11" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="12" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="6" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="8" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="10" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="12" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="4" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="8" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="10" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="12" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="2" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="4" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="6" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="8" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="10" />
+                                    <Pane onMouseClicked="#chosenColumn" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="9" GridPane.rowIndex="12" />
                                  </children>
                               </GridPane>
                               <Pane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <ImageView fx:id="personalGoal" fitHeight="150.0" fitWidth="130.0" layoutX="120.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+                                    <ImageView fx:id="personalGoal" fitHeight="155.0" fitWidth="133.0" layoutX="50.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </Pane>
                            </children>
@@ -578,20 +619,23 @@
          <top>
             <VBox alignment="CENTER" prefHeight="115.0" prefWidth="1366.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="bottomText" alignment="CENTER" contentDisplay="CENTER" prefHeight="49.0" prefWidth="195.0" text="It's player Turn">
+                  <Text fx:id="topText" strokeType="OUTSIDE" strokeWidth="0.0" text="Wait for your turn">
                      <font>
-                        <Font name="Bodoni MT" size="18.0" />
+                        <Font name="Bodoni MT" size="23.0" />
                      </font>
-                  </Label>
+                  </Text>
                   <HBox alignment="CENTER">
                      <children>
-                        <Text fx:id="topText" strokeType="OUTSIDE" strokeWidth="0.0" text="Wait for your turn">
+                        <Text fx:id="bottomText" strokeType="OUTSIDE" strokeWidth="0.0" text="It's player Turn">
                            <font>
-                              <Font name="Bodoni MT" size="23.0" />
+                              <Font name="Bodoni MT" size="21.0" />
                            </font>
                         </Text>
-                        <ImageView fx:id="firstChosenTile" fitHeight="45.0" fitWidth="45.0" onMouseClicked="#chosenOrder" pickOnBounds="true" preserveRatio="true" />
-                        <ImageView fx:id="seconChosenTile" fitHeight="45.0" fitWidth="45.0" onMouseClicked="#chosenOrder" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="firstChosenTile" fitHeight="45.0" fitWidth="45.0" onMouseClicked="#chosenOrder" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="30.0" />
+                           </HBox.margin></ImageView>
+                        <ImageView fx:id="secondChosenTile" fitHeight="45.0" fitWidth="45.0" onMouseClicked="#chosenOrder" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="thirdChosenTile" fitHeight="45.0" fitWidth="45.0" onMouseClicked="#chosenOrder" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </HBox>
@@ -621,38 +665,8 @@
             </Label>
          </children>
       </GridPane>
-      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0">
+      <StackPane fx:id="entireLoginPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0">
          <children>
-            <GridPane fx:id="startPane">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="320.7999954223633" minWidth="10.0" prefWidth="320.7999954223633" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints maxHeight="150.79999389648438" minHeight="10.0" prefHeight="150.79999389648438" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="106.19997253417972" minHeight="10.0" prefHeight="106.19997253417972" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="125.20000305175779" minHeight="10.0" prefHeight="16.799963378906227" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="125.60003662109375" minHeight="10.0" prefHeight="125.60003662109375" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <Label alignment="CENTER" prefHeight="111.0" prefWidth="300.0" text="Welcome to My Shelfie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <font>
-                        <Font name="Bell MT" size="29.0" />
-                     </font>
-                  </Label>
-                  <Button mnemonicParsing="false" onAction="#play" prefHeight="25.0" prefWidth="194.0" text="Play" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-                     <font>
-                        <Font size="19.0" />
-                     </font>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#exit" prefHeight="25.0" prefWidth="194.0" text="Exit" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                     <font>
-                        <Font size="19.0" />
-                     </font>
-                  </Button>
-               </children>
-            </GridPane>
             <GridPane fx:id="waitingLoginPane" alignment="CENTER" visible="false">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.5999755859375" minWidth="0.0" prefWidth="0.0" />
@@ -728,6 +742,11 @@
                   <RowConstraints maxHeight="110.40001220703124" minHeight="10.0" prefHeight="101.59996337890624" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
+                  <Label fx:id="askNumberLabel" alignment="CENTER" prefHeight="34.0" prefWidth="380.0" text="How many players do you want to include?" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
                   <Button fx:id="enterButton" mnemonicParsing="false" onAction="#sendNumber" prefHeight="35.0" prefWidth="117.0" text="Enter" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
@@ -736,15 +755,40 @@
                         <Font name="Bell MT" size="19.0" />
                      </font>
                   </Button>
-                  <Label alignment="CENTER" prefHeight="34.0" prefWidth="380.0" text="How many players do you want to include?" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-                     <font>
-                        <Font size="19.0" />
-                     </font>
-                  </Label>
                   <ChoiceBox fx:id="numberBox" prefHeight="26.0" prefWidth="185.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <Button alignment="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="35.0" prefWidth="165.0" text="Exit My Shelfie" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                      <font>
                         <Font name="Bell MT" size="18.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+            <GridPane fx:id="startPane">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="320.7999954223633" minWidth="10.0" prefWidth="320.7999954223633" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="150.79999389648438" minHeight="10.0" prefHeight="150.79999389648438" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="106.19997253417972" minHeight="10.0" prefHeight="106.19997253417972" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="125.20000305175779" minHeight="10.0" prefHeight="16.799963378906227" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="125.60003662109375" minHeight="10.0" prefHeight="125.60003662109375" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" prefHeight="111.0" prefWidth="300.0" text="Welcome to My Shelfie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="Bell MT" size="29.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#play" prefHeight="25.0" prefWidth="194.0" text="Play" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#exit" prefHeight="25.0" prefWidth="194.0" text="Exit" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                     <font>
+                        <Font size="19.0" />
                      </font>
                   </Button>
                </children>

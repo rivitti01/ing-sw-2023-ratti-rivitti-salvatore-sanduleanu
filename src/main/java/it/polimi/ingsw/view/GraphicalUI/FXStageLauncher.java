@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class FXStageLauncher extends Application {
 
@@ -17,14 +18,27 @@ public class FXStageLauncher extends Application {
             FXMLLoader gameLoader = new FXMLLoader();
             gameLoader.setLocation(getClass().getResource("/Game.fxml"));
             FXGameController gameController = new FXGameController(listenerClient);
-            gameLoader.setController(gameController);
+            Callback<Class<?>, Object> controllerFactory = type ->{
+                if(type == FXGameController.class)
+                    return gameController;
+                else{
+                        try {
+                            return type.newInstance();
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                }
+            };
+
+            gameLoader.setControllerFactory(controllerFactory);
+
             Parent gameRoot = gameLoader.load();
             Scene gameScene = new Scene(gameRoot, 1366, 768);
 
             primaryStage.setTitle("My Shelfie");
             primaryStage.setScene(gameScene);
             primaryStage.setResizable(false);
-            Platform.setImplicitExit(false);
+            Platform.setImplicitExit(true);
 
             FXGraphicalUI.setController(gameController);
 
