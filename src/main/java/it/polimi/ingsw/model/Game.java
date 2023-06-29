@@ -300,6 +300,12 @@ public class Game {
         listener.forEach(ModelListener::printGame);//listener.printGame();
     }
 
+    public void resumingTurn(){
+        listener.forEach(ModelListener::resumingTurn);
+        listener.forEach(ModelListener::printGame);
+    }
+
+
     /**
      * Ends the game and calculates the final points for each player.
      * Notifies the registered listeners to print the final game state and display the final points.
@@ -394,6 +400,9 @@ public class Game {
      */
     public void newMessage(String sender, String receiver, String message)  {
         this.chat.newMessage(sender, receiver, message);
+        listener.forEach(ModelListener::printGame);
+    }
+    public void printGame(){
         listener.forEach(ModelListener::printGame);
     }
 }

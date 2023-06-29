@@ -13,6 +13,7 @@ public interface UI {
 
     void newTurn(boolean b) throws RemoteException;
 
+    void resumingTurn(boolean playing) throws RemoteException;
 
     void askOrder();
 
@@ -59,5 +60,9 @@ public interface UI {
     void gameStarted(boolean nickname);
 
     void askExistingNickname();
+
+    public void clientReconnected(String nickname);
+
+    public void clientDisconnected(String nickname);
 }
 

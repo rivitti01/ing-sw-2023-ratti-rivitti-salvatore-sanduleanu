@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static it.polimi.ingsw.view.Colors.*;
 
-public class ServerHandler implements Server,Runnable, ModelListener {
+public class ServerHandler implements Runnable, ModelListener {
     private String nickname;
     private Socket socket;
     private Game model;
@@ -231,7 +231,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         return nickname;
     }
 
-    @Override
+
     public void numberOfParticipantsSetting(int n) throws RemoteException {
         System.out.println(getTime()+" SOCKET:"+socket.getPort()+": Number of players = "+n);
         if (n > 1 && n < 5){
@@ -261,12 +261,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }
         model.removeModelListener(this);
         serverOne.clientDisconnected(this.nickname, this.clientID);
-    }
-
-    @Override
-    public void newMessage(Client client, String message) {
-
-
     }
 
     @Override
@@ -385,27 +379,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
         }
     }
     @Override
-    public void clientConnection(Client c) throws RemoteException {
-
-    }
-
-    @Override
-    public void clientNickNameSetting(Client c, String nickName) throws RemoteException {//Server ->
-
-    }
-
-
-
-    @Override
-    public void pong() throws RemoteException {
-
-    }
-
-
-
-
-
-    @Override
     public void gameStarted(Player currentPlayer) {
         newTurn(currentPlayer);
     }
@@ -446,7 +419,7 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     @Override
     public void playerDisconnected(String nickname) {
         try {
-            out.writeObject(Warnings.CLIENT_DISCONNECTED);
+            out.writeObject(nickname+"_DISCONNECTED");
             out.reset();
             out.flush();
             int counter = 0;
@@ -468,25 +441,30 @@ public class ServerHandler implements Server,Runnable, ModelListener {
     @Override
     public void playerReconnected(String nickname) {
         try {
-            if (model.getCurrentPlayer().getNickname().equals(this.nickname)){
-                out.writeObject(Warnings.YOUR_TURN);
-                out.reset();
-                out.flush();
-            }else {
-                out.writeObject(Warnings.NOT_YOUR_TURN);
-                out.reset();
-                out.flush();
-            }
-
+            out.writeObject(nickname+"_RECONNECTED");
+            out.reset();
+            out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void tileToDrop(int tilePosition) throws RemoteException {
+    public void resumingTurn() {
+        try {
+            if (model.getCurrentPlayer().getNickname().equals(this.nickname)){
+                out.writeObject(Warnings.RESUMING_TURN);
+                out.reset();
+                out.flush();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
+
+
 
     @Override
     public void finalPoints() throws RuntimeException {
@@ -513,25 +491,6 @@ public class ServerHandler implements Server,Runnable, ModelListener {
 
     public void setClientID(int clientID) {
         this.clientID = clientID;
-    }
-
-    @Override
-    public void checkingCoordinates(int[] coordinates) throws RemoteException {
-
-    }
-    @Override
-    public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
-
-    }
-
-    @Override
-    public void columnSetting(int i) throws RemoteException {
-
-    }
-
-    @Override
-    public void endsSelection() throws RemoteException {
-
     }
 
     public String getTime(){

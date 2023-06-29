@@ -209,11 +209,11 @@ public class TextualUI implements UI {
             case NO_PLAYERS_LEFT ->System.out.println("NO PLAYERS LEFT. YOU WON!");
             case RECONNECTION -> {
                 this.currentState = CurrentState.WAITING_TURN;
-                System.out.println("You have been disconnected. Please wait for your turn");
+                System.out.println("You have been RE-connected. Please wait for your turn");
                 openScanner();
             }
-            case INVALID_RECONNECTION_NICKNAME ->
-                askExistingNickname();
+            case INVALID_RECONNECTION_NICKNAME -> askExistingNickname();
+            case CLIENT_RECONNECTED -> System.out.println("A player Re-connected to the game");
         }
     }
 
@@ -492,6 +492,14 @@ public class TextualUI implements UI {
                 case CHOOSING_TILE -> System.out.println("Choose the tile's coordinates (format: x y)");
             }
         }
+    }
+
+    public void clientReconnected(String nickname){
+        System.out.println(nickname + " RE-connected to the game.");
+    }
+
+    public void clientDisconnected(String nickname){
+        System.out.println(nickname + " disconnected from the game.");
     }
 
 }

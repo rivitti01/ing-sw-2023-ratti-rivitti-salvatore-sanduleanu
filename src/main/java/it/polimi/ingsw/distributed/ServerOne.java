@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.rmi.ServerImpl;
 import it.polimi.ingsw.distributed.socket.ServerSocketImpl;
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.GameView;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.util.Warnings;
 
@@ -76,6 +77,12 @@ public class ServerOne implements ServerListener {
             interruptedTimer = true;
             timerTask.cancel(true);
             timerTask = null;
+
+            if (connectedClients == 2) {
+                // this.model.newTurn();
+                model.resumingTurn();
+                model.printGame();
+            }
         }
         System.out.println(getTime()+" SERVERONE: number of clients connected = " + connectedClients);
         return lastID-1;

@@ -289,7 +289,7 @@ public class GameController  {
                 player.setConnected(true);
             }
         }
-        for (ModelListener listener: model.getListener()){
+        for(ModelListener listener: model.getListener()){
             listener.playerReconnected(nickname);
         }
     }

@@ -140,6 +140,11 @@ public class FXGraphicalUI implements UI {
     }
 
     @Override
+    public void resumingTurn(boolean playing) throws RemoteException {
+
+    }
+
+    @Override
     public void askOrder() {
     }
 
@@ -220,6 +225,17 @@ public class FXGraphicalUI implements UI {
     public void askExistingNickname(){
         gameController.askReconnectingNickname();
     }
+
+    @Override
+    public void clientReconnected(String nickname) {
+
+    }
+
+    @Override
+    public void clientDisconnected(String nickname) {
+
+    }
+
     public static void setController(FXGameController controller2){
         FXGraphicalUI.gameController=controller2;
     }

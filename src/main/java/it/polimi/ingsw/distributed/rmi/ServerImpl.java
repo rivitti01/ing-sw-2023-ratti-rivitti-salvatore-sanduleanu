@@ -182,30 +182,19 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
     @Override
     public void checkingExistingNickname(Client c, String nickName) throws RemoteException {
         if (controller.checkingExistingNickname(nickName)) {
-            //int ID = serverONE.clientConnected();
-            //c.setID(ID);
-            //connectedClientsID.put(c, ID);
             // if client is reconnecting I need to open the scanner thread again in the TUI
             System.out.println(getTime()+ANSI_GREEN_BACKGROUND +" RMI: " +  nickName + " RE-connected" + ANSI_RESET);
             c.warning(Warnings.RECONNECTION);
 
-            for (Player player : this.model.getPlayers()) {
-                if (player.getNickname().equals(nickName)) {
-                    player.setConnected(true);
-                }
-            }
+            controller.reconnectedPlayer(nickName);
             connectedClients.put(c, nickName);
             c.setNickname(nickName);
-            if (((ServerOne) serverONE).getConnectedClients() == 2) {
-                this.model.newTurn();
-            } else if (((ServerOne) serverONE).getConnectedClients() > 2) {
-                for(Player player : this.model.getPlayers()){
-                    if(player.getNickname().equals(nickName)) {
-                        c.printGame(new GameView(this.model, player));
-                        return;
-                    }
+
+            for(Player player : model.getPlayers())
+                if(player.getNickname().equals(nickName)) {
+                    c.printGame(new GameView(model, model.getPlayers().get(model.getPlayers().indexOf(player))));
+                    break;
                 }
-            }
         } else
             c.warning(Warnings.INVALID_RECONNECTION_NICKNAME);
     }
@@ -446,7 +435,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
         if(connectedClients.size() > 0) {
             for (Client client : this.connectedClients.keySet()) {
                 try {
-                    client.warning(Warnings.CLIENT_DISCONNECTED);
+                    client.clientDisconnected(nickname);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -480,25 +469,35 @@ public class ServerImpl extends UnicastRemoteObject implements Server, ModelList
 
     @Override
     public void playerReconnected(String nickname) {
-        for(Client client : this.connectedClients.keySet()){
-            if(model.getCurrentPlayer().getNickname().equals(connectedClients.get(client))) {
+        for(Client client : this.connectedClients.keySet()) {
+            try {
+                client.clientReconnected(nickname);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void resumingTurn() {
+        for (Client client : this.connectedClients.keySet()){
+            if(this.connectedClients.get(client).equals(model.getCurrentPlayer().getNickname())) {
                 try {
-                    client.newTurn(true);
+                    client.resumingTurn(true);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
-            } else {
+            }
+            else {
                 try {
-                    client.newTurn(false);
+                    client.resumingTurn(false);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-
     }
     public String getTime(){
         return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
-
 }

@@ -219,4 +219,19 @@ public class ClientImpl extends UnicastRemoteObject implements Client, ViewListe
     public int getID() throws RemoteException {
         return this.id;
     }
+
+    @Override
+    public void resumingTurn(boolean playing) throws RemoteException {
+        this.view.resumingTurn(playing);
+    }
+
+    @Override
+    public void clientReconnected(String nickname) throws RemoteException {
+        view.clientReconnected(nickname);
+    }
+
+    @Override
+    public void clientDisconnected(String nickname) throws RemoteException{
+        this.view.clientDisconnected(nickname);
+    }
 }

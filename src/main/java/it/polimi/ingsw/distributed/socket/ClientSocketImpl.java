@@ -15,7 +15,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-public class ClientSocketImpl implements Client, ViewListener {
+public class ClientSocketImpl implements ViewListener {
     private UI view;
     private Socket socket;
     private int port;
@@ -100,14 +100,25 @@ public class ClientSocketImpl implements Client, ViewListener {
                     case GAME_ALREADY_STARTED -> {
                         canPlay = false;
                     }
+                    case RESUMING_TURN -> view.resumingTurn(true);
                 }
                 view.warning(warnings);
             }
             case "String" -> {
+                String string = (String) object;
+                if (string.contains("_RECONNECTED")){
+                    String[] parts = string.split("_");
+                    view.clientReconnected(parts[0]);
+                }
+                if (string.contains("_DISCONNECTED")){
+                    String[] parts = string.split("_");
+                    view.clientDisconnected(parts[0]);
+                }
                 if (lastTurn){
-                    String string = (String) object;
                     view.lastTurnReached(string);
                 }
+
+
             }
             case "HashMap" -> {
                 if(lastTurn) {
@@ -119,42 +130,6 @@ public class ClientSocketImpl implements Client, ViewListener {
         }
 
 
-    }
-
-
-
-    @Override
-    public void askNickname() throws RemoteException {
-
-    }
-    @Override
-    public void askExistingNickname() throws RemoteException {
-
-    }
-
-    @Override
-    public void ping() throws RemoteException {
-
-    }
-
-    @Override
-    public void setNickname(String nickname) throws RemoteException {
-        this.nickname = nickname;
-    }
-
-    @Override
-    public void gameStarted(boolean youTurn) {
-
-    }
-
-    @Override
-    public void setID(int id) throws RemoteException {
-
-    }
-
-    @Override
-    public int getID() throws RemoteException {
-        return 0;
     }
 
 
@@ -275,55 +250,9 @@ public class ClientSocketImpl implements Client, ViewListener {
     }
 
 
-    @Override
+
     public void printGame(GameView gameView) throws RemoteException { //CLIENT
         view.printGame(gameView);
     }
-
-    @Override
-    public void finalPoints(Map<String, Integer> finalPoints) throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void warning(Warnings e) throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void askNumberParticipants() throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void newTurn(boolean playing) throws RemoteException { //CLIENT
-    }
-
-
-    @Override
-    public void lastTurn(boolean currentPlayer) throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void askOrder() throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void lastTurnNotification(String nickname) throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void askColumn() throws RemoteException { //CLIENT
-
-    }
-
-    @Override
-    public void askAction() throws RemoteException { //CLIENT
-
-    }
-
 
 }

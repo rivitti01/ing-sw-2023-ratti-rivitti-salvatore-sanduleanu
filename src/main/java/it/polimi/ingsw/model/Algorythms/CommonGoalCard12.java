@@ -13,7 +13,7 @@ public class CommonGoalCard12 implements CardStrategy{
 
 
 
-    public boolean algorythm(Shelf myShelf) { // 5 columns, each has 1 more Tile than the previous colomn or 1 less
+    public boolean algorythm(Shelf myShelf) { // 5 columns, each has 1 more Tile than the previous column or 1 less
         boolean tmp = true;
         for (int c = 0; c < 4; c++) {
             if(myShelf.checkColumnEmptiness(c) <= myShelf.checkColumnEmptiness(c+1))
