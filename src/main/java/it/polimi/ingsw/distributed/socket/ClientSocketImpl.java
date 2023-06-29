@@ -31,6 +31,7 @@ public class ClientSocketImpl implements ViewListener {
     boolean lastTurn = false;
     boolean gameStarted = false;
     boolean canPlay = true;
+    boolean pong = false;
 
     /**
      * Constructs a new instance of the ClientSocketImpl class with the specified IP address, port number,
@@ -68,20 +69,7 @@ public class ClientSocketImpl implements ViewListener {
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
 
-        new Thread(() ->{
-            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.scheduleAtFixedRate(() -> {
-                try {
-                    out.writeObject("PONG");
-                    out.reset();
-                    out.flush();
-                } catch (IOException e) {
-                    System.err.println("Connection with the server lost!");
-                    executorService.shutdown();
-                    throw new RuntimeException(e);
-                }
-            }, 10000, PING_PERIOD, TimeUnit.MILLISECONDS);
-        }).start();
+
 
         while (true) {
             try {
@@ -99,6 +87,9 @@ public class ClientSocketImpl implements ViewListener {
             case "GameView" -> {
                 GameView gameView = (GameView) object;
                 view.printGame(gameView);
+                if (!pong){
+                    pong();
+                }
             }
             case "Warnings"-> {
                 Warnings warnings = (Warnings) object;
@@ -134,7 +125,10 @@ public class ClientSocketImpl implements ViewListener {
                     case GAME_ALREADY_STARTED -> {
                         canPlay = false;
                     }
-                    case RESUMING_TURN -> view.resumingTurn(true);
+                    case RESUMING_TURN -> {
+                        view.resumingTurn(true);
+                        return;
+                    }
                 }
                 view.warning(warnings);
             }
@@ -162,6 +156,23 @@ public class ClientSocketImpl implements ViewListener {
         }
 
 
+    }
+    private void pong(){
+        pong = true;
+        new Thread(() ->{
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.scheduleAtFixedRate(() -> {
+                try {
+                    out.writeObject("PONG");
+                    out.reset();
+                    out.flush();
+                } catch (IOException e) {
+                    System.err.println("Connection with the server lost!");
+                    executorService.shutdown();
+                    throw new RuntimeException(e);
+                }
+            }, 1000, PING_PERIOD, TimeUnit.MILLISECONDS);
+        }).start();
     }
 
 

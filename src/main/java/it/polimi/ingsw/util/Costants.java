@@ -12,11 +12,14 @@ public class Costants {
     public static final int END_GAME_POINT = 1;
     public static final int TIMEOUT_DURATION = 50;   // seconds
     public static final int PING_PERIOD = 1000;   // milliseconds
-    public static final int SOCKET_PORT = 2000;
-    public static final int RMI_PORT = 1099;
+    public static int SOCKET_PORT = 2000;
+    public static int RMI_PORT = 1099;
     public static final int MAX_NUMBER_PLAYERS = 4;
     public static final int MIN_NUMBER_PLAYERS = 2;
-    public static final String SERVER_IP = "172.20.10.4";
+    public static final String DEFAULT_SERVER_IP = "127.0.0.1";
+    public static final String CUSTOM_SERVER_IP = "127.0.0.1";
+
+
 
 
 

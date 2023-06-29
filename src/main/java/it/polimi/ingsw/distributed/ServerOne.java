@@ -8,6 +8,9 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.util.Warnings;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -34,13 +37,16 @@ public class ServerOne implements ServerListener {
     private boolean interruptedTimer = false;
     private List<Integer> connectedClientsID;
     private int lastID = 0;
+    private String ipAddress;
 
     /**
      * Constructs a new instance of the ServerOne class.
      *
      * @throws RemoteException if a remote communication error occurs.
      */
-    public ServerOne() throws RemoteException {
+    public ServerOne(int socketPort, int rmiPort) throws RemoteException {
+        SOCKET_PORT = socketPort;
+        RMI_PORT = rmiPort;
         first = new First();
         model = new Game();
         controller = new GameController(model);
@@ -49,6 +55,9 @@ public class ServerOne implements ServerListener {
         serverRMI = new ServerRMIImpl(model,controller,first);
         serverRMI.addServerListener(this);
         connectedClientsID = new ArrayList<>();
+    }
+    public void setIpAddress(String ipAddress){
+        this.ipAddress = ipAddress;
     }
 
     /**
@@ -59,11 +68,15 @@ public class ServerOne implements ServerListener {
     public void start() throws IOException {
         Thread rmi = new Thread(() -> {
             try {
+                System.setProperty("java.rmi.server.hostname", ipAddress);
+                System.out.println(ipAddress);
                 registry = LocateRegistry.createRegistry(RMI_PORT);
-                registry.rebind("server", serverRMI);
+                registry.bind("server", serverRMI);
                 System.out.println(getTime()+" ServerRMI is running");
             } catch (RemoteException e) {
                 e.printStackTrace();
+            } catch (AlreadyBoundException e) {
+                throw new RuntimeException(e);
             }
         });
         Thread socket = new Thread(() -> {
