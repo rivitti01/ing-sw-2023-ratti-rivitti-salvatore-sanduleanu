@@ -59,7 +59,6 @@ public class FXGameController {
 
     public void initialize() {
         client = tempClient;
-        loadTileImages(tileImages);
         numberBox.setItems(numberList);
         chatArea.setText("Start the message with @nickname to send a message to a specific player.");
     }
@@ -406,25 +405,16 @@ public class FXGameController {
     }
 
     private Image getTileImage(Tile tile) {
-
+        BufferedImage c = null;
         String tileColor = tile.getColor().toString();
-        BufferedImage temp = tileImages[(Color.valueOf(tileColor).ordinal()) * 3 + (tile.getType())];
-
-        return SwingFXUtils.toFXImage(temp, null);
-    }
-
-    private void loadTileImages(BufferedImage[] tiles) {
-        Color[] colors = Color.values();
-        for (int i = 0; i < Arrays.stream(colors).count()-1; i++)
-            for (int j = 0; j < 3; j++) {
-                try {
-                    tiles[(i * 3) + j] = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/tiles/" + j + colors[i] + ".png")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                c = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/tiles/" + tile.getType() + tileColor + ".png")));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-    }
 
+        return SwingFXUtils.toFXImage(c, null);
+    }
 
     private void linkOpponentItems(List<PlayerObjects> playersObjects) {
         playersObjects.get(0).setToken(firstOpponentToken);
