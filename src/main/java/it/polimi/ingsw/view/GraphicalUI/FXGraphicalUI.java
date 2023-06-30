@@ -5,7 +5,6 @@ import it.polimi.ingsw.util.CurrentState;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
-import javafx.application.Platform;
 
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -109,7 +108,7 @@ public class FXGraphicalUI implements UI {
             case YOUR_TURN -> newTurn(true);
             case NOT_YOUR_TURN -> newTurn(false);
             case CORRECT_CORD -> {}
-            case CONTINUE_TO_CHOOSE -> gameController.chooseNext();
+            case CONTINUE_TO_CHOOSE -> gameController.chooseNext(true);
             case ASK_COLUMN -> askColumn();
             case ASK_ORDER -> gameController.askOrder();
             case SET_NUMBER_PLAYERS, INVALID_NUMBER_PLAYERS -> askNumber();
@@ -168,8 +167,8 @@ public class FXGraphicalUI implements UI {
     }
 
     @Override
-    public void printFinalPoints(Map<String, Integer> chart, String winnerNickname) {
-        gameController.printFinalPoints(chart);  //TODO print also the winner
+    public void printFinalPoints(Map<String, Integer> chart, String winner) {
+        gameController.printFinalPoints(chart, winner);
     }
 
     @Override
@@ -209,7 +208,7 @@ public class FXGraphicalUI implements UI {
     }
 
     public void chooseAction() throws RemoteException{
-        gameController.chooseNext();
+        gameController.chooseNext(false);
     }
     public void printChat(ChatView chatView) throws RemoteException {
         gameController.printChat(chatView);

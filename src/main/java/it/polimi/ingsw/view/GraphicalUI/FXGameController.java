@@ -518,24 +518,25 @@ public class FXGameController {
         }
     }
 
-    public void printFinalPoints(Map<String, Integer> chart) {
-        int winner = -1;
+    public void printFinalPoints(Map<String, Integer> chart, String won) {
+
         for (String s : chart.keySet()) {
-            if (chart.get(s) > winner) winner = chart.get(s);
-            if (s.equals(playerNick))
-                Platform.runLater(() -> bottomText.setText("You scored " + chart.get(s) + " points"));
-            else
-                for (int i = 0; i < chart.size() - 1; i++)
-                    if (playersObjects.get(i).getName().equals(s)) {
-                        int finalI = i;
-                        Platform.runLater(() -> {
-                            playersObjects.get(finalI).getLabelPoints().setText("Points: " + chart.get(s));
-                            playersObjects.get(finalI).getLabelPoints().setVisible(true);
-                        });
-                    }
+            for (int i = 0; i < chart.size()-1; i++) {
+                if (s.equals(playerNick)) {
+                    i--;
+                    continue;
+                }
+
+                if (playersObjects.get(i).getName().equals(s)) {
+                    int finalI = i;
+                    Platform.runLater(() -> {
+                        playersObjects.get(finalI).getLabelPoints().setText("Points: " + chart.get(s));
+                        playersObjects.get(finalI).getLabelPoints().setVisible(true);
+                    });
+                }
+            }
         }
-        int finalWinner = winner;
-        Platform.runLater(() -> topText.setText("Game has ended. " + finalWinner + " won!"));
+        Platform.runLater(() -> topText.setText("GAME IS OVER!!! " + won + " won!"));
     }
 
     private void printPlayerPoints(int pnt){
@@ -621,7 +622,8 @@ public class FXGameController {
     }
 
     public void setGameScene(GameView model){
-        Platform.runLater(() -> playerName.setText(playerNick));
+        final String finalPlayerNick = playerNick;
+        Platform.runLater(() -> playerName.setText(finalPlayerNick));
 
 
         Set<String> playerNameSet = model.getPlayersShelves().keySet();
@@ -678,14 +680,30 @@ public class FXGameController {
         currentState=CurrentState.CHOOSING_COLUMN;
     }
 
-    public void chooseNext(){
-        if(model.getChosenTiles().size()==0)
-            currentState=CurrentState.CHOOSING_TILE;
-        else {
-            currentState = CurrentState.CHOOSING_ACTION;
-            Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+    public void chooseNext(boolean next){
+        if(next) {
+            if (model.getChosenTiles().size() == 0)
+                currentState = CurrentState.CHOOSING_TILE;
+            else {
+                currentState = CurrentState.CHOOSING_ACTION;
+                Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+            }
+        }
+
+        if(!next){
+            if (model.getChosenTiles().size() == 0)
+                currentState = CurrentState.CHOOSING_TILE;
+            if (model.getChosenTiles().size()==1) {
+                currentState = CurrentState.CHOOSING_ACTION;
+                Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+            }
+            if (model.getChosenTiles().size()==2) {
+                currentState = CurrentState.CHOOSING_ACTION;
+                Platform.runLater(() -> bottomText.setText("Continue to choose tiles or click the column to drop into."));
+            }
         }
     }
+
 
     public void invalidColumn(){
         this.currentState = CurrentState.CHOOSING_COLUMN;
@@ -750,15 +768,16 @@ public class FXGameController {
     }
 
     public void lastTurnReached(String shelfFiller){
-
-
+   //     Platform.runLater(()-> shelfCompletedToken.setVisible(true));
+    //    if(shelfFiller.equals(playerNick))
+   //         Platform.runLater(()->playerCompletedToken.setVisible(true));
     }
     public void resuming(boolean playing){
         if(playing){
             switch(previousState) {
                 case CHOOSING_ACTION -> {
                     currentState=CurrentState.CHOOSING_ACTION;
-                    chooseNext();
+                    chooseNext(true);
                 }
                 case CHOOSING_COLUMN -> {
                     currentState=CurrentState.CHOOSING_COLUMN;
