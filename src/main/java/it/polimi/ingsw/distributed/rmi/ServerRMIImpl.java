@@ -545,17 +545,17 @@ public class ServerRMIImpl extends UnicastRemoteObject implements Server, ModelL
      * and stores them in a map where the player's nickname is mapped to their points.
      * Then, it iterates over all connected clients and calls their {@code finalPoints} method,
      * passing the map of final points as an argument.
-     *
+     * @param winnerNickname the nickname of the winner
      */
     @Override
-    public void finalPoints() {
+    public void finalPoints(String winnerNickname) {
         Map<String, Integer> finalPoints = new HashMap<>();
         for (Player p : this.model.getPlayers()) {
             finalPoints.put(p.getNickname(), p.getPoints());
         }
         try {
             for (Client client : this.connectedClients.keySet()) {
-                client.finalPoints(finalPoints);
+                client.finalPoints(finalPoints, winnerNickname);
             }
         } catch (RemoteException e) {
             System.err.println("Unable to advice the client about the final points:" +

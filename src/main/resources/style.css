@@ -11,6 +11,7 @@
 .opponentshelf{
     -fx-background-image:url("images/bookshelf_opponent.png") ;
     -fx-background-size: 100% 100%;
+    -fx-background-position-y: 5px;
 }
 
 .playershelf{

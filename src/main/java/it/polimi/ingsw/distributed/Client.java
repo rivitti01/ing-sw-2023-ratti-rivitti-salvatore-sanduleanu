@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface Client extends Remote {
     void printGame(GameView gameView) throws RemoteException;
-    void finalPoints(Map<String, Integer> finalPoints) throws RemoteException;
+    void finalPoints(Map<String, Integer> finalPoints, String winnerNickname) throws RemoteException;
     void warning(Warnings e) throws RemoteException;
     void askNumberParticipants() throws RemoteException;
     void newTurn(boolean playing) throws RemoteException;

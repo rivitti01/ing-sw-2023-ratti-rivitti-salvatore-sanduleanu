@@ -451,8 +451,9 @@ public class TextualUI implements UI {
      * Prints the final points chart at the end of the game.
      *
      * @param chart a map containing player names as keys and their corresponding points as values
+     * @param winnerNickname the nickname of the winner
      */
-    public void printFinalPoints(Map<String, Integer> chart){
+    public void printFinalPoints(Map<String, Integer> chart, String winnerNickname){
         System.out.println("******************** GAME ENDED ***************************************");
         System.out.println();
         System.out.println("                    FINAL POINTS                   ");
@@ -462,6 +463,7 @@ public class TextualUI implements UI {
             System.out.println(s + ":" + chart.get(s));
         }
         System.out.println("--------------------------------------------------");
+        System.out.println("THE WINNER IS: " + winnerNickname);
     }
 
     /**

@@ -44,7 +44,7 @@ public interface UI {
     void printChosenTiles(List<Tile> chosenTiles, String nickname);
 
 
-    void printFinalPoints(Map<String, Integer> chart);
+    void printFinalPoints(Map<String, Integer> chart, String winnerNickname);
 
     void addListener(ViewListener l);
 
