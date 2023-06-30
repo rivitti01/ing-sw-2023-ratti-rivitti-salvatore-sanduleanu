@@ -406,7 +406,7 @@ public class FXGameController {
 
     private Image getTileImage(Tile tile) {
         BufferedImage c = null;
-        String tileColor = tile.getColor().toString();
+        String tileColor = tile.getColor().toString().toLowerCase();
             try {
                 c = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/tiles/" + tile.getType() + tileColor + ".png")));
             } catch (IOException e) {
