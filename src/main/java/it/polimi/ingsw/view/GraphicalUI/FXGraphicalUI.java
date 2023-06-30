@@ -5,6 +5,7 @@ import it.polimi.ingsw.util.CurrentState;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
+import javafx.application.Platform;
 
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -163,7 +164,7 @@ public class FXGraphicalUI implements UI {
 
     @Override
     public void lastTurnReached(String nickname) {
-        gameController.lastTurnReached();
+        gameController.lastTurnReached(nickname);
     }
 
     @Override
@@ -208,7 +209,7 @@ public class FXGraphicalUI implements UI {
     }
 
     public void chooseAction() throws RemoteException{
-        //
+        gameController.chooseNext();
     }
     public void printChat(ChatView chatView) throws RemoteException {
         gameController.printChat(chatView);

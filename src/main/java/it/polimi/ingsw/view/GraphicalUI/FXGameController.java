@@ -481,6 +481,7 @@ public class FXGameController {
                 bottomText.setText("Continue choosing the next tile to drop into the column");
         });
         currentState=CurrentState.CHOOSING_ORDER;
+
     }
 
     public void printTurnState(String playingPlayer) {

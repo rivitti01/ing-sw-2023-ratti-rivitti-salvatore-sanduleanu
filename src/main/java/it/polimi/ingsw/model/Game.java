@@ -27,6 +27,7 @@ public class Game {
     private boolean start = false;
     private boolean end=false;
     private List<ModelListener> listener;
+
     private Warnings errorType = null;
 
     /**
@@ -262,6 +263,15 @@ public class Game {
     public void setErrorType(Warnings errorType){
         this.errorType = errorType;
         listener.forEach(x->x.warning(this.errorType, this.currentPlayer));//listener.warning(errorType, this.currentPlayer);
+    }
+
+    /**
+     * Retrieves the error type associated with this instance of the Warnings class.
+     *
+     * @return The error type represented by this instance of Warnings.
+     */
+    public Warnings getErrorType() {
+        return errorType;
     }
 
     /**

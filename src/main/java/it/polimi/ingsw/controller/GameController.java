@@ -301,7 +301,7 @@ public class GameController  {
      * @param player The player whose chosen tiles are to be put back.
      */
 
-    private void putBackTiles(Player player){
+    protected void putBackTiles(Player player){
         if(!player.getChosenTiles().isEmpty()){
             List<Tile> tiles = player.getChosenTiles();
             List<int[]> coordinates = player.getChosenCoordinates();

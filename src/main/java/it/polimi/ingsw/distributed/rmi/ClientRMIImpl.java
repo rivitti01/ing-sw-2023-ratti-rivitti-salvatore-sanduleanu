@@ -302,7 +302,6 @@ public class ClientRMIImpl extends UnicastRemoteObject implements Client, ViewLi
     @Override
     public void askAction() throws RemoteException {
         this.view.chooseAction();
-
     }
 
     /**
