@@ -5,8 +5,6 @@ import it.polimi.ingsw.util.CurrentState;
 import it.polimi.ingsw.util.ViewListener;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.view.UI;
-
-import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;

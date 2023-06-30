@@ -18,10 +18,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -333,10 +331,9 @@ public class FXGameController {
     }
 
     private void printPersonalGoalShelf(PersonalGoalCard personal) {
-        File p = new File("src/main/resources/images/personal goals/" + personal.getCardName() + "_personal.png");
         BufferedImage tmp = null;
         try {
-            tmp = ImageIO.read(p);
+            tmp = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/personal goals/" + personal.getCardName() + "_personal.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -349,7 +346,7 @@ public class FXGameController {
         for (int i = 0; i < COMMON_CARDS_PER_GAME; i++) {
 
             try {
-                c = ImageIO.read(new File("src/main/resources/images/common goals/" + goals[i] + ".jpg"));
+                c = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/common goals/" + goals[i] + ".jpg")));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -421,7 +418,7 @@ public class FXGameController {
         for (int i = 0; i < Arrays.stream(colors).count()-1; i++)
             for (int j = 0; j < 3; j++) {
                 try {
-                    tiles[(i * 3) + j] = ImageIO.read(new File("src/main/resources/images/tiles/" + j + colors[i] + ".png"));
+                    tiles[(i * 3) + j] = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/tiles/" + j + colors[i] + ".png")));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -651,10 +648,9 @@ public class FXGameController {
 
     private void printToken(String firstPlayer){
 
-        File f = new File("src/main/resources/images/firstplayertoken.png");
         BufferedImage firstTmp = null;
         try {
-            firstTmp = ImageIO.read(f);
+            firstTmp = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/firstplayertoken.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
