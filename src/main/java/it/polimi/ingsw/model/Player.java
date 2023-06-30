@@ -44,8 +44,25 @@ public class Player {
      * @return The player's nickname
      */
     public String getNickname(){return this.nickname;}
+
+
+    /**
+     * Sets the value of the seat property.
+     *
+     * @param seat The new value for the seat property.
+     */
     public void setSeat(boolean seat) {
         this.seat = seat;
+    }
+
+
+    /**
+     * Retrieves the value of the seat property.
+     *
+     * @return The current value of the seat property.
+     */
+    public boolean getSeat() {
+        return this.seat;
     }
 
     /**
