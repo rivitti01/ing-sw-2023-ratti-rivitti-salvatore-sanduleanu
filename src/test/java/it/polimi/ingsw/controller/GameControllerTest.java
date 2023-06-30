@@ -1,7 +1,6 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.distributed.First;
-
 import it.polimi.ingsw.distributed.rmi.ServerRMIImpl;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
