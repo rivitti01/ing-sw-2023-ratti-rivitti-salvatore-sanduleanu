@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 import static java.lang.System.exit;
 
 public class AppClientOne {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) {
         String serverType = null;
         String uiType = null;
         String ipAddress = null;
@@ -61,7 +61,11 @@ public class AppClientOne {
             } else {                    // SOCKET TUI
                 client = new ClientSocketImpl(ipAddress, socketPort, false);
             }
-            client.start();
+            try {
+                client.start();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
