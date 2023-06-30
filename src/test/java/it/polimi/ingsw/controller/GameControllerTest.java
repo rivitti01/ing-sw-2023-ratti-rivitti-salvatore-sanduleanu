@@ -453,4 +453,109 @@ public class GameControllerTest {
         assertEquals(tile1, game.getBoard().getTile(coordinate1[0], coordinate1[1]));
         assertEquals(tile2, game.getBoard().getTile(coordinate2[0], coordinate2[1]));
     }
+
+    @Test
+    void disconnectedPlayer_ShouldSetPlayerConnectedToFalse() {
+        // Arrange
+        gameController.setNumberPlayers(2);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.checkGameInitialization();
+        Player p = game.getCurrentPlayer();
+        p.setConnected(true);
+
+        // Act
+        gameController.disconnectedPlayer(p);
+
+        // Assert
+        assertFalse(p.isConnected());
+    }
+
+    @Test
+    void disconnectedPlayer_ShouldPutBackTilesOnBoard() {
+        // Arrange
+        gameController.setNumberPlayers(2);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.checkGameInitialization();
+        Player p = game.getCurrentPlayer();
+        p.setConnected(true);
+        Tile t1 = game.getBoard().popTile(1,3);
+        Tile t2 = game.getBoard().popTile(1,4);
+        p.addChosenCoordinate(new int[]{1, 3});
+        p.addChosenCoordinate(new int[]{1, 4});
+        p.addChosenTile(t1);
+        p.addChosenTile(t2);
+
+        // Act
+        gameController.disconnectedPlayer(p);
+
+        // Assert
+        assertEquals(t1, game.getBoard().getTile(1, 3));
+        assertEquals(t2, game.getBoard().getTile(1, 4));
+    }
+
+    @Test
+    void disconnectedPlayer_ShouldCallNextPlayer() throws RemoteException {
+        // Arrange
+        gameController.setNumberPlayers(2);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.checkGameInitialization();
+        Player p = game.getCurrentPlayer();
+
+        // Act
+        gameController.disconnectedPlayer(p);
+
+        // Assert
+        assertNotEquals(p, game.getCurrentPlayer());
+        assertEquals(1, game.getPlayers().indexOf(game.getCurrentPlayer()));
+    }
+
+    @Test
+    void testAddChatMessageToAll() {
+        gameController.setNumberPlayers(2);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.checkGameInitialization();
+        String sender = "Alice";
+        String message = "Hello everyone!";
+        gameController.addChatMessage(sender, message);
+
+        // Assert that the message is added to the game model
+        assertEquals(1, game.getChat().getChat().size());
+        assertEquals(sender, game.getChat().getChat().get(0).getSender());
+        assertEquals("all", game.getChat().getChat().get(0).getReceiver());
+        assertEquals(message, game.getChat().getChat().get(0).getMessage());
+    }
+
+    @Test
+    void testAddChatMessageToPlayer() {
+        // Add some players to the game
+        gameController.setNumberPlayers(3);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.setPlayerNickname("Charlie");
+        gameController.checkGameInitialization();
+
+        String sender = "Alice";
+        String receiver = "Bob";
+        String message = "@Bob Hello!";
+        gameController.addChatMessage(sender, message);
+
+        // Assert that the message is added to the game model
+        assertEquals(1, game.getChat().getChat().size());
+        assertEquals(sender, game.getChat().getChat().get(0).getSender());
+        assertEquals(receiver, game.getChat().getChat().get(0).getReceiver());
+        assertEquals("Hello!", game.getChat().getChat().get(0).getMessage());
+    }
+
+    @Test
+    void gameAlreadyStartedTest(){
+        gameController.setNumberPlayers(2);
+        gameController.setPlayerNickname("Alice");
+        gameController.setPlayerNickname("Bob");
+        gameController.checkGameInitialization();
+        assertTrue(gameController.isGameAlreadystarted());
+    }
 }

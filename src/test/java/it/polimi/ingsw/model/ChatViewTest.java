@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.First;
+
 import it.polimi.ingsw.distributed.rmi.ServerRMIImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
