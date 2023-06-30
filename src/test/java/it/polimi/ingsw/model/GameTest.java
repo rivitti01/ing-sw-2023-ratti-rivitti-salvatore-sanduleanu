@@ -13,7 +13,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.management.Query.times;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
