@@ -5,9 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.ingsw.model.Algorythms.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
+import java.io.*;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -82,10 +82,9 @@ public class CommonGoalCard {
      */
     public void fillStack(int numberParticipants){
         scores = new Stack<>();
-        String filePath = "src/main/resources/PlayersPoints.json";
-        File input = new File(filePath);
+        Reader readerConfig = new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream("/PlayersPoints.json")));
         try {
-            JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+            JsonElement fileElement = JsonParser.parseReader(readerConfig);
             JsonObject fileObject = fileElement.getAsJsonObject();
             JsonArray jsonArrayOfPoints = fileObject.get(String.valueOf(numberParticipants)).getAsJsonArray();
             for (JsonElement personalElement : jsonArrayOfPoints){
@@ -93,9 +92,6 @@ public class CommonGoalCard {
                 int point = personalObject.get("point").getAsInt();
                 scores.push(point);
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found!");
-            e.printStackTrace();
         } catch (Exception e){
             System.err.println("File read warning!");
             e.printStackTrace();

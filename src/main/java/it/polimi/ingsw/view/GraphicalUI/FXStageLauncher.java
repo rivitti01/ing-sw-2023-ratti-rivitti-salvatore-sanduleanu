@@ -13,6 +13,18 @@ public class FXStageLauncher extends Application {
 
     private static ViewListener listenerClient;
 
+    /**
+
+     The start method is the entry point for the JavaFX application.
+
+     It initializes and configures the primary stage, loads the game UI from an FXML file,
+
+     sets up the game controller, and displays the game scene.
+
+     @param primaryStage The primary stage of the JavaFX application.
+
+     @throws Exception if an exception occurs during the execution.
+     */
     public void start(Stage primaryStage) throws Exception {
         synchronized (listenerClient) {
             FXMLLoader gameLoader = new FXMLLoader();
@@ -52,10 +64,23 @@ public class FXStageLauncher extends Application {
         primaryStage.show();
     }
 
+
+    /**
+     Launches the JavaFX application by invoking the Application.launch() method.
+     This method should be called to start the JavaFX application and display the primary stage.
+     Note: This method assumes that the class containing this method extends the Application class.
+     @see Application#launch(String...)
+     */
     public void launchStage(){
         Application.launch();
     }
 
+
+    /**
+
+     Adds a listener to the FXStageLauncher.
+     @param l The ViewListener to be added as a listener.
+     */
     public void addListener(ViewListener l) {
         FXStageLauncher.listenerClient=l;
     }
