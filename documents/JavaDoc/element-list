@@ -1,0 +1,11 @@
+module:softeng.gc30
+it.polimi.ingsw
+it.polimi.ingsw.controller
+it.polimi.ingsw.distributed
+it.polimi.ingsw.distributed.rmi
+it.polimi.ingsw.distributed.socket
+it.polimi.ingsw.model
+it.polimi.ingsw.model.Algorythms
+it.polimi.ingsw.util
+it.polimi.ingsw.view
+it.polimi.ingsw.view.GraphicalUI
