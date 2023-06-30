@@ -2,7 +2,8 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.distributed.First;
-import it.polimi.ingsw.distributed.rmi.ServerImpl;
+
+import it.polimi.ingsw.distributed.rmi.ServerRMIImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ChatViewTest {
     private Game game;
     private List<Player> players;
-    private ServerImpl server;
+    private ServerRMIImpl server;
     private First first;
     private GameController gameController;
 
@@ -27,7 +28,7 @@ class ChatViewTest {
         gameController = new GameController(game);
         first = new First();
         players = new ArrayList<>();
-        server = new ServerImpl(game, gameController, first);
+        server = new ServerRMIImpl(game, gameController, first);
         game.addModelListener(server);
         players.add(new Player("John"));
         players.add(new Player("Alice"));
