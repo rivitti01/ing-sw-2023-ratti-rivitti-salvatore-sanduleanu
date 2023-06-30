@@ -7,10 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Serializable;
+import java.io.*;
+import java.util.Objects;
 
 /**
  * Represents a personal goal card which
@@ -28,10 +26,9 @@ public class PersonalGoalCard implements Serializable {
     public PersonalGoalCard(String personalGoalCard){
         cardName = personalGoalCard;
         goalsShelf = new Tile[SHELF_ROWS][SHELF_COLUMN];
-        String filePath = "src/main/resources/PersonalGoalStrategy.json";
-        File input = new File(filePath);
+        Reader readerConfig = new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream("/PersonalGoalStrategy.json")));
         try {
-            JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+            JsonElement fileElement = JsonParser.parseReader(readerConfig);
             JsonObject fileObject = fileElement.getAsJsonObject();
             JsonArray jsonArrayOfPersonalGoal = fileObject.get(personalGoalCard).getAsJsonArray();
             for (JsonElement personalElement : jsonArrayOfPersonalGoal){
@@ -41,9 +38,6 @@ public class PersonalGoalCard implements Serializable {
                 int y = personalObject.get("y").getAsInt();
                 goalsShelf[x][y] = new Tile(Color.valueOf(color));
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found!");
-            e.printStackTrace();
         } catch (Exception e){
             System.err.println("File read warning!");
             e.printStackTrace();

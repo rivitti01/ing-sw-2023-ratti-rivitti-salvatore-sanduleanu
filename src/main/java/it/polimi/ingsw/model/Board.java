@@ -1,18 +1,15 @@
 package it.polimi.ingsw.model;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import it.polimi.ingsw.Main;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import java.util.Objects;
 
 /**
  * The Board class represents the living room of the game.
@@ -60,11 +57,10 @@ public class Board implements Serializable {
      */
 
     private void setupBoard(String boardName){
-        String filePath = "src/main/resources/BoardFactor.json";
-        File input = new File(filePath);
+        Reader readerConfig = new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream("/BoardFactor.json")));
         List<Tile> newBoard = new ArrayList<>();
         try {
-            JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+            JsonElement fileElement = JsonParser.parseReader(readerConfig);
             JsonObject fileObject = fileElement.getAsJsonObject();
             JsonArray jsonArrayOfTiles = fileObject.get(boardName).getAsJsonArray();
             for (JsonElement tileElement : jsonArrayOfTiles){
@@ -76,7 +72,7 @@ public class Board implements Serializable {
                     newBoard.add(new Tile(Color.TRANSPARENT));
                 }
             }
-        } catch (FileNotFoundException | NullPointerException e) {
+        } catch (NullPointerException e) {
             System.err.println("File BoardFactor.json not found, or invalid number of participant ");
             e.printStackTrace();
         } catch (Exception e){

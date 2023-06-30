@@ -14,7 +14,6 @@ import java.util.List;
 
 import static it.polimi.ingsw.util.Costants.SHELF_COLUMN;
 import static it.polimi.ingsw.util.Costants.SHELF_ROWS;
-import static javax.management.Query.times;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameControllerTest {
