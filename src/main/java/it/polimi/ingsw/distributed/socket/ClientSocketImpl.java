@@ -149,7 +149,15 @@ public class ClientSocketImpl implements ViewListener {
             case "HashMap" -> {
                 if(lastTurn) {
                     Map<String, Integer> map = (Map<String, Integer>) object;
-                    view.printFinalPoints(map);
+                    String winnerNickname = null;
+                    int temp = 0;
+                    for(String nickname: map.keySet()){
+                        if(map.get(nickname) >= temp){
+                            temp = map.get(nickname);
+                            winnerNickname = nickname;
+                        }
+                    }
+                    view.printFinalPoints(map, winnerNickname);
                 }
             }
             default -> throw new IllegalStateException("Unexpected value: " + object.getClass().getSimpleName());

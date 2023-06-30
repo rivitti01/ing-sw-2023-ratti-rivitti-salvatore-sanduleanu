@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.distributed.socket.ServerHandler;
 import it.polimi.ingsw.util.Costants;
 import it.polimi.ingsw.util.Warnings;
 import it.polimi.ingsw.util.ModelListener;
@@ -323,11 +322,20 @@ public class Game {
     public void endGame() {
         this.listener.forEach(ModelListener::printGame);
         setEnd(true);
+        int temp = 0;
+        String winnerNickname = null;
         for(Player p : this.players) {
             p.addPoints(p.getShelf().checkAdjacents());
             p.addPoints(p.checkPersonalPoints());
+            if(p.getPoints() >= temp) {
+                temp = p.getPoints();
+                winnerNickname = p.getNickname();
+            }
         }
-        this.listener.forEach(ModelListener::finalPoints);//finalPoints();
+        //introduced string to find winner in case there is a tie
+        //(player most far from the chair wins)
+        for(ModelListener modelListener: this.listener)
+            modelListener.finalPoints(winnerNickname);
     }
 
     /**

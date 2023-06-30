@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.distributed.First;
-import it.polimi.ingsw.distributed.rmi.ServerImpl;
+import it.polimi.ingsw.distributed.rmi.ServerRMIImpl;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.util.Warnings;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +21,7 @@ public class GameControllerTest {
 
     private Game game;
     private List<Player> players;
-    private ServerImpl server;
+    private ServerRMIImpl server;
     private First first;
     private GameController gameController;
 
@@ -32,7 +32,7 @@ public class GameControllerTest {
         gameController = new GameController(game);
         first = new First();
         players = new ArrayList<>();
-        server = new ServerImpl(game, gameController, first);
+        server = new ServerRMIImpl(game, gameController, first);
         game.addModelListener(server);
 
     }

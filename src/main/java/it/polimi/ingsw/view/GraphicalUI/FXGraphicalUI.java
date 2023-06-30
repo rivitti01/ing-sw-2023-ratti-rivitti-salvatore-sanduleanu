@@ -168,8 +168,8 @@ public class FXGraphicalUI implements UI {
     }
 
     @Override
-    public void printFinalPoints(Map<String, Integer> chart) {
-        gameController.printFinalPoints(chart);
+    public void printFinalPoints(Map<String, Integer> chart, String winnerNickname) {
+        gameController.printFinalPoints(chart);  //TODO print also the winner
     }
 
     @Override

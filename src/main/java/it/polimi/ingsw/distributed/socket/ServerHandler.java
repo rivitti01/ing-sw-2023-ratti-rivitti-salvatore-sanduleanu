@@ -620,11 +620,11 @@ public class ServerHandler implements Runnable, ModelListener {
      * Sends the final points to the client player.
      * This method is called at the end of the game to send the final points of all players to the client player.
      * The final points are represented as a map with player nicknames as keys and their corresponding points as values.
-     *
+     * @param winnerNickname the nickname of the winner
      * @throws RuntimeException if an IOException occurs during the communication
      */
     @Override
-    public void finalPoints() throws RuntimeException {
+    public void finalPoints(String winnerNickname) throws RuntimeException {
         Map<String, Integer> finalPoints = new HashMap<>();
         for(Player p: this.model.getPlayers()) {
             finalPoints.put(p.getNickname(), p.getPoints());

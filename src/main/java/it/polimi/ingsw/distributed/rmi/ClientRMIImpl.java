@@ -243,11 +243,12 @@ public class ClientRMIImpl extends UnicastRemoteObject implements Client, ViewLi
      * Notifies the client about the final points of the game.
      *
      * @param finalPoints a map containing the final points of each player
+     * @param winnerNickname the nickname of the winner
      * @throws RemoteException if there is a remote communication error
      */
     @Override
-    public void finalPoints(Map<String, Integer> finalPoints) throws RemoteException {
-        this.view.printFinalPoints(finalPoints);
+    public void finalPoints(Map<String, Integer> finalPoints, String winnerNickname) throws RemoteException {
+        this.view.printFinalPoints(finalPoints, winnerNickname);
     }
 
     /**
