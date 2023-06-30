@@ -32,18 +32,6 @@ public interface UI {
 
     void lastTurnReached(String nickname);
 
-
-    void printBoard(Board b);
-
-    void printShelves(Map<String, Shelf> playerShelves);
-
-
-    void printPersonalGoalShelf(PersonalGoalCard personalGoalCard);
-
-
-    void printChosenTiles(List<Tile> chosenTiles, String nickname);
-
-
     void printFinalPoints(Map<String, Integer> chart, String winnerNickname);
 
     void addListener(ViewListener l);
