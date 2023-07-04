@@ -318,7 +318,6 @@ public class FXGraphicalUI implements UI {
                     throw new RuntimeException(e);
                 }
             }
-            System.out.println("nick");
             gameController.askNickname();
     }
 

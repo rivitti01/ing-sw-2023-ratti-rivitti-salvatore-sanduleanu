@@ -19,12 +19,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 import static it.polimi.ingsw.util.Costants.*;
+
 public class FXGameController {
 
     /**
@@ -57,6 +60,7 @@ public class FXGameController {
     private Node[][] playerMatrix = new Node[6][5];
     private Node[][] boardMatrix = new Node[9][9];
     private boolean isEnding = false;
+    private boolean music = false;
 
     /**
      * Represents the possible states or phases of a turn in a game.
@@ -156,6 +160,14 @@ public class FXGameController {
     private ImageView secondChosenTile;
     @FXML
     private ImageView thirdChosenTile;
+    @FXML
+    private ImageView playerCompleted;
+    @FXML
+    private ImageView boardFirstToken;
+    @FXML
+    private ImageView firstCommonPoint;
+    @FXML
+    private ImageView secondCommonPoint;
 
 
 
@@ -316,15 +328,22 @@ public class FXGameController {
             printPersonalGoalShelf(gameView.getPersonal());
         if (model == null ||  model.getChosenTiles()!=gameView.getChosenTiles() || !(model.getNickName().equals(gameView.getNickName())))
             printChosenTiles(gameView.getChosenTiles(), gameView.getNickName());
+        if (model == null || model.getCommonGoal1()!=gameView.getCommonGoal1())
+                printCommonGoalPoints(gameView.getCommonGoal1(), 1);
+        if (model == null || model.getCommonGoal2()!=gameView.getCommonGoal2())
+                printCommonGoalPoints(gameView.getCommonGoal2(), 2);
+
         if (model!=null)
             printChat(gameView.getChatView());
 
-        if(model==null)
+        if(model==null){
             Platform.runLater(()->{
                 entireLoginPane.setVisible(false);
                 waitingPane.setVisible(false);
                 gamePane.setVisible(true);
             });
+            printBoardToken();
+        }
 
         model = gameView;
 
@@ -427,6 +446,21 @@ public class FXGameController {
         }
     }
 
+    private void printBoardToken(){
+
+        BufferedImage tokenTemp = null;
+        try {
+            tokenTemp = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/points/end game.jpg")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BufferedImage finalToken = tokenTemp;
+        Platform.runLater(() ->  {
+            boardFirstToken.setImage(SwingFXUtils.toFXImage(finalToken, null));
+            boardFirstToken.setVisible(true);
+        });
+
+    }
     private void printChosenTiles(List<Tile> chosenTiles, String nickname) {
         if(chosenTiles.size() > 0 && currentState==CurrentState.WAITING_TURN)
             Platform.runLater(() -> bottomText.setText(nickname + " is choosing tile order: "));
@@ -544,7 +578,10 @@ public class FXGameController {
      * @param playing a boolean value indicating whether the player is still playing (true) or not (false) during the last turn
      */
     public void lastTurn(boolean playing) {
-        Platform.runLater(()-> topText.setText("It's your last turn!!!"));
+        Platform.runLater(()-> {
+            boardFirstToken.setVisible(false);
+            topText.setText("It's your last turn!!!");
+        });
         newTurn(playing);
     }
 
@@ -564,6 +601,34 @@ public class FXGameController {
         });
         currentState=CurrentState.CHOOSING_ORDER;
 
+    }
+
+
+
+    private void printCommonGoalPoints(List<Integer> points, int commonNumber){
+
+
+
+        if(points.size()!=0) {
+            BufferedImage pointsTemp = null;
+            try {
+                pointsTemp = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/points/scoring_" + points.get(points.size() - 1) + ".jpg")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            BufferedImage finalPoints = pointsTemp;
+            if (commonNumber == 1)
+                Platform.runLater(() -> firstCommonPoint.setImage(SwingFXUtils.toFXImage(finalPoints, null)));
+            if (commonNumber == 2)
+                Platform.runLater(() -> secondCommonPoint.setImage(SwingFXUtils.toFXImage(finalPoints, null)));
+        }
+        else{
+            if (commonNumber == 1)
+                Platform.runLater(() -> firstCommonPoint.setVisible(false));
+            if (commonNumber == 2)
+                Platform.runLater(() -> firstCommonPoint.setVisible(false));
+        }
     }
 
     /**
@@ -729,6 +794,7 @@ public class FXGameController {
         setMatrix(playerShelf, playerMatrix);
         setMatrix(gameBoard, boardMatrix);
         started=true;
+        if(music) startMusic();
     }
 
     /**
@@ -941,9 +1007,19 @@ public class FXGameController {
      * @param shelfFiller The nickname of the player who filled their shelf.
      */
     public void lastTurnReached(String shelfFiller){
-   //     Platform.runLater(()-> shelfCompletedToken.setVisible(true));
-    //    if(shelfFiller.equals(playerNick))
-   //         Platform.runLater(()->playerCompletedToken.setVisible(true));
+        Platform.runLater(()-> boardFirstToken.setVisible(false));
+        if(shelfFiller.equals(playerNick)) {
+            Platform.runLater(() -> playerCompleted.setVisible(true));
+            BufferedImage tempPlayerFirst = null;
+            try {
+                tempPlayerFirst = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/points/end game.jpg")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            BufferedImage finalPlayerFirst = tempPlayerFirst;
+            Platform.runLater(() -> playerCompleted.setImage(SwingFXUtils.toFXImage(finalPlayerFirst, null)));
+        }
     }
 
     /**
@@ -1040,6 +1116,32 @@ public class FXGameController {
 
     }
 
+    private void startMusic(){
+        URL url = getClass().getResource("/MyShelfie.wav");
+        AudioInputStream audioStream;
+        Clip clip;
+
+        try {
+            audioStream = AudioSystem.getAudioInputStream(url);
+        } catch (UnsupportedAudioFileException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            clip = AudioSystem.getClip();
+        } catch (LineUnavailableException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            clip.open(audioStream);
+        } catch (LineUnavailableException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        clip.start();
+    }
 
 
     ////////////LOGIN//////////////////

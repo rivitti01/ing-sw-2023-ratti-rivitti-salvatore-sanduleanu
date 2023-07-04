@@ -76,8 +76,12 @@ public class ClientSocketImpl implements ViewListener {
                 Object object = new Object();
                 object = in.readObject();
                 analyzeMessage(object);
-            }catch (IOException | ClassNotFoundException e){
-                if(canPlay) System.err.println("Something went wrong with the connection to the server!");
+            }catch (IOException e){
+                if(canPlay) System.err.println("Something went wrong with the input to the server!");
+                System.exit(1);
+            }
+            catch(ClassNotFoundException e1) {
+                if(canPlay) System.err.println("Something went wrong with the class to the server!");
                 System.exit(1);
             }
         }
