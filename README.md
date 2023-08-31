@@ -35,6 +35,8 @@ IL Jar del progetto può essere scaricato al seguente link: [Jar](https://github
 ### Coverage report
 Al seguente link è possibile consultare il report della coverage dei test effettuati con Junit: [Report](https://github.com/rivitti01/ing-sw-2023-ratti-rivitti-salvatore-sanduleanu/blob/main/documents/image.png)
 
+## NOTA
+My Shelfie è un gioco da tavolo sviluppato ed edito da Cranio Creations Srl. I contenuti grafici di questo progetto riconducibili al prodotto editoriale da tavolo sono utilizzati previa approvazione di Cranio Creations Srl a solo scopo didattico. È vietata la distribuzione, la copia o la riproduzione dei contenuti e immagini in qualsiasi forma al di fuori del progetto, così come la redistribuzione e la pubblicazione dei contenuti e immagini a fini diversi da quello sopracitato. È inoltre vietato l'utilizzo commerciale di suddetti contenuti.
 
 ## Componenti del gruppo
 - [__Leonardo Ratti__](https://github.com/LRatti)
