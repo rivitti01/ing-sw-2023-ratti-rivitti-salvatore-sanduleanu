@@ -8,11 +8,21 @@ Prova finale di Ingegneria del Software Polimi AA 2022/2023
 ```
 java -jar softeng-gc30-1.0-SNAPSHOT-jar-with-dependencies [ipAddress] [socketPort] [rmiPort]
 ```
+Esempio
+```
+java -jar softeng-gc30-1.0-SNAPSHOT-jar-with-dependencies 192.168.1.50 2000 2099
+```
+
 
 ## CLIENT
 
 ```
 java -jar softeng-gc30-1.0-SNAPSHOT-jar-with-dependencies [G/T] [R/S] [ipAddress] [socketPort] [rmiPort]
+```
+
+Esempio con interfaccia grafica e protocollo socket
+```
+java -jar softeng-gc30-1.0-SNAPSHOT-jar-with-dependencies G S 192.168.1.50 2000 2099
 ```
 
 ### Jar
